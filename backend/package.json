@@ -1,0 +1,58 @@
+{
+  "name": "needle-fashion-backend",
+  "version": "1.0.0",
+  "description": "Backend for Needle Fashion e-commerce platform",
+  "main": "dist/server.js",
+  "types": "dist/server.d.ts",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "build": "tsc",
+    "seed": "ts-node src/scripts/seed.ts",
+    "start": "node dist/server.js",
+    "clean": "rimraf dist",
+    "prepare": "npm run clean && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "ecommerce",
+    "ethnic wear",
+    "fashion",
+    "nodejs",
+    "express",
+    "typescript",
+    "mongodb"
+  ],
+  "author": "Sayyed Mohammad Adil <your.email@example.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "google-auth-library": "^10.5.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pdfkit": "^0.13.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/mongoose": "^5.11.97",
+    "@types/morgan": "^1.9.5",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^18.19.130",
+    "@types/pdfkit": "^0.12.10",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  }
+}
