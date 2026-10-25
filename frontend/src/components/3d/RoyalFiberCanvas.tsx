@@ -677,6 +677,9 @@ export default function RoyalFiberCanvas({
         {/* Dynamic Orbiting Specular Glint for high-gleam mirror chrome shimmer */}
         {showRing && <DynamicSilverGlint />}
 
+        {/* Shimmering Zari Dust Particles (3D Box/Dot Motes floating in space) */}
+        {showRing && <RoyalStardustParticles count={380} />}
+
         {/* Silk Ribbon Background: ONLY rendered when explicitly enabled (used on Home page!) */}
         {showBackgroundRibbon && <SilkRibbonBackground lineCount={38} pointsPerLine={55} />}
 
