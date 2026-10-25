@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRightIcon, SparklesIcon, ShieldCheckIcon, ScissorsIcon, TruckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import ProductCarousel from '@/components/ProductCarousel';
-import RoyalFiberCanvas from '@/components/3d/RoyalFiberCanvas';
 
 // Curated luxury menswear masterpieces
 const featuredProducts = [
@@ -126,10 +125,7 @@ export default function Home() {
       <div className="absolute top-[1600px] -left-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none -z-0" />
       <div className="absolute top-[3200px] -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none -z-0" />
 
-      {/* 3D Flowing Silk Zari Threads Animation (Liquid-Metallic Zari Ribbons across Hero) */}
-      <div className="absolute top-0 left-0 right-0 h-[680px] lg:h-[780px] opacity-45 pointer-events-none -z-0 overflow-hidden hidden md:block">
-        <RoyalFiberCanvas showRing={false} showBackgroundRibbon={true} />
-      </div>
+
 
       {/* 1. Grand Editorial Glassmorphic Hero Section */}
       <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28">
@@ -138,12 +134,6 @@ export default function Home() {
             
             {/* Left Column: Glassmorphic Editorial Docket */}
             <div className="lg:col-span-7 z-10 flex flex-col justify-center">
-              {/* Dual-Metallic Atelier Seal */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] uppercase font-bold tracking-[0.22em] mb-4 bg-primary/10 border border-[#BBC2CC]/40 text-foreground w-fit shadow-sm backdrop-blur-md">
-                <span className="text-[#BF953F]">✦</span>
-                <span>24K Gold & Sterling Silver Zari</span>
-                <span className="text-[#BBC2CC]">✦</span>
-              </div>
 
               {/* Main Headline with Gold Foil Shimmer */}
               <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
@@ -217,7 +207,7 @@ export default function Home() {
                           The Rajsabha Imperial Sherwani
                         </p>
                         <p className="text-[11px] text-muted-foreground">
-                          Pure Mulberry Silk with 24K Gold & Sterling Silver Zari
+                          Pure Mulberry Silk with Master Handcrafted Zari
                         </p>
                       </div>
                       <Link
@@ -380,11 +370,7 @@ export default function Home() {
       </section>
 
       {/* 5. Master Karigar Artisanal Lineage Section (Beating Sabyasachi & Manish Malhotra) */}
-      <section className="py-20 sm:py-28 relative overflow-hidden">
-        {/* 3D Liquid Zari Pit-Loom Threads Animation */}
-        <div className="absolute inset-0 pointer-events-none -z-0 opacity-30 overflow-hidden hidden md:block">
-          <RoyalFiberCanvas showRing={false} showBackgroundRibbon={true} />
-        </div>
+      <section className="py-20 sm:py-28 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             

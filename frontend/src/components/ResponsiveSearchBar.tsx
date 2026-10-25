@@ -86,7 +86,7 @@ export default function ResponsiveSearchBar() {
       {/* Desktop Frosted Glass Search Bar */}
       <div className="hidden lg:block relative" ref={searchRef}>
         <form onSubmit={handleSubmit} className="flex items-center">
-          <div className="relative flex items-center glass-pill bg-white/75 dark:bg-[#16181F]/80 border border-[#BF953F]/35 pl-3 pr-1 py-1 focus-within:border-[#B38728] dark:focus-within:border-[#FCF6BA] focus-within:shadow-[0_0_15px_rgba(179,135,40,0.25)] transition-all backdrop-blur-md">
+          <div className="relative flex items-center glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 border border-[#BF953F]/40 pl-3 pr-1 py-1 focus-within:border-[#B38728] dark:focus-within:border-[#FCF6BA] focus-within:shadow-[0_0_15px_rgba(179,135,40,0.25)] transition-all backdrop-blur-md">
             <MagnifyingGlassIcon className="h-4 w-4 text-[#B38728] dark:text-[#FCF6BA] flex-shrink-0" aria-hidden="true" />
             <input
               ref={inputRef}

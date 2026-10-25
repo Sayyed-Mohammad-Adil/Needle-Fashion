@@ -188,17 +188,13 @@ export default function Header() {
       <header
         className={`relative transition-all duration-300 border-b ${
           isScrolled
-            ? 'bg-[#FAF8F5]/80 dark:bg-[#121317]/80 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border-[#BF953F]/30'
-            : 'bg-[#FAF8F5]/90 dark:bg-[#121317]/90 backdrop-blur-md border-[#BF953F]/20'
+            ? 'bg-[#E7DFCFC]/95 dark:bg-[#111318]/95 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.08)] border-[#BF953F]/30'
+            : 'bg-[#EDE7DC]/90 dark:bg-[#111318]/90 backdrop-blur-xl border-[#BF953F]/20'
         }`}
       >
-        {/* Luxury top announcement bar (Warm Ivory Cashmere Ribbon - No Black) */}
+        {/* Luxury top announcement bar */}
         <div
-          className={`relative transition-all duration-300 ${
-            isScrolled
-              ? 'bg-[#F4EFE6]/90 dark:bg-[#181A22]/90'
-              : 'bg-[#F2EDE4] dark:bg-[#161820]'
-          } text-[#2D2518] dark:text-[#FCF6BA] px-3 py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-1.5 sm:gap-3 overflow-hidden border-b border-[#BF953F]/25`}
+          className="relative transition-all duration-300 bg-[#E2D9CC]/90 dark:bg-[#171922]/90 backdrop-blur-md text-[#2B2419] dark:text-[#FCF6BA] px-3 py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-1.5 sm:gap-3 overflow-hidden border-b border-[#BF953F]/20"
         >
           <div
             className="absolute top-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_0_12px_rgba(234,236,236,0.6)]"
@@ -217,10 +213,6 @@ export default function Header() {
             ✦
           </span>
           <span>COMPLIMENTARY WHITE-GLOVE DELIVERY ON ORDERS OVER ₹1,000</span>
-          <span className="hidden md:inline text-[#B38728]/50">•</span>
-          <span className="hidden md:inline text-[#8A651E] dark:text-[#EAECEC] font-bold tracking-[0.2em]">
-            24K GOLD & STERLING SILVER ZARI
-          </span>
           <span className="hidden md:inline text-[#B38728]/50">•</span>
           <span className="hidden md:inline text-[#3E382E] dark:text-white/80">
             HANDCRAFTED IN INDIA
@@ -243,7 +235,7 @@ export default function Header() {
                 (window as any).replayNeedleIntro();
               }
             }}
-            className="hidden sm:inline-flex items-center gap-1 ml-2 text-[9px] uppercase tracking-wider text-[#7A5310] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-white/50 dark:bg-white/5"
+            className="hidden sm:inline-flex items-center gap-1 ml-2 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
             title="Experience Atelier Intro"
           >
             <span>⚜ Replay Intro</span>
@@ -286,20 +278,12 @@ export default function Header() {
                 <div className="flex flex-col">
                   <span className="font-serif text-lg sm:text-2xl font-black tracking-tight flex items-center gap-1.5 leading-none">
                     <span
-                      className="text-transparent bg-clip-text font-black tracking-wider select-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.18)]"
-                      style={{
-                        backgroundImage:
-                          'linear-gradient(to right, #383B46 0%, #6E7382 22%, #FFFFFF 48%, #EAECEC 60%, #464A57 100%)',
-                      }}
+                      className="text-transparent bg-clip-text font-black tracking-wider select-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.14)] bg-gradient-to-r from-[#161820] via-[#4F5565] to-[#1C1F28] dark:from-[#A8A9AD] dark:via-white dark:to-[#BBC2CC]"
                     >
                       NEEDLE
                     </span>{' '}
                     <span
-                      className="text-transparent bg-clip-text font-black tracking-wider drop-shadow-[0_2px_10px_rgba(191,149,63,0.35)]"
-                      style={{
-                        backgroundImage:
-                          'linear-gradient(to right, #B38728, #FFFFFF, #BF953F, #FCF6BA, #AA771C)',
-                      }}
+                      className="text-transparent bg-clip-text font-black tracking-wider drop-shadow-[0_1px_2px_rgba(122,83,16,0.22)] bg-gradient-to-r from-[#7A5310] via-[#BF953F] to-[#5E400B] dark:from-[#B38728] dark:via-[#FCF6BA] dark:to-[#AA771C]"
                     >
                       FASHION
                     </span>
@@ -462,7 +446,7 @@ export default function Header() {
                         : '/profile'
                       : '/auth/login'
                   }
-                  className="relative group flex items-center p-2 rounded-full glass-pill bg-white/75 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/35 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors"
+                  className="relative group flex items-center p-2 rounded-full glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/40 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors shadow-sm"
                   aria-label={
                     isAuthenticated ? 'Account Dossier' : 'Client Sign In'
                   }
@@ -482,7 +466,7 @@ export default function Header() {
               <div className="flow-root pl-1 sm:pl-1.5 flex-shrink-0">
                 <Link
                   href="/cart"
-                  className="relative group flex items-center p-2 rounded-full glass-pill bg-white/75 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/35 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors"
+                  className="relative group flex items-center p-2 rounded-full glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/40 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors shadow-sm"
                   aria-label="Shopping Cart"
                 >
                   <ShoppingBagIcon

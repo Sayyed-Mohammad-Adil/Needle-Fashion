@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import RoyalFiberCanvas from '@/components/3d/RoyalFiberCanvas';
 
 const navigation = {
   categories: [
@@ -77,12 +78,17 @@ export default function Footer() {
 
       {/* Luminous Top Dual-Tone Gold & Shiny Silver Hairline spanning Edge-to-Edge */}
       <div 
-        className="absolute top-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_0_14px_rgba(234,236,236,0.6)]"
+        className="absolute top-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_0_14px_rgba(234,236,236,0.6)] z-20"
         style={{ background: 'linear-gradient(to right, #BF953F, #EAECEC, #FCF6BA, #B38728, #BBC2CC, #AA771C)' }}
       />
 
+      {/* 3D Flowing Silk Zari Threads Animation (Relocated from Main Page to Footer!) */}
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-45 overflow-hidden">
+        <RoyalFiberCanvas showRing={false} showBackgroundRibbon={true} className="w-full h-full" />
+      </div>
+
       {/* Luxury Heritage Guarantee Bar with Obsidian & Dual-Metal Cards */}
-      <div className="border-b border-[#252833]/80 bg-[#08090B]">
+      <div className="border-b border-[#252833]/80 bg-[#08090B]/75 backdrop-blur-sm relative z-10">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#BF953F]/30 shadow-lg hover:border-[#BF953F]/60 transition-all">
@@ -140,7 +146,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 sm:pt-20 lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 sm:pt-20 lg:px-8 relative z-10">
         <div className="xl:grid xl:grid-cols-3 xl:gap-12">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
