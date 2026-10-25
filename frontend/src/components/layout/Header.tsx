@@ -194,45 +194,29 @@ export default function Header() {
       >
         {/* Luxury top announcement bar */}
         <div
-          className="relative transition-all duration-300 bg-[#E2D9CC]/90 dark:bg-[#171922]/90 backdrop-blur-md text-[#2B2419] dark:text-[#FCF6BA] px-3 py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-1.5 sm:gap-3 overflow-hidden border-b border-[#BF953F]/20"
+          className="relative transition-all duration-300 bg-[#E2D9CC]/90 dark:bg-[#171922]/90 backdrop-blur-md text-[#2B2419] dark:text-[#E8D7B5] px-3 py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-1.5 sm:gap-3 overflow-hidden border-b border-[#C5A059]/20"
         >
           <div
-            className="absolute top-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_0_12px_rgba(234,236,236,0.6)]"
+            className="absolute top-0 left-0 right-0 h-[1px] opacity-75"
             style={{
               background:
-                'linear-gradient(to right, #BF953F, #EAECEC, #FCF6BA, #B38728, #BBC2CC, #AA771C)',
+                'linear-gradient(to right, transparent, rgba(197, 160, 89, 0.4) 20%, rgba(197, 160, 89, 0.4) 80%, transparent)',
             }}
           />
-          <span
-            className="text-transparent bg-clip-text font-bold"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, #BF953F, #B38728, #AA771C)',
-            }}
-          >
-            ✦
-          </span>
+          <span className="text-[#C5A059] font-serif">✦</span>
           <span>COMPLIMENTARY WHITE-GLOVE DELIVERY ON ORDERS OVER ₹1,000</span>
-          <span className="hidden md:inline text-[#B38728]/50">•</span>
+          <span className="hidden md:inline text-[#C5A059]/50">•</span>
           <span className="hidden md:inline text-[#3E382E] dark:text-white/80">
             HANDCRAFTED IN INDIA
           </span>
-          <span
-            className="text-transparent bg-clip-text font-bold"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, #AA771C, #B38728, #BF953F)',
-            }}
-          >
-            ✦
-          </span>
+          <span className="text-[#C5A059] font-serif">✦</span>
           <button
             onClick={() => {
               if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('openShahiFarman'));
               }
             }}
-            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
+            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#5C451E] dark:text-[#D1C7B7] hover:text-[#C5A059] transition-colors border border-[#C5A059]/30 rounded-full px-2.5 py-0.5 bg-white/50 dark:bg-white/5 shadow-sm"
             title="Unroll Royal Mughal Farman"
           >
             <span>📜 शाही फ़रमान (Farman)</span>
@@ -246,7 +230,7 @@ export default function Header() {
                 (window as any).replayNeedleIntro();
               }
             }}
-            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
+            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#5C451E] dark:text-[#D1C7B7] hover:text-[#C5A059] transition-colors border border-[#C5A059]/30 rounded-full px-2.5 py-0.5 bg-white/50 dark:bg-white/5 shadow-sm"
             title="Experience Atelier Intro"
           >
             <span>⚜ Replay Darwaza</span>
@@ -264,23 +248,15 @@ export default function Header() {
               <MobileMenu navigation={navigation} />
             </div>
 
-            {/* Logo with Rolesor Dual-Tone Crest */}
+            {/* Logo with Minimalist Royal Crest */}
             <div className="flex lg:ml-0 flex-shrink-0">
               <Link href="/" className="group flex items-center gap-2 sm:gap-3">
                 <div
-                  className="relative w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl p-[1.5px] shadow-[0_0_20px_rgba(191,149,63,0.35),0_0_12px_rgba(234,236,236,0.25)] group-hover:scale-105 transition-all duration-300 flex-shrink-0"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, #BF953F 0%, #EAECEC 30%, #B38728 60%, #BBC2CC 85%, #AA771C 100%)',
-                  }}
+                  className="relative w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl p-[1px] bg-[#C5A059]/40 group-hover:bg-[#C5A059]/70 group-hover:scale-105 transition-all duration-300 flex-shrink-0 shadow-sm"
                 >
-                  <div className="w-full h-full rounded-[10px] sm:rounded-[14px] bg-white dark:bg-[#141518] flex items-center justify-center shadow-inner">
+                  <div className="w-full h-full rounded-[11px] sm:rounded-[15px] bg-white dark:bg-[#141518] flex items-center justify-center">
                     <span
-                      className="font-serif text-base sm:text-xl font-black text-transparent bg-clip-text"
-                      style={{
-                        backgroundImage:
-                          'linear-gradient(135deg, #7A5310 0%, #BF953F 35%, #C69A3C 65%, #5E400B 100%)',
-                      }}
+                      className="font-serif text-base sm:text-xl font-black text-[#8C6928] dark:text-[#C5A059]"
                     >
                       N
                     </span>
@@ -289,18 +265,18 @@ export default function Header() {
                 <div className="flex flex-col">
                   <span className="font-serif text-lg sm:text-2xl font-black tracking-tight flex items-center gap-1.5 leading-none">
                     <span
-                      className="text-transparent bg-clip-text font-black tracking-wider select-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.14)] bg-gradient-to-r from-[#161820] via-[#4F5565] to-[#1C1F28] dark:from-[#A8A9AD] dark:via-white dark:to-[#BBC2CC]"
+                      className="text-[#161820] dark:text-white font-black tracking-wider select-none"
                     >
                       NEEDLE
                     </span>{' '}
                     <span
-                      className="text-transparent bg-clip-text font-black tracking-wider drop-shadow-[0_1px_2px_rgba(122,83,16,0.22)] bg-gradient-to-r from-[#7A5310] via-[#BF953F] to-[#5E400B] dark:from-[#B38728] dark:via-[#FCF6BA] dark:to-[#AA771C]"
+                      className="font-black tracking-wider text-[#8C6928] dark:text-[#C5A059]"
                     >
                       FASHION
                     </span>
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-[8px] sm:text-[9px] tracking-[0.32em] uppercase font-bold text-[#8A651E] dark:text-[#FCF6BA]">
+                    <span className="text-[8px] sm:text-[9px] tracking-[0.32em] uppercase font-bold text-[#8A651E] dark:text-[#C5A059]/80">
                       HAUTE MENSWEAR
                     </span>
                     <span className="text-[7px] text-[#A8A9AD] hidden sm:inline">
@@ -457,40 +433,36 @@ export default function Header() {
                         : '/profile'
                       : '/auth/login'
                   }
-                  className="relative group flex items-center p-2 rounded-full glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/40 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors shadow-sm"
+                  className="relative group flex items-center p-2 rounded-full glass-pill bg-white/70 dark:bg-[#16181F]/75 backdrop-blur-md border border-[#C5A059]/25 text-[#202228] dark:text-[#E0DDD5] hover:text-[#C5A059] dark:hover:text-[#C5A059] hover:border-[#C5A059]/60 transition-colors shadow-sm"
                   aria-label={
                     isAuthenticated ? 'Account Dossier' : 'Client Sign In'
                   }
                   title={isAuthenticated ? 'Account Dossier' : 'Client Sign In'}
                 >
                   <UserIcon
-                    className="h-5 w-5 text-[#202228] dark:text-[#E0DDD5] group-hover:text-[#B38728] dark:group-hover:text-[#FCF6BA] transition-colors"
+                    className="h-5 w-5 text-[#202228] dark:text-[#E0DDD5] group-hover:text-[#C5A059] dark:group-hover:text-[#C5A059] transition-colors"
                     aria-hidden="true"
                   />
                   {isAuthenticated && (
-                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#BF953F] shadow-[0_0_8px_#BF953F]" />
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#C5A059]" />
                   )}
                 </Link>
               </div>
 
-              {/* Cart with Gold Jewel Badge */}
+              {/* Cart with Minimalist Luxury Badge */}
               <div className="flow-root pl-1 sm:pl-1.5 flex-shrink-0">
                 <Link
                   href="/cart"
-                  className="relative group flex items-center p-2 rounded-full glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 backdrop-blur-md border border-[#BF953F]/40 text-[#202228] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] hover:border-[#B38728] transition-colors shadow-sm"
+                  className="relative group flex items-center p-2 rounded-full glass-pill bg-white/70 dark:bg-[#16181F]/75 backdrop-blur-md border border-[#C5A059]/25 text-[#202228] dark:text-[#E0DDD5] hover:text-[#C5A059] dark:hover:text-[#C5A059] hover:border-[#C5A059]/60 transition-colors shadow-sm"
                   aria-label="Shopping Cart"
                 >
                   <ShoppingBagIcon
-                    className="h-5 w-5 text-[#202228] dark:text-[#E0DDD5] group-hover:text-[#B38728] dark:group-hover:text-[#FCF6BA] transition-colors"
+                    className="h-5 w-5 text-[#202228] dark:text-[#E0DDD5] group-hover:text-[#C5A059] dark:group-hover:text-[#C5A059] transition-colors"
                     aria-hidden="true"
                   />
                   {totalItems > 0 && (
                     <span
-                      className="absolute -top-1.5 -right-1.5 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[9px] sm:text-[10px] font-black text-[#141518] shadow-md border border-white/60"
-                      style={{
-                        background:
-                          'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)',
-                      }}
+                      className="absolute -top-1.5 -right-1.5 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[9px] sm:text-[10px] font-bold text-white bg-[#1A1815] dark:bg-[#C5A059] dark:text-[#121316] border border-[#C5A059]/40 shadow-sm"
                     >
                       {totalItems}
                     </span>
@@ -507,12 +479,12 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* Luminous Two-Tone Gold & Shiny Silver Hairline at Bottom of Header (Edge to Edge) */}
+        {/* Minimalist Champagne Hairline at Bottom of Header */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_1px_12px_rgba(234,236,236,0.5)] pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-[1px] opacity-75 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to right, #BF953F, #EAECEC, #FCF6BA, #B38728, #BBC2CC, #AA771C)',
+              'linear-gradient(to right, transparent, rgba(197, 160, 89, 0.25) 15%, rgba(197, 160, 89, 0.25) 85%, transparent)',
           }}
         />
       </header>

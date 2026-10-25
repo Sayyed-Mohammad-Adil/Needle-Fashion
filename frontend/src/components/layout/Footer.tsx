@@ -76,10 +76,10 @@ export default function Footer() {
         Footer
       </h2>
 
-      {/* Luminous Top Dual-Tone Gold & Shiny Silver Hairline spanning Edge-to-Edge */}
+      {/* Minimalist Champagne Hairline spanning Edge-to-Edge */}
       <div 
-        className="absolute top-0 left-0 right-0 h-[1.5px] opacity-90 shadow-[0_0_14px_rgba(234,236,236,0.6)] z-20"
-        style={{ background: 'linear-gradient(to right, #BF953F, #EAECEC, #FCF6BA, #B38728, #BBC2CC, #AA771C)' }}
+        className="absolute top-0 left-0 right-0 h-[1px] opacity-75 z-20"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(197, 160, 89, 0.3) 20%, rgba(197, 160, 89, 0.3) 80%, transparent)' }}
       />
 
       {/* 3D Flowing Silk Zari Threads Animation (Relocated from Main Page to Footer!) */}
@@ -91,10 +91,9 @@ export default function Footer() {
       <div className="border-b border-[#252833]/80 bg-[#08090B]/75 backdrop-blur-sm relative z-10">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#BF953F]/30 shadow-lg hover:border-[#BF953F]/60 transition-all">
+            <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#C5A059]/25 shadow-lg hover:border-[#C5A059]/50 transition-all">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-black text-[#141518] flex-shrink-0 shadow-md"
-                style={{ background: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 flex-shrink-0 shadow-sm"
               >
                 ✦
               </div>
@@ -106,8 +105,7 @@ export default function Footer() {
 
             <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#BBC2CC]/30 shadow-lg hover:border-[#EAECEC]/60 transition-all">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-black text-[#141518] flex-shrink-0 shadow-md"
-                style={{ background: 'linear-gradient(135deg, #A8A9AD 0%, #EAECEC 35%, #C0C0C0 65%, #BBC2CC 100%)' }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold text-[#BBC2CC] bg-white/5 border border-[#BBC2CC]/30 flex-shrink-0 shadow-sm"
               >
                 ❖
               </div>
@@ -117,10 +115,9 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#BF953F]/40 shadow-lg hover:border-[#FCF6BA]/70 transition-all">
+            <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#C5A059]/25 shadow-lg hover:border-[#C5A059]/50 transition-all">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-black text-[#141518] flex-shrink-0 shadow-md"
-                style={{ background: 'linear-gradient(135deg, #BF953F 0%, #EAECEC 30%, #B38728 60%, #BBC2CC 85%, #AA771C 100%)' }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/30 flex-shrink-0 shadow-sm"
               >
                 ⚜
               </div>
@@ -132,8 +129,7 @@ export default function Footer() {
 
             <div className="bg-[#12141A] p-5 rounded-2xl flex items-center gap-4 border border-[#BBC2CC]/30 shadow-lg hover:border-[#EAECEC]/60 transition-all">
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-black text-[#141518] flex-shrink-0 shadow-md"
-                style={{ background: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold text-[#BBC2CC] bg-white/5 border border-[#BBC2CC]/30 flex-shrink-0 shadow-sm"
               >
                 ✈
               </div>
@@ -151,13 +147,11 @@ export default function Footer() {
           <div className="space-y-6">
             <div className="flex items-center gap-3">
               <div 
-                className="w-11 h-11 rounded-2xl p-[1.5px] shadow-[0_0_20px_rgba(191,149,63,0.35),0_0_12px_rgba(234,236,236,0.25)] flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, #BF953F 0%, #EAECEC 30%, #B38728 60%, #BBC2CC 85%, #AA771C 100%)' }}
+                className="w-11 h-11 rounded-2xl p-[1px] bg-[#C5A059]/40 flex-shrink-0 shadow-sm"
               >
                 <div className="w-full h-full rounded-[14px] bg-[#141518] flex items-center justify-center">
                   <span 
-                    className="font-serif text-xl font-black text-transparent bg-clip-text"
-                    style={{ backgroundImage: 'linear-gradient(135deg, #EAECEC 0%, #BF953F 35%, #FCF6BA 65%, #BBC2CC 100%)' }}
+                    className="font-serif text-xl font-black text-[#C5A059]"
                   >
                     N
                   </span>
@@ -166,22 +160,17 @@ export default function Footer() {
               <div className="flex flex-col">
                 <span className="font-serif text-2xl font-black tracking-tight flex items-center gap-1.5 leading-none">
                   <span
-                    className="inline-block text-transparent bg-clip-text font-black tracking-wider select-none drop-shadow-[0_2px_12px_rgba(187,194,204,0.55)]"
-                    style={{
-                      backgroundImage:
-                        'linear-gradient(to right, #A8A9AD, #FFFFFF, #EAECEC, #FFFFFF, #BBC2CC)',
-                    }}
+                    className="inline-block text-white font-black tracking-wider select-none"
                   >
                     NEEDLE
                   </span>{' '}
                   <span 
-                    className="text-transparent bg-clip-text font-black tracking-wider drop-shadow-[0_2px_12px_rgba(191,149,63,0.4)]"
-                    style={{ backgroundImage: 'linear-gradient(to right, #B38728, #FFFFFF, #BF953F, #FCF6BA, #AA771C)' }}
+                    className="text-[#C5A059] font-black tracking-wider"
                   >
                     FASHION
                   </span>
                 </span>
-                <span className="text-[9px] tracking-[0.32em] uppercase text-[#FCF6BA] font-bold mt-1">
+                <span className="text-[9px] tracking-[0.32em] uppercase text-[#C5A059]/80 font-bold mt-1">
                   EXCLUSIVELY MENS HAUTE COUTURE • 24K GOLD & STERLING SILVER
                 </span>
               </div>
@@ -207,8 +196,7 @@ export default function Footer() {
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
                 <h3 
-                  className="text-xs uppercase tracking-widest font-black text-transparent bg-clip-text"
-                  style={{ backgroundImage: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                  className="text-xs uppercase tracking-widest font-bold text-[#C5A059]"
                 >
                   {navigation.categories[0].name}
                 </h3>
@@ -224,8 +212,7 @@ export default function Footer() {
               </div>
               <div className="mt-10 md:mt-0">
                 <h3 
-                  className="text-xs uppercase tracking-widest font-black text-transparent bg-clip-text"
-                  style={{ backgroundImage: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                  className="text-xs uppercase tracking-widest font-bold text-[#C5A059]"
                 >
                   {navigation.categories[1].name}
                 </h3>
@@ -243,8 +230,7 @@ export default function Footer() {
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
                 <h3 
-                  className="text-xs uppercase tracking-widest font-black text-transparent bg-clip-text"
-                  style={{ backgroundImage: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                  className="text-xs uppercase tracking-widest font-bold text-[#C5A059]"
                 >
                   {navigation.categories[2].name}
                 </h3>
@@ -259,10 +245,9 @@ export default function Footer() {
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <div className="bg-[#13151C] p-6 rounded-3xl border border-[#BF953F]/40 shadow-2xl">
+                <div className="bg-[#13151C] p-6 rounded-3xl border border-[#C5A059]/25 shadow-xl">
                   <h3 
-                    className="text-xs uppercase tracking-widest font-black text-transparent bg-clip-text"
-                    style={{ backgroundImage: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                    className="text-xs uppercase tracking-widest font-bold text-[#C5A059]"
                   >
                     Private Salon Circle
                   </h3>
@@ -277,13 +262,12 @@ export default function Footer() {
                         type="email"
                         autoComplete="email"
                         required
-                        className="w-full bg-[#090A0D] border border-[#BF953F]/40 rounded-full px-4 py-2.5 text-xs text-white placeholder:text-[#8A8477] focus:outline-none focus:border-[#FCF6BA] shadow-inner"
+                        className="w-full bg-[#090A0D] border border-[#C5A059]/30 rounded-full px-4 py-2.5 text-xs text-white placeholder:text-[#8A8477] focus:outline-none focus:border-[#C5A059] shadow-inner"
                         placeholder="gentleman@domain.com"
                       />
                       <button
                         type="submit"
-                        className="w-full py-2.5 text-xs uppercase tracking-wider font-bold text-[#141518] shadow-md rounded-full hover:scale-102 active:scale-98 transition-all"
-                        style={{ background: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+                        className="w-full py-2.5 text-xs uppercase tracking-wider font-semibold text-[#141518] bg-[#C5A059] hover:bg-[#B8924A] shadow-md rounded-full transition-all"
                       >
                         Request Invitation
                       </button>
@@ -303,10 +287,9 @@ export default function Footer() {
             <Link href="/terms" className="text-[#D8D2C4] hover:text-white transition-colors">Terms of Commission</Link>
             <span>•</span>
             <span 
-              className="text-transparent bg-clip-text font-bold"
-              style={{ backgroundImage: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+              className="text-[#C5A059]/80 font-medium tracking-wide"
             >
-              Imperial 24K Gold Glass Edition
+              Imperial Edition
             </span>
           </div>
         </div>

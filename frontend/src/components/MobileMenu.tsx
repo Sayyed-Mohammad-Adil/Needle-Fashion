@@ -74,22 +74,10 @@ export default function MobileMenu({ navigation }: MobileMenuProps) {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-serif text-lg font-black tracking-tight text-foreground flex items-center gap-1.5 leading-none">
-                      <span
-                        className="text-transparent bg-clip-text font-black tracking-wider select-none drop-shadow-[0_1px_6px_rgba(187,194,204,0.5)]"
-                        style={{
-                          backgroundImage:
-                            'linear-gradient(to right, #A8A9AD, #FFFFFF, #EAECEC, #FFFFFF, #BBC2CC)',
-                        }}
-                      >
+                      <span className="text-foreground font-black tracking-wider">
                         NEEDLE
                       </span>{' '}
-                      <span
-                        className="text-transparent bg-clip-text font-black tracking-wider drop-shadow-[0_1px_6px_rgba(191,149,63,0.35)]"
-                        style={{
-                          backgroundImage:
-                            'linear-gradient(to right, #B38728, #FFFFFF, #BF953F, #FCF6BA, #AA771C)',
-                        }}
-                      >
+                      <span className="text-[#C5A059] font-black tracking-wider">
                         FASHION
                       </span>
                     </span>

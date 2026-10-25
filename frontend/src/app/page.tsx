@@ -285,13 +285,10 @@ export default function Home() {
       <section aria-labelledby="wings-heading" className="py-20 sm:py-28 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-semibold tracking-[0.25em] uppercase text-primary mb-2 block">
-              ✦ Needle Fashion Royal Taxonomy ✦
-            </span>
             <h2 id="wings-heading" className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
               The Four Menswear Haute Wings
             </h2>
-            <div className="w-24 h-0.5 mx-auto mt-4 mb-4 shadow-[0_0_10px_rgba(234,236,236,0.5)]" style={{ background: 'linear-gradient(to right, transparent, #BF953F, #EAECEC, #B38728, #BBC2CC, transparent)' }} />
+            <div className="w-20 h-0.5 mx-auto mt-4 mb-4 opacity-75" style={{ background: 'linear-gradient(to right, transparent, #C5A059, transparent)' }} />
             <p className="text-sm text-muted-foreground font-light">
               Exclusively created for gentlemen of distinction. Sculpted in tailored slate greys, royal creams, and white silks with antique gold and sterling silver flourishes.
             </p>

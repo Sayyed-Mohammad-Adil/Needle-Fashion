@@ -262,7 +262,7 @@ export default function ResponsiveCheckout() {
                   </p>
                 </div>
               </div>
-              <p className="font-serif text-sm font-bold text-[#8A6418] dark:text-[#FCF6BA]">
+              <p className="font-serif text-sm font-bold text-[#8A6418] dark:text-[#C5A059]">
                 ₹{(product.price * item.quantity).toLocaleString()}
               </p>
             </div>
@@ -271,22 +271,22 @@ export default function ResponsiveCheckout() {
       </div>
       
       {/* Investment breakdown */}
-      <div className="bg-card p-6 rounded-2xl border-2 border-[#B38728]/40 space-y-3 text-xs shadow-md">
+      <div className="bg-card p-6 rounded-2xl border border-[#C5A059]/30 space-y-3 text-xs shadow-md">
         <div className="flex justify-between">
           <span className="text-muted-foreground font-medium">Commission Subtotal ({totalItems} items)</span>
           <span className="font-bold text-foreground">₹{itemsPrice.toLocaleString()}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground font-medium">White-Glove Insured Delivery</span>
-          <span className="font-bold text-[#8A6418] dark:text-[#FCF6BA]">{shippingPrice === 0 ? 'Complimentary' : `₹${shippingPrice.toLocaleString()}`}</span>
+          <span className="font-bold text-[#8A6418] dark:text-[#C5A059]">{shippingPrice === 0 ? 'Complimentary' : `₹${shippingPrice.toLocaleString()}`}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground font-medium">GST (18% Imperial Duty)</span>
           <span className="font-bold text-foreground">₹{taxPrice.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between border-t border-[#B38728]/40 pt-3">
+        <div className="flex justify-between border-t border-[#C5A059]/30 pt-3">
           <span className="font-serif text-sm font-bold text-foreground">Total Commission Investment</span>
-          <span className="font-serif text-lg font-black text-[#8A6418] dark:text-[#FCF6BA]">₹{totalOrderPrice.toLocaleString()}</span>
+          <span className="font-serif text-lg font-black text-[#8A6418] dark:text-[#C5A059]">₹{totalOrderPrice.toLocaleString()}</span>
         </div>
       </div>
     </div>

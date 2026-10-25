@@ -88,31 +88,31 @@ export default function CustomLuxuryCursor() {
           width: '32px',
           height: '32px',
           border: isHovered
-            ? '1.5px solid #FCF6BA'
-            : '1px solid rgba(191, 149, 63, 0.55)',
+            ? '1.5px solid #C5A059'
+            : '1px solid rgba(197, 160, 89, 0.4)',
           boxShadow: isHovered
-            ? '0 0 16px rgba(252, 246, 186, 0.6), inset 0 0 8px rgba(234, 236, 236, 0.4)'
-            : '0 0 10px rgba(191, 149, 63, 0.25)',
+            ? '0 0 10px rgba(197, 160, 89, 0.25)'
+            : '0 0 6px rgba(197, 160, 89, 0.12)',
           background: isHovered
-            ? 'radial-gradient(circle, rgba(252, 246, 186, 0.15) 0%, rgba(234, 236, 236, 0.05) 50%, transparent 80%)'
+            ? 'radial-gradient(circle, rgba(197, 160, 89, 0.08) 0%, transparent 70%)'
             : 'transparent',
           transition: 'transform 0.12s ease-out, border 0.2s ease, box-shadow 0.2s ease',
         }}
       >
-        {/* Subtle Shiny Silver Micro Chronometer Accents on Hover */}
+        {/* Subtle Micro Chronometer Accent on Hover */}
         {isHovered && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="w-1 h-1 rounded-full bg-[#EAECEC] shadow-[0_0_6px_#EAECEC]" />
+            <span className="w-1 h-1 rounded-full bg-[#C5A059]/60" />
           </div>
         )}
       </div>
 
       {/* Tiny Center Precision Gold Core Dot */}
       <div
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[#BF953F] will-change-transform transition-opacity duration-150"
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[#C5A059] will-change-transform transition-opacity duration-150"
         style={{
           transform: `translate3d(${position.x}px, ${position.y}px, 0) translate(-50%, -50%)`,
-          boxShadow: '0 0 6px #FCF6BA, 0 0 2px #EAECEC',
+          boxShadow: '0 0 4px rgba(197, 160, 89, 0.4)',
           opacity: isHovered ? 0 : 0.9,
         }}
       />

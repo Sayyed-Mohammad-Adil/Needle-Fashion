@@ -86,8 +86,8 @@ export default function ResponsiveSearchBar() {
       {/* Desktop Frosted Glass Search Bar */}
       <div className="hidden lg:block relative" ref={searchRef}>
         <form onSubmit={handleSubmit} className="flex items-center">
-          <div className="relative flex items-center glass-pill bg-[#F5EFE6]/90 dark:bg-[#16181F]/80 border border-[#BF953F]/40 pl-3 pr-1 py-1 focus-within:border-[#B38728] dark:focus-within:border-[#FCF6BA] focus-within:shadow-[0_0_15px_rgba(179,135,40,0.25)] transition-all backdrop-blur-md">
-            <MagnifyingGlassIcon className="h-4 w-4 text-[#B38728] dark:text-[#FCF6BA] flex-shrink-0" aria-hidden="true" />
+          <div className="relative flex items-center glass-pill bg-white/70 dark:bg-[#16181F]/75 border border-[#C5A059]/30 pl-3 pr-1 py-1 focus-within:border-[#C5A059] focus-within:ring-1 focus-within:ring-[#C5A059]/20 transition-all backdrop-blur-md">
+            <MagnifyingGlassIcon className="h-4 w-4 text-[#9C7A3C] dark:text-[#C5A059] flex-shrink-0" aria-hidden="true" />
             <input
               ref={inputRef}
               type="text"
@@ -106,8 +106,7 @@ export default function ResponsiveSearchBar() {
             />
             <button
               type="submit"
-              className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-[0.14em] font-bold text-[#141518] shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)' }}
+              className="px-3.5 py-1.5 rounded-full text-[10px] uppercase tracking-[0.16em] font-semibold text-[#6B4E1B] dark:text-[#E8D7B5] bg-[#C5A059]/15 hover:bg-[#C5A059] hover:text-[#121316] dark:hover:text-[#121316] border border-[#C5A059]/35 hover:border-[#C5A059] transition-all flex items-center justify-center flex-shrink-0"
             >
               Search
             </button>
@@ -154,7 +153,7 @@ export default function ResponsiveSearchBar() {
       {/* Search Trigger Button for Mobile Screen */}
       <button
         type="button"
-        className="p-2 text-[#1F2026] dark:text-[#E0DDD5] hover:text-[#B38728] dark:hover:text-[#FCF6BA] lg:hidden rounded-full bg-white/75 dark:bg-[#16181F]/80 border border-[#BF953F]/35 hover:border-[#B38728] transition-colors backdrop-blur-md"
+        className="p-2 text-[#1F2026] dark:text-[#E0DDD5] hover:text-[#C5A059] lg:hidden rounded-full bg-white/75 dark:bg-[#16181F]/80 border border-[#C5A059]/30 hover:border-[#C5A059] transition-colors backdrop-blur-md"
         onClick={() => setIsMobileSearchOpen(true)}
         aria-label="Search"
       >
