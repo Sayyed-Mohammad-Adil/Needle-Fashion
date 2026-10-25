@@ -282,21 +282,22 @@ textarea {
   color: #EAECEC;
 }
 
-/* Luxury Buttons */
+/* Luxury Buttons - Refined Antique Champagne Gold (Non-piercing, understated matte finish) */
 .btn-primary,
 .btn-luxury-gold {
-  background: linear-gradient(135deg, #ECC880 0%, #C5A059 60%, #A68032 100%);
-  color: #121316;
+  background: linear-gradient(135deg, #C9A55C 0%, #B89248 55%, #9E7934 100%);
+  color: #100C09;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(197, 160, 89, 0.3);
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(197, 160, 89, 0.2);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary:hover,
 .btn-luxury-gold:hover {
-  background: linear-gradient(135deg, #F3D28E 0%, #D4AF37 60%, #B8903B 100%);
-  box-shadow: 0 6px 20px rgba(197, 160, 89, 0.45);
+  background: linear-gradient(135deg, #D5B26A 0%, #C5A059 55%, #AB853E 100%);
+  box-shadow: 0 4px 14px rgba(197, 160, 89, 0.28);
   transform: translateY(-1px);
 }
 

@@ -72,26 +72,49 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[85vh] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background transition-colors duration-300">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        {/* Monogram */}
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 mb-4 shadow-sm">
-          <span className="font-serif text-2xl font-black text-primary">N</span>
+    <div className="relative min-h-[92vh] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden select-none">
+      {/* =========================================================================
+          ROYAL MUGHAL PALACE ARCHITECTURAL BACKGROUND
+          Colonnade corridor with Makrana marble arches, lanterns, and candlelight
+      ========================================================================= */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <picture>
+          <source srcSet="/mughal_palace_auth_bg.webp" type="image/webp" />
+          <img
+            src="/mughal_palace_auth_bg.jpg"
+            alt="Royal Mughal Palace Atelier"
+            className="w-full h-full object-cover object-center"
+          />
+        </picture>
+        {/* Soft, Calming Architectural Scrim for Flawless Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0C0806]/80 via-[#0C0806]/65 to-[#0C0806]/85 backdrop-blur-[2px]" />
+        {/* Subtle Luxury Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(12,8,6,0.9)_100%)]" />
+      </div>
+
+      {/* Header Monogram & Subtitle */}
+      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
+        {/* Monogram Badge */}
+        <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-[#1A130E]/90 border border-[#C5A059]/30 mb-3 shadow-[0_8px_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
+          <span className="font-serif text-2xl font-bold text-[#E8DAC5]">N</span>
         </div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Private Patron Club</p>
-        <h2 className="font-serif text-3xl font-bold tracking-tight text-foreground mt-1">
+        <p className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/90">
+          Private Patron Club • شاہی حلقہ
+        </p>
+        <h2 className="font-serif text-2xl sm:text-3xl font-normal tracking-wide text-[#F5EDD6] mt-1 drop-shadow-sm">
           Create Atelier Account
         </h2>
-        <p className="text-xs text-muted-foreground mt-2">
-          Enjoy bespoke bridal consults, private preview events, and tailored garment logs.
+        <p className="text-xs text-[#B8A790] mt-1.5 max-w-sm mx-auto leading-relaxed">
+          Bespoke bridal consults, private preview salons, and master karigar garment records.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card py-8 px-6 sm:px-10 rounded-3xl border border-border shadow-xl">
+      {/* Glassmorphic Luxury Patron Card */}
+      <div className="relative z-10 mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-[#120D0A]/85 sm:bg-[#120D0A]/90 backdrop-blur-xl py-8 px-6 sm:px-10 rounded-3xl border border-[#C5A059]/30 shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+              <label htmlFor="name" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
                 Full Name
               </label>
               <div>
@@ -101,18 +124,18 @@ export default function RegisterPage() {
                   autoComplete="name"
                   placeholder="e.g. Vikramaditya Rathore"
                   {...register('name')}
-                  className={`w-full rounded-xl border bg-background px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                    errors.name ? 'border-red-400' : 'border-border'
+                  className={`w-full rounded-xl border bg-[#1C1612]/75 px-4 py-2.5 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all ${
+                    errors.name ? 'border-red-400/80' : 'border-[#C5A059]/25'
                   }`}
                 />
                 {errors.name && (
-                  <p className="mt-1 text-[11px] text-red-500">{errors.name.message}</p>
+                  <p className="mt-1 text-[11px] text-red-400">{errors.name.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+              <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
                 Email Address
               </label>
               <div>
@@ -122,18 +145,18 @@ export default function RegisterPage() {
                   autoComplete="email"
                   placeholder="patron@domain.com"
                   {...register('email')}
-                  className={`w-full rounded-xl border bg-background px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                    errors.email ? 'border-red-400' : 'border-border'
+                  className={`w-full rounded-xl border bg-[#1C1612]/75 px-4 py-2.5 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all ${
+                    errors.email ? 'border-red-400/80' : 'border-[#C5A059]/25'
                   }`}
                 />
                 {errors.email && (
-                  <p className="mt-1 text-[11px] text-red-500">{errors.email.message}</p>
+                  <p className="mt-1 text-[11px] text-red-400">{errors.email.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+              <label htmlFor="phone" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
                 Phone / WhatsApp Number
               </label>
               <div>
@@ -143,18 +166,18 @@ export default function RegisterPage() {
                   autoComplete="tel"
                   placeholder="+91 98765 43210"
                   {...register('phone')}
-                  className={`w-full rounded-xl border bg-background px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                    errors.phone ? 'border-red-400' : 'border-border'
+                  className={`w-full rounded-xl border bg-[#1C1612]/75 px-4 py-2.5 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all ${
+                    errors.phone ? 'border-red-400/80' : 'border-[#C5A059]/25'
                   }`}
                 />
                 {errors.phone && (
-                  <p className="mt-1 text-[11px] text-red-500">{errors.phone.message}</p>
+                  <p className="mt-1 text-[11px] text-red-400">{errors.phone.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+              <label htmlFor="password" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
                 Password
               </label>
               <div>
@@ -164,18 +187,18 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   placeholder="Minimum 6 characters"
                   {...register('password')}
-                  className={`w-full rounded-xl border bg-background px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                    errors.password ? 'border-red-400' : 'border-border'
+                  className={`w-full rounded-xl border bg-[#1C1612]/75 px-4 py-2.5 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all ${
+                    errors.password ? 'border-red-400/80' : 'border-[#C5A059]/25'
                   }`}
                 />
                 {errors.password && (
-                  <p className="mt-1 text-[11px] text-red-500">{errors.password.message}</p>
+                  <p className="mt-1 text-[11px] text-red-400">{errors.password.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+              <label htmlFor="confirmPassword" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
                 Confirm Password
               </label>
               <div>
@@ -185,12 +208,12 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   placeholder="Re-enter password"
                   {...register('confirmPassword')}
-                  className={`w-full rounded-xl border bg-background px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                    errors.confirmPassword ? 'border-red-400' : 'border-border'
+                  className={`w-full rounded-xl border bg-[#1C1612]/75 px-4 py-2.5 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all ${
+                    errors.confirmPassword ? 'border-red-400/80' : 'border-[#C5A059]/25'
                   }`}
                 />
                 {errors.confirmPassword && (
-                  <p className="mt-1 text-[11px] text-red-500">{errors.confirmPassword.message}</p>
+                  <p className="mt-1 text-[11px] text-red-400">{errors.confirmPassword.message}</p>
                 )}
               </div>
             </div>
@@ -199,13 +222,13 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full btn-luxury-gold py-3.5 text-xs font-semibold uppercase tracking-[0.18em] flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#B89248] via-[#C5A059] to-[#A88035] text-[#120D0A] font-serif font-semibold text-xs uppercase tracking-[0.18em] shadow-[0_8px_25px_rgba(197,160,89,0.25)] hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {isSubmitting ? (
                   'Enrolling Patron...'
                 ) : (
                   <>
-                    <SparklesIcon className="w-4 h-4" />
+                    <SparklesIcon className="w-4 h-4 text-[#120D0A]" />
                     <span>Join Atelier Membership</span>
                   </>
                 )}
@@ -213,10 +236,10 @@ export default function RegisterPage() {
             </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-border text-center">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-6 pt-5 border-t border-[#C5A059]/20 text-center">
+            <p className="text-xs text-[#B8A790]">
               Already have an account?{' '}
-              <Link href="/auth/login" className="font-semibold text-primary hover:underline">
+              <Link href="/auth/login" className="font-semibold text-[#C5A059] hover:text-[#E8DAC5] transition-colors underline-offset-4 hover:underline">
                 Sign in
               </Link>
             </p>

@@ -137,13 +137,13 @@ export default function FirstVisitIntro() {
       onClick={handleEnter}
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#0C0806] select-none cursor-pointer"
     >
-      {/* Golden Running Words along the Very Top Header (Urdu & Hindi Marquee) */}
-      <div className="absolute top-0 left-0 right-0 z-40 overflow-hidden pointer-events-none py-2 bg-[#0C0806]/85 border-b border-[#C5A059]/30 backdrop-blur-sm">
+      {/* Golden Running Words along the Very Top Header (Urdu & Hindi Marquee - Muted Antique Gold) */}
+      <div className="absolute top-0 left-0 right-0 z-40 overflow-hidden pointer-events-none py-1.5 bg-[#0C0806]/90 border-b border-[#C5A059]/20 backdrop-blur-sm">
         <div className="flex w-[200%] animate-mughal-marquee whitespace-nowrap">
-          <span className="text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-[#C5A059] via-[#F5EDD6] to-[#C5A059] px-4 drop-shadow-[0_0_10px_rgba(197,160,89,0.5)]">
+          <span className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/75 px-4">
             ✦ दस्तकारी • دستکاری ✦ शाही रिवायत • شاہی روایات ✦ ज़री का नूर • نورِ زردوزی ✦ नफ़ासत • نفاست ✦ ख़ानदानी हुनर • خاندانی ہنر ✦ शाही पोशाक • شاہی ملبوسات ✦ सोज़नकारी • سوزن کاری ✦ कारीगर विरासत • وراثتِ کاریگر
           </span>
-          <span className="text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-[#C5A059] via-[#F5EDD6] to-[#C5A059] px-4 drop-shadow-[0_0_10px_rgba(197,160,89,0.5)]">
+          <span className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/75 px-4">
             ✦ दस्तकारी • دستکاری ✦ शाही रिवायत • شاہی روایات ✦ ज़री का नूर • نورِ زردوزی ✦ नफ़ासत • نفاست ✦ ख़ानदानी हुनर • خاندانی ہنر ✦ शाही पोशाक • شاہی ملبوسات ✦ सोज़नकारी • سوزن کاری ✦ कारीगर विरासत • وراثتِ کاریگر
           </span>
         </div>
@@ -155,7 +155,7 @@ export default function FirstVisitIntro() {
           e.stopPropagation();
           handleEnter();
         }}
-        className="absolute top-3.5 right-4 sm:top-5 sm:right-6 z-50 text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-[#E6D5B8] hover:text-[#C5A059] transition-all px-3.5 py-1.5 rounded-full border border-[#C5A059]/40 shadow-xl bg-black/80 backdrop-blur-md cursor-pointer hover:border-[#C5A059]"
+        className="absolute top-3.5 right-4 sm:top-5 sm:right-6 z-50 text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-[#D8C7B0] hover:text-[#C5A059] transition-all px-3.5 py-1.5 rounded-full border border-[#C5A059]/30 shadow-lg bg-black/80 backdrop-blur-md cursor-pointer hover:border-[#C5A059]"
       >
         Skip &rarr;
       </button>
@@ -242,7 +242,7 @@ export default function FirstVisitIntro() {
               {/* Subtle Breathing Ring Knocker Pulse */}
               <div
                 ref={knockerLeftGlow}
-                className="absolute top-[56%] left-[72%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-[#C5A059]/45 pointer-events-none animate-ping opacity-35"
+                className="absolute top-[56%] left-[72%] -translate-x-1/2 -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-[#C5A059]/30 pointer-events-none animate-pulse opacity-25"
               />
             </div>
 
@@ -266,7 +266,7 @@ export default function FirstVisitIntro() {
               {/* Subtle Breathing Ring Knocker Pulse */}
               <div
                 ref={knockerRightGlow}
-                className="absolute top-[56%] right-[72%] translate-x-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-[#C5A059]/45 pointer-events-none animate-ping opacity-35"
+                className="absolute top-[56%] right-[72%] translate-x-1/2 -translate-y-1/2 w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-[#C5A059]/30 pointer-events-none animate-pulse opacity-25"
               />
             </div>
           </div>
@@ -296,25 +296,25 @@ export default function FirstVisitIntro() {
         ref={promptRef}
         className="absolute bottom-9 sm:bottom-12 left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center"
       >
-        <div className="group flex items-center gap-2.5 sm:gap-3 px-6 sm:px-8 py-2.5 rounded-full bg-black/80 backdrop-blur-md border border-[#C5A059]/60 shadow-[0_12px_40px_rgba(0,0,0,0.9)]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] shadow-[0_0_8px_#C5A059] animate-pulse" />
-          <span className="text-[10px] sm:text-[12px] font-serif uppercase tracking-[0.28em] text-[#F5EDD6] font-semibold drop-shadow-md">
+        <div className="group flex items-center gap-2.5 sm:gap-3 px-6 sm:px-8 py-2 rounded-full bg-[#100B08]/90 backdrop-blur-md border border-[#C5A059]/35 shadow-[0_12px_36px_rgba(0,0,0,0.85)]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059]/80 shadow-[0_0_6px_#C5A059]" />
+          <span className="text-[10px] sm:text-[11px] font-serif uppercase tracking-[0.26em] text-[#E8DAC5] font-medium">
             दस्तक दें • Tap to Enter
           </span>
-          <span className="text-xs text-[#C5A059]">⚜</span>
+          <span className="text-[11px] text-[#C5A059]/70">⚜</span>
         </div>
-        <span className="text-[8.5px] sm:text-[9.5px] uppercase tracking-[0.2em] text-[#C5A059]/80 font-serif mt-1.5 drop-shadow">
+        <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-[#C5A059]/60 font-serif mt-1.5">
           (Click anywhere on the palace doors)
         </span>
       </div>
 
-      {/* Golden Running Words along Bottom (Urdu & Hindi Marquee Reverse) */}
-      <div className="absolute bottom-0 left-0 right-0 z-40 overflow-hidden pointer-events-none py-2 bg-[#0C0806]/85 border-t border-[#C5A059]/30 backdrop-blur-sm">
+      {/* Golden Running Words along Bottom (Urdu & Hindi Marquee - Muted Antique Gold) */}
+      <div className="absolute bottom-0 left-0 right-0 z-40 overflow-hidden pointer-events-none py-1.5 bg-[#0C0806]/90 border-t border-[#C5A059]/20 backdrop-blur-sm">
         <div className="flex w-[200%] animate-mughal-marquee-reverse whitespace-nowrap">
-          <span className="text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-[#C5A059] via-[#F5EDD6] to-[#C5A059] px-4 drop-shadow-[0_0_10px_rgba(197,160,89,0.5)]">
+          <span className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/75 px-4">
             ❖ 48-नुकाती फ़रमान • ۴۸ نکاتی فرمان ❖ बनारसी रेशम • خالص ریشم ❖ २4 कैरेट ज़री • چوبیس قیراط زری ❖ शाही दस्तकार • شاہی کاریگر ❖ राजसी परिधान • خلعتِ شاہی ❖
           </span>
-          <span className="text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-[#C5A059] via-[#F5EDD6] to-[#C5A059] px-4 drop-shadow-[0_0_10px_rgba(197,160,89,0.5)]">
+          <span className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/75 px-4">
             ❖ 48-नुकाती फ़रमान • ۴۸ نکاتی فرمان ❖ बनारसी रेशम • خالص ریشم ❖ २4 कैरेट ज़री • چوبیس قیراط زری ❖ शाही दस्तकार • شاہی کاریگر ❖ राजसी परिधान • خلعتِ شاہی ❖
           </span>
         </div>
