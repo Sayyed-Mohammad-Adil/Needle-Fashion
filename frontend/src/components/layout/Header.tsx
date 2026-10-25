@@ -228,6 +228,17 @@ export default function Header() {
           </span>
           <button
             onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('openShahiFarman'));
+              }
+            }}
+            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
+            title="Unroll Royal Mughal Farman"
+          >
+            <span>📜 शाही फ़रमान (Farman)</span>
+          </button>
+          <button
+            onClick={() => {
               if (
                 typeof window !== 'undefined' &&
                 (window as any).replayNeedleIntro
@@ -235,10 +246,10 @@ export default function Header() {
                 (window as any).replayNeedleIntro();
               }
             }}
-            className="hidden sm:inline-flex items-center gap-1 ml-2 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
+            className="hidden sm:inline-flex items-center gap-1 ml-1.5 text-[9px] uppercase tracking-wider text-[#6B4810] dark:text-[#EAECEC] hover:text-[#B38728] transition-colors border border-[#BF953F]/40 rounded-full px-2.5 py-0.5 bg-[#EDE7DC]/90 dark:bg-white/10 shadow-sm"
             title="Experience Atelier Intro"
           >
-            <span>⚜ Replay Intro</span>
+            <span>⚜ Replay Darwaza</span>
           </button>
         </div>
 

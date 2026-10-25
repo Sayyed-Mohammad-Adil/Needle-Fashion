@@ -9,6 +9,7 @@ import { CartProvider } from '@/contexts/CartContext';
 import ThemeProviderWrapper from '@/components/ThemeProviderWrapper';
 import ChatWidget from '@/components/chat/ChatWidget';
 import FirstVisitIntro from '@/components/effects/FirstVisitIntro';
+import ShahiFarmanModal from '@/components/effects/ShahiFarmanModal';
 import CustomLuxuryCursor from '@/components/effects/CustomLuxuryCursor';
 
 const inter = Inter({ 
@@ -41,6 +42,7 @@ export default function RootLayout({
             <CartProvider>
               <CustomLuxuryCursor />
               <FirstVisitIntro />
+              <ShahiFarmanModal />
               <Toaster position="top-center" />
               <Header />
               <main className="min-h-screen">{children}</main>

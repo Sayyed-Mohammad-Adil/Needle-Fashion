@@ -604,3 +604,30 @@ textarea {
 .silver-shine-glow {
   box-shadow: 0 0 25px rgba(234, 236, 236, 0.5), 0 0 50px rgba(255, 255, 255, 0.3);
 }
+
+/* 9. Mughal Royal Calligraphy Marquee ("Sone ke Akshar") */
+@keyframes mughalMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes mughalMarqueeReverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-mughal-marquee {
+  animation: mughalMarquee 32s linear infinite;
+}
+
+.animate-mughal-marquee-reverse {
+  animation: mughalMarqueeReverse 35s linear infinite;
+}

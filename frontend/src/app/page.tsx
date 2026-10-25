@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRightIcon, SparklesIcon, ShieldCheckIcon, ScissorsIcon, TruckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import ProductCarousel from '@/components/ProductCarousel';
+import ShahiFarmanTrigger from '@/components/effects/ShahiFarmanTrigger';
 
 // Curated luxury menswear masterpieces
 const featuredProducts = [
@@ -424,13 +425,17 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex flex-wrap items-center gap-3">
                 <Link
                   href="/about"
                   className="btn-glass-gold rounded-full px-8 py-3.5 text-xs uppercase tracking-[0.16em] font-bold inline-flex items-center gap-2"
                 >
                   <span>Explore Atelier Craftsmanship &rarr;</span>
                 </Link>
+                <ShahiFarmanTrigger
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs uppercase tracking-[0.16em] font-bold border border-primary/40 bg-secondary/60 hover:bg-primary/20 text-foreground transition-all shadow-sm"
+                  label="📜 शाही फ़रमान (Unroll Royal Decree)"
+                />
               </div>
             </div>
 
