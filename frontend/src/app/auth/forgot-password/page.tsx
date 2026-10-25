@@ -51,52 +51,53 @@ export default function ForgotPassword() {
             className="w-full h-full object-cover object-center"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0C0806]/80 via-[#0C0806]/65 to-[#0C0806]/85 backdrop-blur-[2px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(12,8,6,0.9)_100%)]" />
+        {/* Soft, Calming Architectural Scrim for Flawless Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/60 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.7)_100%)]" />
       </div>
 
-      <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-[#1A130E]/90 border border-[#C5A059]/30 mb-3 shadow-[0_8px_20px_rgba(0,0,0,0.6)] backdrop-blur-md">
-          <span className="font-serif text-2xl font-bold text-[#E8DAC5]">N</span>
-        </div>
-        <p className="text-[10px] sm:text-[11px] font-serif font-medium uppercase tracking-[0.26em] text-[#C5A059]/90">
-          Credential Recovery • بازیابی چابی
-        </p>
-        <h2 className="font-serif text-2xl sm:text-3xl font-normal tracking-wide text-[#F5EDD6] mt-1 drop-shadow-sm">
-          Forgot Your Password?
-        </h2>
-        <p className="text-xs text-[#B8A790] mt-1.5 max-w-sm mx-auto leading-relaxed">
-          Enter your registered patron email address to receive secure reset instructions.
-        </p>
-      </div>
+      {/* Main Luxury Patron Card with Integrated Header */}
+      <div className="relative z-10 w-full sm:max-w-md mx-auto my-auto">
+        <div className="bg-[#FAF7F2]/96 sm:bg-[#FAF7F2]/98 backdrop-blur-2xl py-7 px-6 sm:px-9 rounded-3xl border border-[#C5A059]/40 shadow-[0_24px_70px_rgba(0,0,0,0.45),0_0_25px_rgba(197,160,89,0.12)]">
+          {/* Card Header */}
+          <div className="text-center mb-5">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-[#C5A059]/40 mb-2.5 shadow-sm">
+              <span className="font-serif text-2xl font-bold text-[#8C6B28]">N</span>
+            </div>
+            <p className="text-[10px] font-serif font-semibold uppercase tracking-[0.24em] text-[#9E7A32]">
+              Credential Recovery • بازیابی چابی
+            </p>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A120B] mt-0.5">
+              Forgot Your Password?
+            </h2>
+            <p className="text-xs text-[#6B5E51] mt-1 max-w-sm mx-auto leading-relaxed">
+              Enter your registered patron email address to receive secure reset instructions.
+            </p>
+          </div>
 
-      <div className="relative z-10 mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-[#120D0A]/85 sm:bg-[#120D0A]/90 backdrop-blur-xl py-8 px-6 sm:px-10 rounded-3xl border border-[#C5A059]/30 shadow-[0_24px_60px_rgba(0,0,0,0.85)]">
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#D4C4A8] mb-1.5">
+              <label htmlFor="email" className="block text-[11px] font-semibold uppercase tracking-[0.1em] text-[#3D3226] mb-1">
                 Email Address
               </label>
-              <div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="patron@domain.com"
-                  className="w-full rounded-xl border border-[#C5A059]/25 bg-[#1C1612]/75 px-4 py-3 text-xs text-[#F5EDD6] placeholder:text-[#8C7A68] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 transition-all"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="patron@domain.com"
+                className="w-full rounded-xl border border-[#D9CDBF] bg-white px-3.5 py-2.5 text-xs text-[#1C1510] placeholder:text-[#A39686] focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/40 shadow-sm transition-all"
+              />
             </div>
 
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#B89248] via-[#C5A059] to-[#A88035] text-[#120D0A] font-serif font-semibold text-xs uppercase tracking-[0.18em] shadow-[0_8px_25px_rgba(197,160,89,0.25)] hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#B89248] via-[#C5A059] to-[#9E7934] text-[#120D0A] font-serif font-semibold text-xs uppercase tracking-[0.18em] shadow-[0_6px_18px_rgba(197,160,89,0.3)] hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {isLoading ? 'Transmitting Instructions...' : 'Send Reset Instructions'}
               </button>
@@ -105,18 +106,18 @@ export default function ForgotPassword() {
             {message && (
               <div className={`text-xs text-center p-3 rounded-xl border ${
                 message.includes('Failed')
-                  ? 'border-red-400/30 bg-red-950/40 text-red-300'
-                  : 'border-[#C5A059]/40 bg-[#1A130E] text-[#F5EDD6]'
+                  ? 'border-red-400/40 bg-red-50 text-red-700'
+                  : 'border-[#C5A059]/40 bg-[#FAF3E0] text-[#7A5B20]'
               }`}>
                 {message}
               </div>
             )}
           </form>
 
-          <div className="mt-6 pt-5 border-t border-[#C5A059]/20 text-center">
-            <p className="text-xs text-[#B8A790]">
+          <div className="mt-5 pt-4 border-t border-[#E8DEC8] text-center">
+            <p className="text-xs text-[#6B5E51]">
               Remember your secret key?{' '}
-              <Link href="/auth/login" className="font-semibold text-[#C5A059] hover:text-[#E8DAC5] transition-colors underline-offset-4 hover:underline">
+              <Link href="/auth/login" className="font-semibold text-[#8C6B28] hover:text-[#5E4717] transition-colors underline-offset-4 hover:underline">
                 Sign in here
               </Link>
             </p>
