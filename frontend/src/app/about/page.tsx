@@ -11,10 +11,10 @@ export default function AboutPage() {
       <div className="relative min-h-[520px] flex items-center justify-center overflow-hidden border-b border-border">
         <div className="absolute inset-0">
           <Image
-            src="/images/hero-ethnic.jpg"
-            alt="Needle Fashion Royal Atelier"
+            src="/images/vintage-hero-palace.webp"
+            alt="Needle Fashion Royal Atelier Heritage"
             fill
-            className="object-cover object-top filter brightness-[0.4] saturate-[0.85]"
+            className="object-cover object-center filter brightness-[0.4] saturate-[0.85]"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-transparent" />
@@ -150,8 +150,18 @@ export default function AboutPage() {
 
       {/* CTA section */}
       <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden border border-primary/30 p-10 sm:p-16 text-center bg-gradient-to-r from-card via-background to-card shadow-2xl">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
+        <div className="relative rounded-3xl overflow-hidden border border-primary/30 p-10 sm:p-16 text-center bg-card shadow-2xl">
+          {/* Vintage Palace Night Backdrop */}
+          <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+            <Image
+              src="/images/vintage-palace-night.webp"
+              alt="Vintage Indian Heritage Palace at Twilight"
+              fill
+              className="object-cover object-center opacity-25 dark:opacity-30 mix-blend-luminosity"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/85 to-card/95 dark:from-[#111318]/95 dark:via-[#111318]/85 dark:to-[#111318]/95" />
+          </div>
+          <div className="relative z-10">
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Experience Needle Fashion In Person
           </h2>
@@ -174,6 +184,7 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

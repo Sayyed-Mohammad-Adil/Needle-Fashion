@@ -35,8 +35,19 @@ export default function CartPage() {
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="mx-auto max-w-2xl lg:max-w-7xl">
+    <div className="bg-background text-foreground min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
+      {/* Subtle vintage jaali filigree watermark in background */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.03] -z-0">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: "url('/images/vintage-jaali-motif.webp')",
+            backgroundSize: '360px 360px',
+            backgroundRepeat: 'repeat',
+          }}
+        />
+      </div>
+      <div className="mx-auto max-w-2xl lg:max-w-7xl relative z-10">
         <div className="border-b border-border/50 pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-1">
@@ -62,7 +73,17 @@ export default function CartPage() {
             </h2>
 
             {items.length === 0 ? (
-              <div className="py-20 text-center glass-panel rounded-3xl p-8 my-4 shadow-xl border border-[#C5A059]/30">
+              <div className="py-20 text-center glass-panel rounded-3xl p-8 my-4 shadow-xl border border-[#C5A059]/30 relative overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+                  <Image
+                    src="/images/vintage-royal-salon.webp"
+                    alt="Vintage Royal Salon"
+                    fill
+                    className="object-cover object-center opacity-15 dark:opacity-20 mix-blend-luminosity"
+                  />
+                  <div className="absolute inset-0 bg-background/90" />
+                </div>
+                <div className="relative z-10">
                 <div className="w-16 h-16 rounded-full glass-pill mx-auto flex items-center justify-center text-[#C5A059] mb-4">
                   <ShoppingBagIcon className="w-8 h-8" />
                 </div>
@@ -77,6 +98,7 @@ export default function CartPage() {
                   >
                     Explore Atelier Collections &rarr;
                   </Link>
+                </div>
                 </div>
               </div>
             ) : (

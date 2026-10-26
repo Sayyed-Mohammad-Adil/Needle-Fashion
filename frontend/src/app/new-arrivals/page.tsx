@@ -103,8 +103,18 @@ export default function NewArrivalsPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Glassmorphic Header Docket */}
-        <div className="glass-panel-gold rounded-3xl p-8 sm:p-12 border border-primary/30 shadow-2xl mb-12">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="glass-panel-gold rounded-3xl p-8 sm:p-12 border border-primary/30 shadow-2xl mb-12 relative overflow-hidden">
+          {/* Vintage Palace Architectural Backdrop */}
+          <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+            <Image
+              src="/images/vintage-hero-palace.webp"
+              alt="Vintage Palace Architecture"
+              fill
+              className="object-cover object-center opacity-20 dark:opacity-25 mix-blend-luminosity"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/90 to-card/75 dark:from-[#14161E]/95 dark:via-[#14161E]/90 dark:to-[#14161E]/80" />
+          </div>
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 glass-pill px-4 py-1 text-primary text-[10px] font-bold uppercase tracking-[0.24em] mb-4 shadow-sm">
                 <SparklesIcon className="h-3.5 w-3.5" />

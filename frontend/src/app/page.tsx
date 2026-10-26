@@ -129,8 +129,21 @@ export default function Home() {
 
 
       {/* 1. Grand Editorial Glassmorphic Hero Section */}
-      <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
+        {/* Vintage Royal Mughal Palace Backdrop */}
+        <div className="absolute inset-0 pointer-events-none select-none -z-0 overflow-hidden">
+          <Image
+            src="/images/vintage-hero-palace.webp"
+            alt="Vintage Royal Indian Palace Architecture"
+            fill
+            priority
+            className="object-cover object-center opacity-25 dark:opacity-20 mix-blend-luminosity scale-105"
+          />
+          {/* Subtle vignette and radial fade to guarantee 100% text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-transparent dark:from-background dark:via-background/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/60" />
+        </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             {/* Left Column: Glassmorphic Editorial Docket */}
@@ -282,8 +295,19 @@ export default function Home() {
       </section>
 
       {/* 3. The Four Menswear Haute Wings (Glassmorphic Cards) */}
-      <section aria-labelledby="wings-heading" className="py-20 sm:py-28 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section aria-labelledby="wings-heading" className="py-20 sm:py-28 relative overflow-hidden">
+        {/* Subtle vintage jaali filigree watermark in background */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.045] dark:opacity-[0.035] -z-0">
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: "url('/images/vintage-jaali-motif.webp')",
+              backgroundSize: '360px 360px',
+              backgroundRepeat: 'repeat',
+            }}
+          />
+        </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 id="wings-heading" className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
               The Four Menswear Haute Wings
@@ -368,7 +392,17 @@ export default function Home() {
       </section>
 
       {/* 5. Master Karigar Artisanal Lineage Section (Beating Sabyasachi & Manish Malhotra) */}
-      <section className="py-20 sm:py-28 relative">
+      <section className="py-20 sm:py-28 relative overflow-hidden">
+        {/* Vintage 19th Century Textile Atelier Backdrop */}
+        <div className="absolute inset-0 pointer-events-none select-none -z-0 overflow-hidden">
+          <Image
+            src="/images/vintage-karigar-atelier.webp"
+            alt="Historical Royal Indian Weaving Atelier"
+            fill
+            className="object-cover object-center opacity-15 dark:opacity-20 mix-blend-luminosity scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background dark:from-background dark:via-background/92 dark:to-background" />
+        </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
@@ -511,6 +545,16 @@ export default function Home() {
       <section className="py-20 sm:py-28 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl glass-panel-gold p-8 sm:p-14 lg:p-16 relative overflow-hidden shadow-2xl border border-primary/40">
+            {/* Vintage Royal Bespoke Fitting Chamber Backdrop */}
+            <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+              <Image
+                src="/images/vintage-royal-salon.webp"
+                alt="Vintage Royal Fitting Salon"
+                fill
+                className="object-cover object-right opacity-20 dark:opacity-25 mix-blend-luminosity"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/90 to-card/75 dark:from-[#13151C]/95 dark:via-[#13151C]/90 dark:to-[#13151C]/75" />
+            </div>
             <div className="relative z-10 max-w-3xl">
               <div className="inline-flex items-center gap-2 glass-pill px-3.5 py-1 text-primary text-[10px] font-bold uppercase tracking-[0.22em] mb-4">
                 <SparklesIcon className="w-3.5 h-3.5" />
@@ -598,8 +642,18 @@ export default function Home() {
       {/* 9. Sovereign Atelier Call to Action */}
       <section className="py-16 sm:py-24 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl glass-panel p-8 sm:p-12 border border-primary/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 shadow-xl">
-            <div>
+          <div className="rounded-3xl glass-panel p-8 sm:p-12 border border-primary/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 shadow-xl relative overflow-hidden">
+            {/* Vintage Palace at Twilight Backdrop */}
+            <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+              <Image
+                src="/images/vintage-palace-night.webp"
+                alt="Vintage Indian Heritage Palace at Twilight"
+                fill
+                className="object-cover object-center opacity-25 dark:opacity-30 mix-blend-luminosity"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/85 to-card/90 dark:from-[#111318]/95 dark:via-[#111318]/85 dark:to-[#111318]/90" />
+            </div>
+            <div className="relative z-10">
               <span className="text-xs font-semibold tracking-[0.25em] uppercase text-primary mb-2 block">
                 ✦ The Grand Atelier Awaits ✦
               </span>
@@ -610,7 +664,7 @@ export default function Home() {
                 Explore our current runway creations or book an appointment at our private fitting salons.
               </p>
             </div>
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 flex-shrink-0">
+            <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 flex-shrink-0">
               <Link
                 href="/new-arrivals"
                 className="btn-glass-gold rounded-full px-6 sm:px-8 py-3.5 sm:py-4 text-xs uppercase tracking-[0.18em] font-bold shadow-xl"
