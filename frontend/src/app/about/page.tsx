@@ -14,10 +14,10 @@ export default function AboutPage() {
             src="/images/vintage-hero-palace.webp"
             alt="Needle Fashion Royal Atelier Heritage"
             fill
-            className="object-cover object-center filter brightness-[0.4] saturate-[0.85]"
+            className="object-cover object-center filter brightness-[0.55] sepia-[0.15] contrast-[1.05]"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/45 to-black/25" />
         </div>
         
         <div className="relative max-w-5xl mx-auto py-24 px-4 sm:px-6 lg:px-8 text-center">
@@ -157,9 +157,10 @@ export default function AboutPage() {
               src="/images/vintage-palace-night.webp"
               alt="Vintage Indian Heritage Palace at Twilight"
               fill
-              className="object-cover object-center opacity-25 dark:opacity-30 mix-blend-luminosity"
+              className="object-cover object-center opacity-45 dark:opacity-40 contrast-[1.06]"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/85 to-card/95 dark:from-[#111318]/95 dark:via-[#111318]/85 dark:to-[#111318]/95" />
+            <div className="absolute inset-0 bg-gradient-to-r from-card/90 via-card/70 to-card/90 dark:from-[#111318]/90 dark:via-[#111318]/70 dark:to-[#111318]/90" />
+            <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/30 dark:from-[#111318]/50 dark:via-transparent dark:to-[#111318]/30" />
           </div>
           <div className="relative z-10">
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">

@@ -110,9 +110,11 @@ export default function NewArrivalsPage() {
               src="/images/vintage-hero-palace.webp"
               alt="Vintage Palace Architecture"
               fill
-              className="object-cover object-center opacity-20 dark:opacity-25 mix-blend-luminosity"
+              priority
+              className="object-cover object-right md:object-center opacity-45 dark:opacity-35 sepia-[0.18] contrast-[1.08] brightness-[0.98]"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-card/95 via-card/90 to-card/75 dark:from-[#14161E]/95 dark:via-[#14161E]/90 dark:to-[#14161E]/80" />
+            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 via-50% to-transparent dark:from-[#14161E] dark:via-[#14161E]/85 dark:via-50% dark:to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/30 dark:from-[#14161E]/50 dark:via-transparent dark:to-[#14161E]/30" />
           </div>
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
@@ -201,7 +203,18 @@ export default function NewArrivalsPage() {
 
         {/* Bespoke Fitting Consultation Banner with Glassmorphism */}
         <div className="mt-20 rounded-3xl glass-panel-gold p-8 sm:p-12 border border-primary/40 shadow-2xl relative overflow-hidden">
-          <div className="max-w-2xl">
+          {/* Vintage Royal Fitting Salon Backdrop */}
+          <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+            <Image
+              src="/images/vintage-royal-salon.webp"
+              alt="Vintage Royal Fitting Salon"
+              fill
+              className="object-cover object-right opacity-40 dark:opacity-30 sepia-[0.18] contrast-[1.06]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-card via-card/88 via-55% to-card/25 dark:from-[#14161E] dark:via-[#14161E]/88 dark:via-55% dark:to-[#14161E]/25" />
+            <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/25 dark:from-[#14161E]/50 dark:via-transparent dark:to-[#14161E]/25" />
+          </div>
+          <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center gap-2 glass-pill px-3 py-1 text-primary text-[10px] font-bold uppercase tracking-widest mb-3">
               <ScissorsIcon className="w-3.5 h-3.5" />
               <span>Personal Master Cutter Service</span>

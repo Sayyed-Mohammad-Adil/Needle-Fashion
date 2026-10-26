@@ -37,7 +37,7 @@ export default function CartPage() {
   return (
     <div className="bg-background text-foreground min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
       {/* Subtle vintage jaali filigree watermark in background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.03] -z-0">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.07] dark:opacity-[0.05] -z-0">
         <div
           className="w-full h-full"
           style={{
@@ -79,9 +79,9 @@ export default function CartPage() {
                     src="/images/vintage-royal-salon.webp"
                     alt="Vintage Royal Salon"
                     fill
-                    className="object-cover object-center opacity-15 dark:opacity-20 mix-blend-luminosity"
+                    className="object-cover object-center opacity-35 dark:opacity-30 sepia-[0.2] contrast-[1.06]"
                   />
-                  <div className="absolute inset-0 bg-background/90" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-card/85 via-card/65 to-card/85 dark:from-[#111318]/85 dark:via-[#111318]/65 dark:to-[#111318]/85" />
                 </div>
                 <div className="relative z-10">
                 <div className="w-16 h-16 rounded-full glass-pill mx-auto flex items-center justify-center text-[#C5A059] mb-4">
