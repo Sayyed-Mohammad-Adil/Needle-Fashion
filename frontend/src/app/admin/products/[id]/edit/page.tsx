@@ -3,420 +3,375 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { productService } from '@/lib/api/product-service';
+import { categoryService } from '@/lib/api/category-service';
+import { Product, Category } from '@/lib/types';
+import ProductPhotoManager, { FormattedImage } from '@/components/admin/ProductPhotoManager';
 import { toast } from 'react-hot-toast';
-
-// Mock product data
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Embroidered Kurta',
-    description: 'Handcrafted embroidered kurta with traditional designs perfect for festive occasions.',
-    category: 'Kurta',
-    price: 2999,
-    stock: 15,
-    sku: 'KRT-EMB-001',
-    featured: true,
-    images: [
-      '/images/products/kurta1.jpg',
-      '/images/products/kurta1-alt.jpg',
-    ],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Maroon', 'Navy Blue', 'Beige'],
-    customizable: true,
-  },
-  // Other products would be here
-];
+import {
+  ArrowLeftIcon,
+  SparklesIcon,
+  CheckIcon,
+  TrashIcon,
+  EyeIcon,
+} from '@heroicons/react/24/outline';
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const productId = parseInt(params.id);
-  
+  const productId = params.id;
+
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState<any>(null);
-  
-  // Form state
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form State
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
-  const [sku, setSku] = useState('');
-  const [featured, setFeatured] = useState(false);
-  const [sizes, setSizes] = useState<string[]>([]);
-  const [colors, setColors] = useState<string[]>([]);
-  const [customizable, setCustomizable] = useState(false);
-  
-  // Available options
-  const availableCategories = ['Kurta', 'Sherwani', 'Kurta-Jacket Set', 'Jacket', 'Dhoti', 'Accessories'];
-  const availableSizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
-  const availableColors = ['Maroon', 'Navy Blue', 'Black', 'Beige', 'White', 'Gold', 'Green', 'Red'];
-  
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
+  const [isMakeToOrder, setIsMakeToOrder] = useState(true);
+  const [selectedSizes, setSelectedSizes] = useState<number[]>([38, 40, 42, 44]);
+  const [images, setImages] = useState<FormattedImage[]>([]);
+
+  const availableSizes = [36, 38, 40, 42, 44, 46, 48, 50];
+
   useEffect(() => {
-    // In a real app, fetch product from API
-    const fetchProduct = async () => {
-      try {
-        // Simulate API call
-        setTimeout(() => {
-          const foundProduct = mockProducts.find(p => p.id === productId);
-          
-          if (foundProduct) {
-            setProduct(foundProduct);
-            // Populate form fields
-            setName(foundProduct.name);
-            setDescription(foundProduct.description || '');
-            setCategory(foundProduct.category);
-            setPrice(foundProduct.price.toString());
-            setStock(foundProduct.stock.toString());
-            setSku(foundProduct.sku);
-            setFeatured(foundProduct.featured);
-            setSizes(foundProduct.sizes || []);
-            setColors(foundProduct.colors || []);
-            setCustomizable(foundProduct.customizable || false);
-          } else {
-            toast.error('Product not found');
-            router.push('/admin/products');
-          }
-          
-          setIsLoading(false);
-        }, 500);
-      } catch (error) {
-        toast.error('Failed to load product');
-        setIsLoading(false);
-      }
-    };
-    
-    fetchProduct();
-  }, [productId, router]);
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    fetchData();
+  }, [productId]);
+
+  const fetchData = async () => {
     try {
       setIsLoading(true);
-      
-      // Validate form
-      if (!name || !category || !price || !sku) {
-        toast.error('Please fill all required fields');
-        setIsLoading(false);
-        return;
+
+      const [cats, prod] = await Promise.all([
+        categoryService.getCategories(),
+        productService.getProductById(productId),
+      ]);
+
+      setCategories(Array.isArray(cats) ? cats : []);
+
+      if (prod) {
+        setName(prod.name || '');
+        setDescription(prod.description || '');
+        const catId = typeof prod.category === 'object' ? prod.category?._id : prod.category;
+        setCategory(catId || '');
+        setPrice(String(prod.price || ''));
+        setStock(String(prod.stock || 0));
+        setIsOutOfStock(Boolean(prod.isOutOfStock));
+        setIsMakeToOrder(prod.isMakeToOrder !== undefined ? prod.isMakeToOrder : true);
+        setSelectedSizes(prod.sizes || [38, 40, 42]);
+
+        // Normalize images
+        const formatted = Array.isArray(prod.images)
+          ? prod.images.map((img: any) => ({
+              data: img.data || img.url || '',
+              alt: img.alt || '',
+            }))
+          : [];
+        setImages(formatted);
       }
-      
-      // Prepare updated product data
-      const updatedProduct = {
-        ...product,
-        name,
-        description,
-        category,
-        price: parseFloat(price),
-        stock: parseInt(stock),
-        sku,
-        featured,
-        sizes,
-        colors,
-        customizable,
-      };
-      
-      // In a real app, send to API
-      // await updateProduct(productId, updatedProduct);
-      
-      // Simulate API call
-      setTimeout(() => {
-        toast.success('Product updated successfully');
-        router.push('/admin/products');
-      }, 1000);
     } catch (error) {
-      toast.error('Failed to update product');
+      console.error('Failed to load piece:', error);
+      toast.error('Failed to load product details');
+    } finally {
       setIsLoading(false);
     }
   };
-  
-  const handleSizeToggle = (size: string) => {
-    if (sizes.includes(size)) {
-      setSizes(sizes.filter(s => s !== size));
+
+  const handleSizeToggle = (size: number) => {
+    if (selectedSizes.includes(size)) {
+      setSelectedSizes(selectedSizes.filter((s) => s !== size));
     } else {
-      setSizes([...sizes, size]);
+      setSelectedSizes([...selectedSizes, size].sort((a, b) => a - b));
     }
   };
-  
-  const handleColorToggle = (color: string) => {
-    if (colors.includes(color)) {
-      setColors(colors.filter(c => c !== color));
-    } else {
-      setColors([...colors, color]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name.trim()) {
+      toast.error('Please specify a garment title');
+      return;
+    }
+    if (!category) {
+      toast.error('Please assign an archival category');
+      return;
+    }
+    if (!price || isNaN(Number(price)) || Number(price) <= 0) {
+      toast.error('Please enter a valid price in INR');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+
+      const updatePayload = {
+        name: name.trim(),
+        description: description.trim(),
+        price: Number(price),
+        stock: Number(stock) || 0,
+        isOutOfStock,
+        category,
+        isMakeToOrder,
+        sizes: selectedSizes,
+        images: images.length > 0 ? images : [{ data: '/images/hero-ethnic.jpg', alt: name }],
+      };
+
+      await productService.updateProduct(productId, updatePayload);
+      toast.success('Piece details and pricing updated successfully!');
+      router.push('/admin/products');
+    } catch (error: any) {
+      console.error('Failed to update product:', error);
+      toast.error(error.response?.data?.message || 'Failed to update piece');
+    } finally {
+      setIsSaving(false);
     }
   };
-  
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you wish to permanently delete this piece from the catalog?')) return;
+    try {
+      await productService.deleteProduct(productId);
+      toast.success('Piece deleted from catalogue');
+      router.push('/admin/products');
+    } catch (error) {
+      toast.error('Failed to delete piece');
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="py-24 text-center">
+        <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin mx-auto" />
+        <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground">Loading Creation Specifications...</p>
       </div>
     );
   }
-  
+
   return (
-    <div>
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Edit Product</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Update the details for {product?.name}
-          </p>
-        </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+    <div className="max-w-5xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
+        <div className="flex items-center gap-4">
           <Link
             href="/admin/products"
-            className="block rounded-md bg-gray-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            className="p-2.5 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary transition-colors"
           >
-            Back to Products
+            <ArrowLeftIcon className="w-4 h-4" />
           </Link>
+          <div>
+            <div className="inline-flex items-center gap-1 text-[10px] font-bold tracking-[0.22em] uppercase text-primary">
+              <SparklesIcon className="w-3 h-3" />
+              <span>Modify Creation Details</span>
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              {name || 'Edit Product'}
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/product/${productId}`}
+            target="_blank"
+            className="p-2.5 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary transition-colors flex items-center gap-1.5 text-xs font-semibold"
+          >
+            <EyeIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">View on Store</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="p-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+            title="Delete Piece"
+          >
+            <TrashIcon className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSaving}
+            className="btn-luxury-gold px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md hover:scale-[1.02] transition-all flex items-center gap-2"
+          >
+            <CheckIcon className="w-4 h-4" />
+            <span>{isSaving ? 'Saving Changes...' : 'Save Changes'}</span>
+          </button>
         </div>
       </div>
-      
-      <form onSubmit={handleSubmit} className="mt-8 space-y-8">
-        {/* Basic Information */}
-        <div className="bg-white shadow sm:rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Basic Information</h3>
-            <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-              <div className="sm:col-span-3">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Product Name *
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="sm:col-span-3">
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                  Category *
-                </label>
-                <div className="mt-1">
-                  <select
-                    id="category"
-                    name="category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    {availableCategories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="sm:col-span-6">
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <div className="mt-1">
-                  <textarea
-                    id="description"
-                    name="description"
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-              
-              <div className="sm:col-span-2">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                  Price (₹) *
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    name="price"
-                    id="price"
-                    min="0"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="sm:col-span-2">
-                <label htmlFor="stock" className="block text-sm font-medium text-gray-700">
-                  Stock *
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="number"
-                    name="stock"
-                    id="stock"
-                    min="0"
-                    value={stock}
-                    onChange={(e) => setStock(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="sm:col-span-2">
-                <label htmlFor="sku" className="block text-sm font-medium text-gray-700">
-                  SKU *
-                </label>
-                <div className="mt-1">
-                  <input
-                    type="text"
-                    name="sku"
-                    id="sku"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="sm:col-span-2">
-                <div className="flex items-center">
-                  <input
-                    id="featured"
-                    name="featured"
-                    type="checkbox"
-                    checked={featured}
-                    onChange={(e) => setFeatured(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <label htmlFor="featured" className="ml-2 block text-sm text-gray-900">
-                    Featured Product
-                  </label>
-                </div>
-              </div>
-              
-              <div className="sm:col-span-2">
-                <div className="flex items-center">
-                  <input
-                    id="customizable"
-                    name="customizable"
-                    type="checkbox"
-                    checked={customizable}
-                    onChange={(e) => setCustomizable(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <label htmlFor="customizable" className="ml-2 block text-sm text-gray-900">
-                    Customizable
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Photo Management Docket */}
+        <div className="bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm space-y-4">
+          <ProductPhotoManager images={images} onChange={setImages} />
         </div>
-        
-        {/* Variants */}
-        <div className="bg-white shadow sm:rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Product Variants</h3>
-            
-            {/* Sizes */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700">Available Sizes</label>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {availableSizes.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => handleSizeToggle(size)}
-                    className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium ${sizes.includes(size) ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-800'}`}
-                  >
-                    {size}
-                  </button>
-                ))}
+
+        {/* Pricing & Inventory Docket */}
+        <div className="bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm space-y-6">
+          <h3 className="font-serif text-lg font-bold text-foreground pb-3 border-b border-border/60">
+            Pricing, Valuation &amp; Stock
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Base Retail Price (₹ INR) *
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold">₹</span>
+                <input
+                  type="number"
+                  required
+                  min={0}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-background pl-8 pr-4 py-2.5 text-sm font-serif font-bold text-foreground focus:outline-none focus:border-primary"
+                />
               </div>
             </div>
-            
-            {/* Colors */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700">Available Colors</label>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {availableColors.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => handleColorToggle(color)}
-                    className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium ${colors.includes(color) ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-800'}`}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Available Physical Units
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={stock}
+                onChange={(e) => {
+                  setStock(e.target.value);
+                  setIsOutOfStock(Number(e.target.value) <= 0);
+                }}
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+              />
             </div>
-          </div>
-        </div>
-        
-        {/* Image Upload - In a real app, you would implement file uploads */}
-        <div className="bg-white shadow sm:rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium leading-6 text-gray-900">Product Images</h3>
-            <div className="mt-2 max-w-xl text-sm text-gray-500">
-              <p>Upload images of your product. The first image will be used as the featured image.</p>
-            </div>
-            <div className="mt-5">
-              <button
-                type="button"
-                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Catalogue Stock Status
+              </label>
+              <select
+                value={isOutOfStock ? 'out' : 'in'}
+                onChange={(e) => setIsOutOfStock(e.target.value === 'out')}
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
               >
-                Upload Images
-              </button>
+                <option value="in">In Stock / Available</option>
+                <option value="out">Out of Stock (Archive)</option>
+              </select>
             </div>
-            
-            {/* Display existing images */}
-            {product?.images && product.images.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-                {product.images.map((image: string, index: number) => (
-                  <div key={index} className="relative">
-                    <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200">
-                      <div className="h-40 w-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        [Image Placeholder]
-                      </div>
-                    </div>
-                    {index === 0 && (
-                      <span className="absolute top-0 right-0 inline-flex items-center rounded-md bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
-        
-        {/* Submit buttons */}
-        <div className="flex justify-end space-x-3">
+
+        {/* Garment Details Docket */}
+        <div className="bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm space-y-6">
+          <h3 className="font-serif text-lg font-bold text-foreground pb-3 border-b border-border/60">
+            Garment Details &amp; Provenance
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Garment Title / Model Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Atelier Description &amp; Provenance
+              </label>
+              <textarea
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background p-3 text-xs text-foreground focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                Archival Category *
+              </label>
+              <select
+                required
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+              >
+                {categories.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-3 pt-6">
+              <input
+                type="checkbox"
+                id="editMakeToOrder"
+                checked={isMakeToOrder}
+                onChange={(e) => setIsMakeToOrder(e.target.checked)}
+                className="w-4 h-4 rounded text-primary focus:ring-primary border-border"
+              />
+              <label htmlFor="editMakeToOrder" className="text-xs font-bold text-foreground cursor-pointer">
+                Available for Bespoke 48-Point Anatomical Tailoring
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Sizes */}
+        <div className="bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm space-y-4">
+          <h3 className="font-serif text-lg font-bold text-foreground pb-2 border-b border-border/60">
+            Available Menswear Chest Sizes (Inches)
+          </h3>
+
+          <div className="flex flex-wrap gap-2.5 pt-2">
+            {availableSizes.map((sz) => {
+              const isSelected = selectedSizes.includes(sz);
+              return (
+                <button
+                  type="button"
+                  key={sz}
+                  onClick={() => handleSizeToggle(sz)}
+                  className={`w-14 h-12 rounded-xl text-xs font-serif font-bold transition-all flex flex-col items-center justify-center ${
+                    isSelected
+                      ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                      : 'border border-border bg-background text-muted-foreground hover:border-primary/50'
+                  }`}
+                >
+                  <span>{sz}</span>
+                  <span className="text-[9px] font-sans font-normal opacity-75">Chest</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-4 pt-4">
           <Link
             href="/admin/products"
-            className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="px-6 py-3 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted"
           >
             Cancel
           </Link>
           <button
             type="submit"
-            disabled={isLoading}
-            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+            disabled={isSaving}
+            className="btn-luxury-gold px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-all"
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {isSaving ? 'Saving Changes...' : 'Save & Publish Changes'}
           </button>
         </div>
       </form>

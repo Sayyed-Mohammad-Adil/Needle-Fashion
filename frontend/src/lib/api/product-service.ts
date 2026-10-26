@@ -85,6 +85,15 @@ export const productService = {
   deleteProduct: async (id: string): Promise<void> => {
     await apiClient.delete(`/api/products/${id}`);
   },
+
+  // Quick update product pricing & stock (admin only)
+  updateProductPricing: async (
+    id: string,
+    data: { price?: number; stock?: number; isOutOfStock?: boolean }
+  ): Promise<Product> => {
+    const response = await apiClient.patch(`/api/products/${id}/pricing`, data);
+    return response.data.product || response.data;
+  },
   
   // Get top rated products
   getTopProducts: async (): Promise<Product[]> => {

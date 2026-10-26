@@ -165,6 +165,34 @@ export interface FAQ {
   updatedAt: string;
 }
 
+// Client Inquiry & Fitting Request types
+export interface Inquiry {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  type: 'Bespoke Commission' | 'Atelier Fitting' | 'Custom Measurement' | 'Order Inquiry' | 'General';
+  subject: string;
+  message: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  productId?: string;
+  productName?: string;
+  measurements?: {
+    chest?: number;
+    waist?: number;
+    length?: number;
+    sleeve?: number;
+    shoulder?: number;
+    neck?: number;
+    fitting?: string;
+  };
+  status: 'Pending' | 'Contacted' | 'Fitting Scheduled' | 'In Progress' | 'Fulfilled' | 'Archived';
+  adminNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // API Response types
 export interface ApiResponse<T> {
   success: boolean;

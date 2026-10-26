@@ -57,7 +57,7 @@ export const orderService = {
   },
 
   // Get all orders (admin only)
-  getOrders: async (filters?: OrderFilters): Promise<PaginatedResponse<Order>> => {
+  getOrders: async (filters?: OrderFilters): Promise<any> => {
     const params = new URLSearchParams();
     
     if (filters) {
@@ -69,6 +69,21 @@ export const orderService = {
     }
     
     const response = await apiClient.get('/api/orders', { params });
+    const data = response.data;
+    const ordersList = data.orders || data.items || data.data?.items || (Array.isArray(data) ? data : []);
+    return {
+      orders: ordersList,
+      items: ordersList,
+      total: data.total || ordersList.length,
+      page: data.page || 1,
+      pages: data.pages || 1,
+      data: { items: ordersList, total: data.total || ordersList.length },
+    };
+  },
+
+  // Update order status (admin only)
+  updateOrderStatus: async (id: string, status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | string): Promise<Order> => {
+    const response = await apiClient.put(`/api/orders/${id}/status`, { status });
     return response.data;
   },
 
@@ -86,12 +101,6 @@ export const orderService = {
   // Update order to delivered
   updateOrderToDelivered: async (id: string): Promise<Order> => {
     const response = await apiClient.put(`/api/orders/${id}/deliver`);
-    return response.data;
-  },
-
-  // Update order status
-  updateOrderStatus: async (id: string, status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled'): Promise<Order> => {
-    const response = await apiClient.put(`/api/orders/${id}/status`, { status });
     return response.data;
   },
 

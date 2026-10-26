@@ -1,4 +1,5 @@
 import ResponsiveAdminDashboard from '@/components/ResponsiveAdminDashboard';
+import AdminGuard from '@/components/AdminGuard';
 
 export default function AdminLayout({
   children,
@@ -6,8 +7,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ResponsiveAdminDashboard>
-      {children}
-    </ResponsiveAdminDashboard>
+    <AdminGuard>
+      <ResponsiveAdminDashboard>
+        {children}
+      </ResponsiveAdminDashboard>
+    </AdminGuard>
   );
 }

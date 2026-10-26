@@ -18,6 +18,9 @@ router.route('/:id')
     .get(product_controller_1.getProductById)
     .put(auth_middleware_1.protect, auth_middleware_1.admin, product_controller_1.updateProduct)
     .delete(auth_middleware_1.protect, auth_middleware_1.admin, product_controller_1.deleteProduct);
+router.route('/:id/pricing')
+    .patch(auth_middleware_1.protect, auth_middleware_1.admin, product_controller_1.updateProductPricing)
+    .put(auth_middleware_1.protect, auth_middleware_1.admin, product_controller_1.updateProductPricing);
 // Review routes
 router.route('/:id/reviews')
     .get(review_controller_1.getProductReviews)

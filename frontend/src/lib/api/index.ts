@@ -6,3 +6,5 @@ export * from './auth-service';
 export * from './analytics-service';
 export * from './expense-service';
 export * from './faq-service';
+export * from './inquiry-service';
+export * from './upload-service';

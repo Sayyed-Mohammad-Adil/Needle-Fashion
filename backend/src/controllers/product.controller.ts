@@ -177,12 +177,21 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid category' });
     }
 
+    // Normalize images: accept array of strings (URLs) or objects
+    const formattedImages = Array.isArray(images)
+      ? images.map((img: any) =>
+          typeof img === 'string'
+            ? { data: img, alt: name || '' }
+            : { data: img.data || img.url || '', alt: img.alt || '' }
+        )
+      : [];
+
     // Create product
     const product = await Product.create({
       name,
       description,
-      price,
-      images,
+      price: Number(price),
+      images: formattedImages,
       category,
       filters: new Map(Object.entries(filters || {})),
       sizes,
@@ -226,8 +235,16 @@ export const updateProduct = async (req: Request, res: Response) => {
     // Update fields if provided
     if (name) product.name = name;
     if (description) product.description = description;
-    if (price) product.price = price;
-    if (images) product.images = images;
+    if (price !== undefined) product.price = Number(price);
+    if (images) {
+      product.images = Array.isArray(images)
+        ? images.map((img: any) =>
+            typeof img === 'string'
+              ? { data: img, alt: product.name || '' }
+              : { data: img.data || img.url || '', alt: img.alt || '' }
+          )
+        : images;
+    }
     if (category) {
       // Validate category exists
       const categoryExists = await Category.findById(category);
@@ -283,6 +300,39 @@ export const getTopProducts = async (req: Request, res: Response) => {
       .limit(limit);
 
     res.json(products);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Quick update product pricing & stock
+// @route   PATCH /api/products/:id/pricing
+// @access  Private/Admin
+export const updateProductPricing = async (req: Request, res: Response) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const { price, stock, isOutOfStock } = req.body;
+    if (price !== undefined && !isNaN(Number(price))) {
+      product.price = Number(price);
+    }
+    if (stock !== undefined && !isNaN(Number(stock))) {
+      product.stock = Number(stock);
+      product.isOutOfStock = Number(stock) <= 0;
+    }
+    if (isOutOfStock !== undefined) {
+      product.isOutOfStock = Boolean(isOutOfStock);
+    }
+
+    const updated = await product.save();
+    res.json({
+      success: true,
+      message: 'Product pricing updated successfully',
+      product: updated,
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTopProducts = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProductById = exports.getProducts = void 0;
+exports.updateProductPricing = exports.getTopProducts = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProductById = exports.getProducts = void 0;
 const mongoose_1 = require("mongoose");
 const product_model_1 = require("../models/product.model");
 const category_model_1 = require("../models/category.model");
@@ -160,12 +160,18 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!categoryExists) {
             return res.status(400).json({ message: 'Invalid category' });
         }
+        // Normalize images: accept array of strings (URLs) or objects
+        const formattedImages = Array.isArray(images)
+            ? images.map((img) => typeof img === 'string'
+                ? { data: img, alt: name || '' }
+                : { data: img.data || img.url || '', alt: img.alt || '' })
+            : [];
         // Create product
         const product = yield product_model_1.Product.create({
             name,
             description,
-            price,
-            images,
+            price: Number(price),
+            images: formattedImages,
             category,
             filters: new Map(Object.entries(filters || {})),
             sizes,
@@ -196,10 +202,15 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             product.name = name;
         if (description)
             product.description = description;
-        if (price)
-            product.price = price;
-        if (images)
-            product.images = images;
+        if (price !== undefined)
+            product.price = Number(price);
+        if (images) {
+            product.images = Array.isArray(images)
+                ? images.map((img) => typeof img === 'string'
+                    ? { data: img, alt: product.name || '' }
+                    : { data: img.data || img.url || '', alt: img.alt || '' })
+                : images;
+        }
         if (category) {
             // Validate category exists
             const categoryExists = yield category_model_1.Category.findById(category);
@@ -263,4 +274,36 @@ const getTopProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getTopProducts = getTopProducts;
+// @desc    Quick update product pricing & stock
+// @route   PATCH /api/products/:id/pricing
+// @access  Private/Admin
+const updateProductPricing = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield product_model_1.Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        const { price, stock, isOutOfStock } = req.body;
+        if (price !== undefined && !isNaN(Number(price))) {
+            product.price = Number(price);
+        }
+        if (stock !== undefined && !isNaN(Number(stock))) {
+            product.stock = Number(stock);
+            product.isOutOfStock = Number(stock) <= 0;
+        }
+        if (isOutOfStock !== undefined) {
+            product.isOutOfStock = Boolean(isOutOfStock);
+        }
+        const updated = yield product.save();
+        res.json({
+            success: true,
+            message: 'Product pricing updated successfully',
+            product: updated,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.updateProductPricing = updateProductPricing;
 //# sourceMappingURL=product.controller.js.map

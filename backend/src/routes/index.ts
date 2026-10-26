@@ -11,6 +11,8 @@ import expenseRoutes from './expense.routes';
 import themeRoutes from './theme.routes';
 import notificationRoutes from './notification.routes';
 import chatRoutes from './chat.routes';
+import uploadRoutes from './upload.routes';
+import inquiryRoutes from './inquiry.routes';
 import { notFound, errorHandler } from '../middleware/error.middleware';
 import { sanitizeInput, preventNoSQLInjection, logSuspiciousActivity } from '../middleware/security.middleware';
 
@@ -38,6 +40,8 @@ router.use('/api/expenses', expenseRoutes);
 router.use('/api/themes', themeRoutes);
 router.use('/api/notifications', notificationRoutes);
 router.use('/api/chat', chatRoutes);
+router.use('/api/upload', uploadRoutes);
+router.use('/api/inquiries', inquiryRoutes);
 
 // Health check endpoint
 router.get('/api/health', (req, res) => {

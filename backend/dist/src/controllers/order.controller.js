@@ -75,7 +75,9 @@ exports.createOrder = createOrder;
 const getOrderById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const order = yield order_model_1.Order.findById(req.params.id).populate('user', 'name email');
+        const order = yield order_model_1.Order.findById(req.params.id)
+            .populate('user', 'name email phone address')
+            .populate('items.product', 'name images price category');
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
@@ -199,12 +201,14 @@ const getOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const count = yield order_model_1.Order.countDocuments(filterObj);
         const orders = yield order_model_1.Order.find(filterObj)
-            .populate('user', 'id name')
+            .populate('user', 'id name email phone address')
+            .populate('items.product', 'name images price category')
             .sort({ createdAt: -1 })
             .limit(pageSize)
             .skip(pageSize * (page - 1));
         res.json({
             orders,
+            items: orders,
             page,
             pages: Math.ceil(count / pageSize),
             total: count,

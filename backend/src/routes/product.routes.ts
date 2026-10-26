@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
   getTopProducts,
+  updateProductPricing,
 } from '../controllers/product.controller';
 import {
   createReview,
@@ -31,6 +32,10 @@ router.route('/:id')
   .get(getProductById)
   .put(protect, admin, updateProduct)
   .delete(protect, admin, deleteProduct);
+
+router.route('/:id/pricing')
+  .patch(protect, admin, updateProductPricing)
+  .put(protect, admin, updateProductPricing);
 
 // Review routes
 router.route('/:id/reviews')

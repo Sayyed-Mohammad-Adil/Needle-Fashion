@@ -277,22 +277,22 @@ function seed() {
                 console.log('Creating default theme...');
                 yield theme_model_1.Theme.create({
                     name: 'Default',
-                    description: 'Default store theme',
+                    description: 'Bespoke Cream & Gold Haute Couture Theme',
                     isDefault: true,
                     colors: {
-                        primary: '#3b82f6',
-                        secondary: '#64748b',
-                        accent: '#f59e0b',
-                        background: '#ffffff',
-                        text: '#1f2937',
-                        border: '#e5e7eb',
+                        primary: '#C5A059', // Champagne Gold
+                        secondary: '#F2EDE4', // Soft Cashmere Cream
+                        accent: '#C5A059',
+                        background: '#FAF8F5', // Royal Cream Alabaster
+                        text: '#18191D', // Deep Graphite Charcoal
+                        border: '#E6DFD3',
                     },
                     fonts: {
-                        heading: 'Inter, sans-serif',
+                        heading: 'Playfair Display, serif',
                         body: 'Inter, sans-serif',
                     },
                     layout: {
-                        borderRadius: '0.5rem',
+                        borderRadius: '0.75rem',
                         spacing: '4px',
                     },
                     isActive: true,
@@ -308,22 +308,22 @@ function seed() {
                 console.log('Creating Dark theme...');
                 yield theme_model_1.Theme.create({
                     name: 'Dark',
-                    description: 'Dark mode theme',
+                    description: 'Imperial Charcoal & Radiant Gold Theme',
                     isDefault: false,
                     colors: {
-                        primary: '#FFD700', // Gold
-                        secondary: '#444444',
-                        accent: '#FFD700',
-                        background: '#1E1E1E',
-                        text: '#FFFFFF',
-                        border: '#444444',
+                        primary: '#DFB76C', // Radiant Antique Gold
+                        secondary: '#1F222B', // Slate Charcoal
+                        accent: '#DFB76C',
+                        background: '#121317', // Imperial Charcoal
+                        text: '#FAF8F5', // Silk Cream
+                        border: '#2B2F3A',
                     },
                     fonts: {
-                        heading: 'Inter, sans-serif',
+                        heading: 'Playfair Display, serif',
                         body: 'Inter, sans-serif',
                     },
                     layout: {
-                        borderRadius: '0.5rem',
+                        borderRadius: '0.75rem',
                         spacing: '4px',
                     },
                     isActive: true,

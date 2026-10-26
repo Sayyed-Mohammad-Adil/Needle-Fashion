@@ -90,6 +90,14 @@ const setupSocket = (io) => {
                 console.error('Socket error:', error);
             }
         }));
+        socket.on('typing', (data) => {
+            const { sessionId, userName, role } = data;
+            socket.to(sessionId).emit('typing', { sessionId, userName, role });
+        });
+        socket.on('stop_typing', (data) => {
+            const { sessionId, role } = data;
+            socket.to(sessionId).emit('stop_typing', { sessionId, role });
+        });
         socket.on('disconnect', () => {
             console.log('Client disconnected:', socket.id);
         });

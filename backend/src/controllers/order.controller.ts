@@ -81,7 +81,9 @@ export const createOrder = async (req: Request, res: Response) => {
 // @access  Private
 export const getOrderById = async (req: Request, res: Response) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user', 'name email');
+    const order = await Order.findById(req.params.id)
+      .populate('user', 'name email phone address')
+      .populate('items.product', 'name images price category');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -216,13 +218,15 @@ export const getOrders = async (req: Request, res: Response) => {
 
     const count = await Order.countDocuments(filterObj);
     const orders = await Order.find(filterObj)
-      .populate('user', 'id name email')
+      .populate('user', 'id name email phone address')
+      .populate('items.product', 'name images price category')
       .sort({ createdAt: -1 })
       .limit(pageSize)
       .skip(pageSize * (page - 1));
 
     res.json({
       orders,
+      items: orders,
       page,
       pages: Math.ceil(count / pageSize),
       total: count,
