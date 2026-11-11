@@ -201,17 +201,17 @@ export default function Footer() {
           alt="Royal Mughal Palace Archway Backdrop"
           fill
           sizes="100vw"
-          className="object-cover object-center opacity-25 dark:opacity-30 sepia-[0.28] contrast-[1.08]"
+          className="object-cover object-center opacity-55 dark:opacity-50 sepia-[0.24] contrast-[1.12]"
         />
         <div
-          className="absolute inset-0 opacity-[0.09] dark:opacity-[0.07]"
+          className="absolute inset-0 opacity-[0.2] dark:opacity-[0.16]"
           style={{
             backgroundImage: "url('/images/vintage-jaali-motif.webp')",
             backgroundSize: '260px 260px',
             backgroundRepeat: 'repeat',
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/78 to-secondary/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/65 via-background/45 to-secondary/75" />
       </div>
 
       {/* Subtle 3D Flowing Gold Zari Threads */}

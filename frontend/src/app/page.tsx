@@ -144,10 +144,10 @@ export default function Home() {
             alt="Vintage Royal Indian Palace Architecture"
             fill
             priority
-            className="object-cover object-center lg:object-right opacity-35 dark:opacity-25 sepia-[0.16] contrast-[1.08] brightness-[0.98] scale-[1.02]"
+            className="object-cover object-center lg:object-right opacity-55 dark:opacity-45 sepia-[0.16] contrast-[1.1] brightness-[0.98] scale-[1.02]"
           />
           {/* Asymmetrical gradient mask: solid behind text on left, opens up to palace grandeur on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 via-50% to-transparent dark:from-background dark:via-background/85 dark:via-50% dark:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/65 via-45% to-transparent dark:from-background dark:via-background/70 dark:via-45% dark:to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40 dark:from-background dark:via-transparent dark:to-background/40" />
         </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
@@ -307,7 +307,7 @@ export default function Home() {
       {/* 3. The Four Menswear Haute Wings (Glassmorphic Cards) */}
       <section aria-labelledby="wings-heading" className="py-20 sm:py-28 relative overflow-hidden">
         {/* Subtle vintage jaali filigree watermark in background */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.075] dark:opacity-[0.055] -z-0">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.18] dark:opacity-[0.14] -z-0">
           <div
             className="w-full h-full"
             style={{
@@ -415,9 +415,9 @@ export default function Home() {
             src="/images/vintage-karigar-atelier.webp"
             alt="Historical Royal Indian Weaving Atelier"
             fill
-            className="object-cover object-center opacity-30 dark:opacity-25 sepia-[0.22] contrast-[1.06] brightness-[0.96]"
+            className="object-cover object-center opacity-50 dark:opacity-45 sepia-[0.22] contrast-[1.08] brightness-[0.96]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background dark:from-background dark:via-background/75 dark:to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background/90 dark:from-background/90 dark:via-background/55 dark:to-background/90" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/80" />
         </div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
@@ -574,9 +574,9 @@ export default function Home() {
                 src="/images/vintage-royal-salon.webp"
                 alt="Vintage Royal Fitting Salon"
                 fill
-                className="object-cover object-right opacity-45 dark:opacity-35 sepia-[0.18] contrast-[1.06]"
+                className="object-cover object-right opacity-65 dark:opacity-55 sepia-[0.18] contrast-[1.08]"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-card via-card/85 via-55% to-card/25 dark:from-[#13151C] dark:via-[#13151C]/85 dark:via-55% dark:to-[#13151C]/25" />
+              <div className="absolute inset-0 bg-gradient-to-r from-card via-card/75 via-50% to-card/15 dark:from-[#13151C] dark:via-[#13151C]/75 dark:via-50% dark:to-[#13151C]/15" />
               <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/30 dark:from-[#13151C]/50 dark:via-transparent dark:to-[#13151C]/30" />
             </div>
             <div className="relative z-10 max-w-3xl">
@@ -679,9 +679,9 @@ export default function Home() {
                 src="/images/vintage-palace-night.webp"
                 alt="Vintage Indian Heritage Palace at Twilight"
                 fill
-                className="object-cover object-center opacity-50 dark:opacity-45 contrast-[1.08] brightness-[0.94]"
+                className="object-cover object-center opacity-70 dark:opacity-65 contrast-[1.1] brightness-[0.94]"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-card/90 via-card/70 to-card/85 dark:from-[#111318]/90 dark:via-[#111318]/70 dark:to-[#111318]/85" />
+              <div className="absolute inset-0 bg-gradient-to-r from-card/80 via-card/55 to-card/75 dark:from-[#111318]/80 dark:via-[#111318]/55 dark:to-[#111318]/75" />
               <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-card/40 dark:from-[#111318]/60 dark:via-transparent dark:to-[#111318]/40" />
             </div>
             <div className="relative z-10">

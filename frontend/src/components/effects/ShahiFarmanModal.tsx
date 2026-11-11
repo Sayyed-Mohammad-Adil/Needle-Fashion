@@ -373,7 +373,7 @@ export default function ShahiFarmanModal() {
           >
             {/* Jaali Brocade Texture on Cover Cloth */}
             <div
-              className="absolute inset-0 opacity-20 mix-blend-soft-light pointer-events-none"
+              className="absolute inset-0 opacity-35 mix-blend-soft-light pointer-events-none"
               style={{
                 backgroundImage: "url('/images/vintage-jaali-motif.webp')",
                 backgroundSize: '140px 140px',
@@ -508,7 +508,7 @@ export default function ShahiFarmanModal() {
           {/* Woven Jacquard Jaali Brocade Texture inside the Silk */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 opacity-[0.16] mix-blend-soft-light pointer-events-none"
+            className="absolute inset-0 opacity-[0.28] mix-blend-soft-light pointer-events-none"
             style={{
               backgroundImage: "url('/images/vintage-jaali-motif.webp')",
               backgroundSize: '210px 210px',
