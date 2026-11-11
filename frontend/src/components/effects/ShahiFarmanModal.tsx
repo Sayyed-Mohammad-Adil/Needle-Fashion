@@ -6,8 +6,12 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function ShahiFarmanModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [stageLabel, setStageLabel] = useState('शाही ग़िलाफ़ • Royal Farman Cover');
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
+  const coverLidRef = useRef<HTMLDivElement>(null);
+  const coverSealRef = useRef<HTMLDivElement>(null);
   const fabricBodyRef = useRef<HTMLDivElement>(null);
   const sheenSweepRef = useRef<HTMLDivElement>(null);
   const topRodRef = useRef<HTMLDivElement>(null);
@@ -21,6 +25,7 @@ export default function ShahiFarmanModal() {
   useEffect(() => {
     const handleOpen = () => {
       isClosingRef.current = false;
+      setStageLabel('शाही ग़िलाफ़ • Royal Farman Cover');
       setIsOpen(true);
     };
 
@@ -33,19 +38,24 @@ export default function ShahiFarmanModal() {
     };
   }, []);
 
-  // Realistic Silk Cloth Unrolling Animation
+  // 3-Act Choreography: 1) Show Velvet Cover & Wax Seal -> 2) Pull Scroll Out -> 3) Unroll Silk Cloth
   useEffect(() => {
     if (!isOpen) return;
 
     document.body.style.overflow = 'hidden';
 
+    const cover = coverRef.current;
+    const coverLid = coverLidRef.current;
+    const coverSeal = coverSealRef.current;
     const fabric = fabricBodyRef.current;
     const sheen = sheenSweepRef.current;
     const topRod = topRodRef.current;
     const bottomRod = bottomRodRef.current;
     const cylinder = bottomRodCylinderRef.current;
     const content = contentRef.current;
-    if (!fabric || !topRod || !bottomRod || !content) return;
+    if (!cover || !coverLid || !coverSeal || !fabric || !topRod || !bottomRod || !content) {
+      return;
+    }
 
     timelineRef.current?.kill();
     breezeTweenRef.current?.kill();
@@ -53,9 +63,14 @@ export default function ShahiFarmanModal() {
     gsap.set(fabric, { height: 'auto' });
     const naturalHeight = fabric.scrollHeight;
 
-    gsap.set(fabric, { height: 0, opacity: 1 });
-    gsap.set(topRod, { opacity: 0, y: -18, scaleX: 0.92 });
-    gsap.set(bottomRod, { opacity: 0, y: -12, scaleX: 0.92 });
+    // Initial state: Only the sealed Royal Velvet Cover (Ghilaf) is visible; scroll is hidden inside
+    gsap.set(cover, { opacity: 0, scale: 0.9, y: 12, display: 'flex' });
+    gsap.set(coverLid, { x: 0, opacity: 1 });
+    gsap.set(coverSeal, { scale: 1, rotation: 0, opacity: 1 });
+
+    gsap.set(fabric, { height: 0, opacity: 0 });
+    gsap.set(topRod, { opacity: 0, x: -45, y: 0, scaleX: 0.9 });
+    gsap.set(bottomRod, { opacity: 0, x: -45, y: 0, scaleX: 0.9 });
     gsap.set(content, { opacity: 0, y: -14 });
 
     const revealItems = content.querySelectorAll('[data-farman-reveal]');
@@ -64,6 +79,7 @@ export default function ShahiFarmanModal() {
     const tl = gsap.timeline({
       onComplete: () => {
         gsap.set(fabric, { clearProps: 'height' });
+        setStageLabel('शाही फ़रमान • Royal Decree');
         if (sheen) {
           breezeTweenRef.current = gsap.to(sheen, {
             yPercent: 18,
@@ -78,27 +94,80 @@ export default function ShahiFarmanModal() {
     });
     timelineRef.current = tl;
 
-    tl.to([topRod, bottomRod], {
+    // ACT 1: Present the Royal Velvet Cover & Wax Seal (0.0s -> 1.05s)
+    tl.to(cover, {
       opacity: 1,
+      scale: 1,
       y: 0,
-      scaleX: 1,
-      duration: 0.4,
-      ease: 'power2.out',
+      duration: 0.45,
+      ease: 'power3.out',
     })
+      .to(coverSeal, {
+        scale: 1.12,
+        duration: 0.35,
+        yoyo: true,
+        repeat: 1,
+        ease: 'sine.inOut',
+      })
+      // Break / untie the Royal Wax Seal & open the right brass cap of the cover
+      .add(() => setStageLabel('मोहर खुल रही है • Unsealing Cover...'))
+      .to(coverSeal, {
+        scale: 0.7,
+        rotation: -18,
+        opacity: 0,
+        duration: 0.35,
+        ease: 'power2.in',
+      })
       .to(
-        fabric,
+        coverLid,
         {
-          height: naturalHeight,
-          duration: 1.25,
-          ease: 'power3.inOut',
+          x: 42,
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.out',
         },
-        '+=0.05'
+        '-=0.15'
       )
+      // ACT 2: Pull the rolled scroll horizontally out of the velvet cover sleeve
+      .add(() => setStageLabel('फ़रमान बाहर निकाला जा रहा है • Drawing Scroll...'))
+      .to(
+        [topRod, bottomRod],
+        {
+          opacity: 1,
+          x: 0,
+          scaleX: 1,
+          duration: 0.65,
+          ease: 'power3.out',
+        },
+        '-=0.1'
+      )
+      .to(
+        cover,
+        {
+          x: -70,
+          opacity: 0,
+          scale: 0.92,
+          duration: 0.55,
+          ease: 'power2.in',
+          onComplete: () => {
+            gsap.set(cover, { display: 'none' });
+          },
+        },
+        '-=0.35'
+      )
+      // ACT 3: Unroll the woven crimson silk cloth downward
+      .add(() => setStageLabel('शाही रेशम खुल रहा है • Unrolling Farman...'))
+      .set(fabric, { opacity: 1 })
+      .to(fabric, {
+        height: naturalHeight,
+        duration: 1.15,
+        ease: 'power3.inOut',
+      })
       .to(
         cylinder,
         {
           backgroundPositionY: '120px',
-          duration: 1.25,
+          duration: 1.15,
           ease: 'power3.inOut',
         },
         '<'
@@ -111,18 +180,18 @@ export default function ShahiFarmanModal() {
           duration: 0.55,
           ease: 'power2.out',
         },
-        '-=0.75'
+        '-=0.7'
       )
       .to(
         revealItems,
         {
           opacity: 1,
           y: 0,
-          duration: 0.45,
-          stagger: 0.08,
+          duration: 0.42,
+          stagger: 0.07,
           ease: 'power2.out',
         },
-        '-=0.4'
+        '-=0.38'
       );
 
     return () => {
@@ -132,11 +201,14 @@ export default function ShahiFarmanModal() {
     };
   }, [isOpen]);
 
-  // Smooth Cloth Roll-Up Animation on close
+  // Roll Up Cloth & Tuck Back Into Cover on Close
   const handleClose = useCallback(() => {
     if (isClosingRef.current) return;
     isClosingRef.current = true;
 
+    const cover = coverRef.current;
+    const coverLid = coverLidRef.current;
+    const coverSeal = coverSealRef.current;
     const fabric = fabricBodyRef.current;
     const topRod = topRodRef.current;
     const bottomRod = bottomRodRef.current;
@@ -154,6 +226,7 @@ export default function ShahiFarmanModal() {
 
     const currentHeight = fabric.offsetHeight;
     gsap.set(fabric, { height: currentHeight });
+    setStageLabel('फ़रमान लपेटा जा रहा है • Rolling Scroll...');
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -167,38 +240,67 @@ export default function ShahiFarmanModal() {
     tl.to(content, {
       opacity: 0,
       y: -12,
-      duration: 0.28,
+      duration: 0.24,
       ease: 'power2.in',
     })
       .to(
         fabric,
         {
           height: 0,
-          duration: 0.85,
+          duration: 0.7,
           ease: 'power3.inOut',
         },
-        '-=0.1'
+        '-=0.08'
       )
       .to(
         cylinder,
         {
           backgroundPositionY: '0px',
-          duration: 0.85,
+          duration: 0.7,
           ease: 'power3.inOut',
         },
         '<'
-      )
-      .to(
-        [topRod, bottomRod],
-        {
+      );
+
+    if (cover && coverLid && coverSeal) {
+      tl.set(cover, { display: 'flex', x: -50, opacity: 0, scale: 0.94 })
+        .set(coverLid, { x: 35, opacity: 0 })
+        .set(coverSeal, { opacity: 0, scale: 0.8 })
+        .to(cover, {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.35,
+          ease: 'power2.out',
+        })
+        .to(
+          [topRod, bottomRod],
+          {
+            x: -36,
+            opacity: 0,
+            duration: 0.35,
+            ease: 'power2.in',
+          },
+          '<'
+        )
+        .to(coverLid, {
+          x: 0,
+          opacity: 1,
+          duration: 0.25,
+          ease: 'power2.out',
+        })
+        .to(cover, {
           opacity: 0,
-          y: -10,
-          scaleX: 0.94,
+          scale: 0.92,
           duration: 0.25,
           ease: 'power2.in',
-        },
-        '-=0.1'
-      );
+        });
+    } else {
+      tl.to([topRod, bottomRod], {
+        opacity: 0,
+        duration: 0.25,
+      });
+    }
   }, []);
 
   if (!isOpen) return null;
@@ -214,15 +316,15 @@ export default function ShahiFarmanModal() {
       {/* Backdrop click to roll up */}
       <div className="fixed inset-0" onClick={handleClose} />
 
-      {/* Main Shahi Farman Scroll Assembly */}
+      {/* Main Shahi Farman Assembly */}
       <div
         ref={scrollWrapperRef}
         className="relative z-10 w-full max-w-xl my-auto flex flex-col items-center pointer-events-auto"
       >
         {/* Top Hanging Header & Roll-Up Button */}
-        <div className="w-full flex items-center justify-between px-2 mb-2">
-          <span className="font-serif text-[10px] uppercase tracking-[0.26em] text-[#E6D5B8]/85">
-            ✦ Woven Crimson Silk Scroll &bull; Needle Fashion
+        <div className="w-full flex items-center justify-between px-2 mb-3">
+          <span className="font-serif text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-[#FFE8B8]">
+            ✦ {stageLabel}
           </span>
           <button
             type="button"
@@ -232,6 +334,102 @@ export default function ShahiFarmanModal() {
             <XMarkIcon className="w-4 h-4" />
             <span>लपेटें (Roll Up)</span>
           </button>
+        </div>
+
+        {/* =====================================================================
+            ACT 1 & 2: ROYAL BROCADE SILK & BRASS CYLINDRICAL FARMAN COVER (GHILAF)
+        ===================================================================== */}
+        <div
+          ref={coverRef}
+          className="relative w-[92%] sm:w-[88%] flex items-center justify-center my-6 z-40 select-none drop-shadow-[0_24px_45px_rgba(0,0,0,0.95)]"
+        >
+          {/* Left Closed Brass End-Cap of the Farman Cover */}
+          <div className="flex items-center -mr-1 z-30 flex-shrink-0">
+            <div className="w-3 h-7 rounded-l-full bg-gradient-to-r from-[#3D2406] to-[#B38728] border border-[#F5EDD6]/65" />
+            <div
+              className="w-7 h-20 sm:h-24 rounded-l-xl border-2 border-[#F5EDD6]/70 shadow-xl flex flex-col items-center justify-around py-2"
+              style={{
+                background:
+                  'linear-gradient(180deg, #4E3209 0%, #DFB76C 28%, #FFF2CC 50%, #A97B2C 74%, #352106 100%)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3D2808]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3D2808]" />
+            </div>
+          </div>
+
+          {/* Center Cylindrical Velvet & Zari Brocade Sleeve Body */}
+          <div
+            className="relative flex-1 h-20 sm:h-24 border-y-2 border-[#DFB76C]/80 shadow-inner flex items-center justify-center overflow-hidden"
+            style={{
+              backgroundColor: '#5B0715',
+              backgroundImage: [
+                // Cylindrical highlight & bottom shadow for 3D round tube feel
+                'linear-gradient(180deg, rgba(15,1,4,0.8) 0%, rgba(165,24,48,0.45) 26%, rgba(255,220,175,0.16) 45%, rgba(92,8,22,0.7) 74%, rgba(12,1,3,0.92) 100%)',
+                // Fine woven cloth grain
+                'repeating-linear-gradient(90deg, rgba(255,235,200,0.05) 0px, rgba(255,235,200,0.05) 1px, transparent 1px, transparent 3px)',
+              ].join(', '),
+            }}
+          >
+            {/* Jaali Brocade Texture on Cover Cloth */}
+            <div
+              className="absolute inset-0 opacity-20 mix-blend-soft-light pointer-events-none"
+              style={{
+                backgroundImage: "url('/images/vintage-jaali-motif.webp')",
+                backgroundSize: '140px 140px',
+              }}
+            />
+
+            {/* Two Gold Zari Kinari Straps Around Cover */}
+            <div className="absolute inset-y-0 left-8 w-3 bg-gradient-to-b from-[#6B4A14] via-[#FFF2CC] to-[#4E3209] border-x border-[#F5EDD6]/60 opacity-90" />
+            <div className="absolute inset-y-0 right-8 w-3 bg-gradient-to-b from-[#6B4A14] via-[#FFF2CC] to-[#4E3209] border-x border-[#F5EDD6]/60 opacity-90" />
+
+            {/* Cover Title Inscribed in Gold */}
+            <div className="relative z-10 text-center px-12">
+              <span className="font-serif text-[10px] sm:text-xs uppercase tracking-[0.28em] text-[#FFF3D6] font-bold block drop-shadow">
+                शाही ग़िलाफ़ &bull; Royal Sleeve
+              </span>
+              <span className="font-serif italic text-[10px] text-[#E6D5B8]/85 block mt-0.5">
+                Needle Fashion Imperial Dispatch
+              </span>
+            </div>
+          </div>
+
+          {/* Center Tied Gold Dori & Crimson Shahi Wax Seal */}
+          <div
+            ref={coverSealRef}
+            className="absolute left-1/2 -translate-x-1/2 -bottom-5 z-40 flex flex-col items-center"
+          >
+            <div
+              className="w-12 h-12 rounded-full border-2 border-[#DFB76C] shadow-[0_6px_18px_rgba(0,0,0,0.85)] flex items-center justify-center"
+              style={{
+                background:
+                  'radial-gradient(circle at 35% 30%, #B81D38 0%, #7A0E22 62%, #420510 100%)',
+              }}
+            >
+              <div className="w-9 h-9 rounded-full border border-dashed border-[#FFF3D6]/75 flex items-center justify-center">
+                <span className="font-serif text-lg font-black text-[#FFF3D6]">N</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Removable Brass End-Cap (Slides off when unsealing!) */}
+          <div
+            ref={coverLidRef}
+            className="flex items-center -ml-1 z-30 flex-shrink-0"
+          >
+            <div
+              className="w-7 h-20 sm:h-24 rounded-r-xl border-2 border-[#F5EDD6]/70 shadow-xl flex flex-col items-center justify-around py-2"
+              style={{
+                background:
+                  'linear-gradient(180deg, #4E3209 0%, #DFB76C 28%, #FFF2CC 50%, #A97B2C 74%, #352106 100%)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3D2808]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3D2808]" />
+            </div>
+            <div className="w-3 h-7 rounded-r-full bg-gradient-to-l from-[#3D2406] to-[#B38728] border border-[#F5EDD6]/65" />
+          </div>
         </div>
 
         {/* =====================================================================
@@ -264,7 +462,6 @@ export default function ShahiFarmanModal() {
                 'linear-gradient(180deg, #4E3209 0%, #B38728 18%, #FFF2CC 44%, #C5A059 68%, #3D2606 100%)',
             }}
           >
-            {/* Crimson Silk Loops Wrapped Around Top Rod (kapda binding) */}
             <div
               className="absolute -inset-y-0.5 left-4 right-4 rounded-sm opacity-95 border-y border-[#DFB76C]/60"
               style={{
@@ -272,7 +469,6 @@ export default function ShahiFarmanModal() {
                   'linear-gradient(180deg, #4A0410 0%, #8E1128 32%, #AA1933 55%, #5C0615 100%)',
               }}
             />
-            {/* Gold Zari Stitched Collar Rings on Cloth Sleeve */}
             <div className="absolute -inset-y-0.5 left-7 w-1.5 bg-gradient-to-b from-[#FFF3D6] via-[#C5A059] to-[#6B4A14] rounded-full shadow" />
             <div className="absolute -inset-y-0.5 right-7 w-1.5 bg-gradient-to-b from-[#FFF3D6] via-[#C5A059] to-[#6B4A14] rounded-full shadow" />
           </div>
@@ -302,11 +498,8 @@ export default function ShahiFarmanModal() {
           style={{
             backgroundColor: '#7D0B1F',
             backgroundImage: [
-              // Soft silk drapery horizontal fold ripples
               'linear-gradient(180deg, rgba(25,2,6,0.55) 0%, rgba(165,24,48,0.22) 12%, rgba(75,5,17,0.35) 28%, rgba(175,30,54,0.2) 48%, rgba(70,4,15,0.3) 68%, rgba(165,24,48,0.22) 86%, rgba(25,2,6,0.6) 100%)',
-              // Vertical edge tension folds (where cloth drapes inward between rods)
               'linear-gradient(90deg, rgba(18,2,5,0.68) 0%, rgba(255,220,180,0.06) 6%, rgba(0,0,0,0.18) 12%, transparent 25%, transparent 75%, rgba(0,0,0,0.18) 88%, rgba(255,220,180,0.06) 94%, rgba(18,2,5,0.68) 100%)',
-              // Fine orthogonal silk warp & weft weave threads
               'repeating-linear-gradient(0deg, rgba(255,235,200,0.045) 0px, rgba(255,235,200,0.045) 1px, rgba(0,0,0,0.09) 1px, rgba(0,0,0,0.09) 3px)',
               'repeating-linear-gradient(90deg, rgba(255,235,200,0.04) 0px, rgba(255,235,200,0.04) 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 3px)',
             ].join(', '),
@@ -323,7 +516,7 @@ export default function ShahiFarmanModal() {
             }}
           />
 
-          {/* Living Satin Sheen Sweep (simulates silk catching light in gentle breeze) */}
+          {/* Living Satin Sheen Sweep */}
           <div
             ref={sheenSweepRef}
             aria-hidden="true"
@@ -334,7 +527,7 @@ export default function ShahiFarmanModal() {
             }}
           />
 
-          {/* Woven Gota-Patti / Zari Kinari Left Selvedge Border + Stitched Thread Line */}
+          {/* Woven Gota-Patti / Zari Kinari Left Selvedge Border */}
           <div
             aria-hidden="true"
             className="absolute top-0 bottom-0 left-0 w-7 sm:w-9 pointer-events-none z-10 border-r border-dashed border-[#FFE4A8]/70 flex flex-col items-center justify-around py-4"
@@ -353,7 +546,7 @@ export default function ShahiFarmanModal() {
             ))}
           </div>
 
-          {/* Woven Gota-Patti / Zari Kinari Right Selvedge Border + Stitched Thread Line */}
+          {/* Woven Gota-Patti / Zari Kinari Right Selvedge Border */}
           <div
             aria-hidden="true"
             className="absolute top-0 bottom-0 right-0 w-7 sm:w-9 pointer-events-none z-10 border-l border-dashed border-[#FFE4A8]/70 flex flex-col items-center justify-around py-4"
@@ -386,7 +579,6 @@ export default function ShahiFarmanModal() {
             ref={contentRef}
             className="px-10 sm:px-14 py-8 sm:py-10 relative z-10 text-center flex flex-col items-center"
           >
-            {/* Bismillah Calligraphy */}
             <p
               data-farman-reveal
               className="font-serif text-lg sm:text-xl text-[#FFF3D6] tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.75)] mb-1.5 select-none"
@@ -394,7 +586,6 @@ export default function ShahiFarmanModal() {
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </p>
 
-            {/* Sub-Invocation */}
             <p
               data-farman-reveal
               className="text-[10px] sm:text-[11px] font-serif uppercase tracking-[0.22em] text-[#FFE8B8] drop-shadow-sm"
@@ -402,7 +593,6 @@ export default function ShahiFarmanModal() {
               ✦ बा-अदब &bull; बा-मुलाहिज़ा &bull; Needle Fashion Atelier ✦
             </p>
 
-            {/* Main Shahi Farman Title */}
             <h2
               data-farman-reveal
               className="font-serif text-2xl sm:text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#FFF3D6] via-[#FFE29A] to-[#F5EDD6] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] mt-3"
@@ -414,7 +604,6 @@ export default function ShahiFarmanModal() {
               className="w-40 sm:w-56 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFE8B8] to-transparent my-3 opacity-85"
             />
 
-            {/* Stitched Velvet Couplet Patch */}
             <div
               data-farman-reveal
               className="bg-[#4B0511]/65 border border-dashed border-[#FFE4A8]/55 py-2.5 px-4 my-1.5 max-w-md w-full shadow-inner"
@@ -427,7 +616,6 @@ export default function ShahiFarmanModal() {
               </p>
             </div>
 
-            {/* Embroidered Decree Clauses */}
             <div className="mt-4 space-y-3 text-xs sm:text-[13px] leading-relaxed text-[#FFF3DE] max-w-md font-light">
               <p data-farman-reveal className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                 <strong className="font-serif font-bold text-[#FFE4A8] block mb-0.5">
@@ -454,7 +642,6 @@ export default function ShahiFarmanModal() {
               </div>
             </div>
 
-            {/* Stitched Zari Accept Button */}
             <button
               data-farman-reveal
               type="button"
@@ -502,7 +689,6 @@ export default function ShahiFarmanModal() {
               backgroundPositionY: '0px',
             }}
           >
-            {/* Rolled Silk Fabric Wrapped Around Bottom Rod */}
             <div
               className="absolute -inset-y-1 left-4 right-4 rounded-full opacity-95 border-y border-[#DFB76C]/65 shadow-[0_4px_12px_rgba(0,0,0,0.75)]"
               style={{
