@@ -1,212 +1,93 @@
 # Needle Fashion Frontend
 
-A modern e-commerce frontend for men's ethnic wear built with Next.js, TypeScript, and TailwindCSS.
+A luxury men's ethnic wear and bespoke couture e-commerce frontend built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and **Tailwind CSS v4**.
 
 ## Features
 
-- **Responsive Design**: Mobile-first design with TailwindCSS
-- **Theme Support**: Light/Dark theme toggle with next-themes
-- **Authentication**: JWT-based authentication with context management
-- **Product Catalog**: Dynamic product listing with advanced filtering
-- **Shopping Cart**: Persistent cart with localStorage
-- **Order Management**: Complete checkout flow with GST calculation
-- **Admin Dashboard**: Comprehensive admin panel for business management
-- **Search & Filtering**: Advanced search with dynamic filters
-- **FAQ System**: Interactive FAQ with chatbot integration
-- **SEO Optimized**: Next.js SSR/SSG for better performance
+- **Menswear Vintage Heritage Aesthetic**: Warm cream alabaster & imperial obsidian dark/light themes, antique champagne gold (`#C5A059`), vintage jaali filigree & palace backdrops, and frosted glassmorphism.
+- **Interactive Menswear Showcase** (`src/components/showcase/`):
+  - `GoldAtelierTicker` — Scrolling gold marquee linking directly to showcase sections.
+  - `NeedleArchiveMoods` — *"Six Moods. Timeless Silhouettes."* framed in golden jharokha arches with kalash finials.
+  - `TryTheLookShowcase` — Interactive look carousel with *"In This Look"* piece checklist, 10% full-ensemble discount, and direct cart integration.
+  - `PickAWeaveShowcase` — Cursor-reactive 3D tilting fanned cards (`ZARDOZI`, `JODHPUR`, `CHANDERI`, `BROCADE`, `KASHMIR`) with quick `+` add-to-bag.
+  - `AtelierRackShowcase` — Virtual brass rail with category tabs (`All`, `Sherwanis`, `Bandhgalas`, `Kurtas`, `Regalia`) and lift-off hanger detail modal (Front/Craft Detail toggle & chest size chips `36`–`44` / `48-Pt Bespoke`).
+  - `CoronationCurvedCarousel` — 3D curved arch carousel for the Groom Coronation Edit.
+  - `AtelierMotionReels` — 3D curved arc of five atelier lookbook reels with gold progress bar and story modal.
+- **3D & Heritage Effects** (`src/components/3d/` & `src/components/effects/`):
+  - `RoyalFiberCanvas` (`three` / `@react-three/fiber`) for flowing silk zari threads in the vintage footer.
+  - `FirstVisitIntro` (*Replay Darwaza*), `ShahiFarmanModal`, `ShahiFarmanTrigger`, and `CustomLuxuryCursor`.
+- **Full Storefront & Bespoke Flows**:
+  - Product catalog (`/category/[category]`, `/new-arrivals`, `/product/[id]`) with dynamic filters and search.
+  - Persistent cart (`CartContext`), 48-point bespoke measurement forms, and multi-step checkout (`/checkout`).
+  - Customer portal (`/profile`, `/customer/wishlist`, `/customer/orders`, `/customer/catalog`, `/customer/profile`).
+  - Informational & concierge pages (`/about`, `/contact`, `/faq`, `/returns`, `/privacy`, `/terms`).
+  - Real-time chat widget (`Socket.IO`) and notification bell.
+- **Admin Dashboard** (`/admin/*`):
+  - Analytics, product & media manager, categories, inventory, orders, customer dossiers, inquiries, expenses, themes, notifications, and live chat.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: TailwindCSS v4
-- **UI Components**: Headless UI, Heroicons
-- **State Management**: React Context API
-- **Forms**: React Hook Form with Zod validation
-- **HTTP Client**: Axios
-- **Notifications**: React Hot Toast
-- **Theme**: next-themes for dark mode
+- **Framework**: Next.js 15.5 (App Router, Turbopack)
+- **UI & Styling**: React 19, TypeScript, Tailwind CSS v4, Headless UI, Heroicons, React Icons
+- **3D & Motion**: Three.js, `@react-three/fiber`, GSAP
+- **Forms & Validation**: React Hook Form, Zod
+- **HTTP & Real-Time**: Axios, Socket.IO Client
+- **Auth & Notifications**: NextAuth, JWT contexts, React Hot Toast
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Create a `.env.local` file:
-   ```bash
-   cp .env.example .env.local
+2. Configure `.env.local`:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   NEXT_PUBLIC_APP_NAME=Needle Fashion
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
-4. Configure your environment variables in `.env.local`
-
-5. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-## Environment Variables
+## Scripts
 
-Create a `.env.local` file with the following variables:
-
-```env
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:5000
-
-# App Configuration
-NEXT_PUBLIC_APP_NAME=Needle Fashion
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
+- `npm run dev` — Start Next.js development server with Turbopack
+- `npm run build` — Build for production
+- `npm start` — Start production server
+- `npm run lint` — Run ESLint
 
 ## Project Structure
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── admin/             # Admin dashboard pages
-│   ├── auth/              # Authentication pages
-│   ├── cart/              # Shopping cart
-│   ├── checkout/          # Checkout process
-│   ├── customer/          # Customer pages
-│   ├── faq/               # FAQ page
-│   └── product/           # Product pages
-├── components/            # Reusable components
-│   ├── admin/             # Admin-specific components
-│   ├── forms/             # Form components
-│   ├── layout/            # Layout components
-│   ├── product/           # Product-related components
-│   └── ui/                # UI components
-├── contexts/              # React contexts
-├── hooks/                 # Custom React hooks
-├── lib/                   # Utility libraries
-│   ├── api/               # API service functions
-│   └── types.ts           # TypeScript type definitions
-└── styles/                # Global styles
+├── app/                         # Next.js App Router pages
+│   ├── about/                   # Karigar lineage & bespoke guide
+│   ├── admin/                   # Admin portal (analytics, media, products, orders, inquiries, themes)
+│   ├── auth/                    # Login, register, forgot-password
+│   ├── cart/                    # Shopping bag
+│   ├── category/[category]/     # Filtered menswear category catalog
+│   ├── checkout/                # Multi-step checkout
+│   ├── contact/                 # Atelier appointment & inquiry form
+│   ├── customer/                # Customer profile, orders, wishlist, catalog
+│   ├── faq/                     # Atelier FAQ
+│   ├── new-arrivals/            # Runway new arrivals
+│   ├── product/[id]/            # Product detail with bespoke measurements
+│   └── returns/, privacy/, terms/
+├── components/
+│   ├── 3d/                      # RoyalFiberCanvas (Three.js silk zari threads)
+│   ├── admin/                   # Admin forms, analytics, media manager
+│   ├── chat/                    # Live chat widget
+│   ├── effects/                 # FirstVisitIntro, ShahiFarmanModal, CustomLuxuryCursor
+│   ├── layout/                  # Header & Vintage Heritage Footer
+│   └── showcase/                # Interactive menswear showcase sections
+├── contexts/                    # Auth, Cart, Chat, Notification, Theme contexts
+└── lib/                         # API services & TypeScript types
 ```
-
-## Key Features
-
-### Theme System
-- Light/Dark theme toggle
-- Persistent theme preference
-- CSS custom properties for theming
-- Golden accent color (#FFD700) for brand consistency
-
-### Authentication
-- JWT-based authentication
-- Protected routes
-- Role-based access control
-- Automatic token refresh
-
-### Product Catalog
-- Dynamic product loading from API
-- Advanced filtering system
-- Search functionality
-- Pagination
-- Grid/List view toggle
-
-### Shopping Cart
-- Persistent cart with localStorage
-- Custom measurements for make-to-order items
-- GST calculation
-- Multiple fitting options
-
-### Admin Dashboard
-- Revenue and sales analytics
-- Order management
-- Product management
-- Customer management
-- Expense tracking
-- FAQ management
-
-## Development
-
-### Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-
-### Styling
-- TailwindCSS v4 with custom theme
-- CSS custom properties for dynamic theming
-- Responsive design with mobile-first approach
-- Component-based styling
-
-### State Management
-- React Context for global state
-- Local state with useState/useReducer
-- Persistent state with localStorage
-- Form state with React Hook Form
-
-## API Integration
-
-The frontend integrates with the backend API through service functions:
-
-- `authService` - Authentication operations
-- `productService` - Product management
-- `categoryService` - Category operations
-- `orderService` - Order management
-- `analyticsService` - Analytics data
-- `faqService` - FAQ management
-
-## Components
-
-### Layout Components
-- `Header` - Navigation with theme toggle
-- `Footer` - Site footer with links
-- `ThemeProviderWrapper` - Theme context provider
-
-### Product Components
-- Product cards with image placeholders
-- Product detail pages
-- Filter components
-- Search functionality
-
-### Admin Components
-- Dashboard with analytics
-- Product management forms
-- Order management interface
-- Customer management
-
-## Responsive Design
-
-- Mobile-first approach
-- Breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px)
-- Touch-friendly interface
-- Optimized for all screen sizes
-
-## Performance
-
-- Next.js App Router for optimal performance
-- Image optimization with Next.js Image component
-- Code splitting and lazy loading
-- SEO optimization with metadata
-
-## Deployment
-
-### Vercel (Recommended)
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push
-
-### Other Platforms
-1. Build the application:
-   ```bash
-   npm run build
-   ```
-2. Deploy the `out` directory to your hosting platform
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## License
 
-This project is licensed under the ISC License.
+ISC License.

@@ -1,125 +1,35 @@
-# Responsive Components
+# Frontend Components Guide
 
-This directory contains responsive components created to enhance the user experience across different device sizes for the Needle Fashion e-commerce platform.
+This directory houses the modular UI, layout, 3D, heritage effect, and menswear showcase components for the **Needle Fashion** platform.
 
-## Components Created
+## Directory Breakdown
 
-### 1. ProductCarousel.tsx
-A responsive product carousel that adapts to different screen sizes:
-- Shows 1 item on mobile
-- Shows 2 items on small screens
-- Shows 3 items on medium screens
-- Shows 4 items on large screens
-- Includes navigation arrows and dot indicators
-- Auto-rotates every 5 seconds
+### 1. Menswear Showcase (`showcase/`)
+Interactive menswear showcase sections integrated into the homepage (`src/app/page.tsx`):
+- **`GoldAtelierTicker.tsx`** — Scrolling antique gold marquee with anchor links to each showcase section.
+- **`NeedleArchiveMoods.tsx`** — *"Six Moods. Timeless Silhouettes."* framed in golden jharokha/temple-arch windows with kalash finials.
+- **`TryTheLookShowcase.tsx`** — Multi-look groom ensemble carousel with an interactive *"In This Look"* piece checklist, 10% bundle discount calculation, and direct `CartContext` integration.
+- **`PickAWeaveShowcase.tsx`** — Fanned arc of 3D cursor-tilting fabric cards (`ZARDOZI`, `JODHPUR`, `CHANDERI`, `BROCADE`, `KASHMIR`) with wishlist toggle and `+` quick add-to-bag.
+- **`AtelierRackShowcase.tsx`** — Filterable brass clothing rail (`All`, `Sherwanis`, `Bandhgalas`, `Kurtas`, `Regalia`) with a blurred lift-off hanger detail modal, Front / Craft Detail toggle, and size chips (`36`–`44` & `48-Pt Bespoke`).
+- **`CoronationCurvedCarousel.tsx`** — 3D curved arch carousel for the Groom Coronation Edit.
+- **`AtelierMotionReels.tsx`** — 3D curved arc of five lookbook/karigar reels with play/pause controls, gold progress bar, and full-screen story modal.
+- **`showcaseCartHelper.ts`** — Shared helper adapting showcase items into `CartItem` payloads for `CartContext`.
 
-### 2. MobileMenu.tsx
-A slide-out mobile navigation menu:
-- Replaces the default mobile menu
-- Collapsible category sections
-- Clean, organized layout for mobile users
-- Smooth animations and transitions
+### 2. Layout Components (`layout/`)
+- **`Header.tsx`** — Sticky frosted-glass header with menswear category flyouts (`Sherwani`, `Kurta`, `Bandhgala`, `Regalia`), search bar, client dossier/account link, and cart badge.
+- **`Footer.tsx`** — Vintage royal Indian atelier footer featuring twilight palace & jaali filigree textures, subtle `RoyalFiberCanvas` zari threads, 4 heritage guarantee plaques, verified route navigation, *Shahi Farman* trigger, and Private Salon Circle invitation form.
 
-### 3. MobileCartDrawer.tsx
-A slide-out cart drawer for mobile devices:
-- Accessible from any page
-- Shows cart items with images and details
-- Quantity adjustment controls
-- Direct checkout flow
-- Responsive design for all mobile screen sizes
+### 3. 3D & Heritage Effects (`3d/` & `effects/`)
+- **`3d/RoyalFiberCanvas.tsx`** — Three.js / React Three Fiber canvas rendering flowing metallic gold silk zari threads.
+- **`effects/FirstVisitIntro.tsx`** — Animated *Darwaza* ceremonial entrance overlay (`replayNeedleIntro`).
+- **`effects/ShahiFarmanModal.tsx` & `effects/ShahiFarmanTrigger.tsx`** — Unrollable royal Mughal decree modal.
+- **`effects/CustomLuxuryCursor.tsx`** — Custom gold and silver luxury cursor enhancement.
 
-### 4. ResponsiveSearchBar.tsx
-A responsive search component:
-- Desktop: Integrated search bar in the header
-- Mobile: Full-screen search overlay
-- Search suggestions dropdown
-- Clean, accessible design
-
-### 5. MobileUserMenu.tsx
-A responsive user menu for mobile:
-- Collapsible user profile menu
-- Access to account features
-- Sign out functionality
-- Works on all mobile devices
-
-### 6. ResponsiveFilter.tsx
-A responsive filter component:
-- Mobile: Slide-out filter panel
-- Desktop: Sidebar filter panel
-- Collapsible filter sections
-- Clear filters functionality
-
-### 7. ResponsiveCheckout.tsx
-A multi-step responsive checkout flow:
-- Step 1: Shipping information
-- Step 2: Payment method
-- Step 3: Order review
-- Progress indicator for desktop and mobile
-- Mobile-optimized form fields
-
-### 8. ResponsiveAdminDashboard.tsx
-A responsive admin dashboard layout:
-- Mobile: Slide-out navigation menu
-- Desktop: Persistent sidebar navigation
-- Responsive main content area
-- Works on all screen sizes
-
-### 9. admin/ResponsiveProductForm.tsx
-A responsive product management form:
-- Grid-based layout that adapts to screen size
-- Mobile-friendly form controls
-- Image upload with previews
-- Filter selection dropdowns
-
-### 10. admin/ResponsiveAnalyticsDashboard.tsx
-A responsive analytics dashboard:
-- Grid-based metric cards
-- Scrollable chart containers for mobile
-- Responsive data visualization
-- Mobile-optimized layout
-
-### 11. Profile Page (/app/profile/page.tsx)
-A responsive user profile page:
-- Tab-based navigation for mobile
-- Sidebar navigation for desktop
-- Responsive profile information display
-- Mobile-friendly action buttons
-
-## Integration Points
-
-These components have been integrated into the existing application:
-
-1. **Header** - Uses MobileMenu, ResponsiveSearchBar, and MobileUserMenu
-2. **Homepage** - Uses ProductCarousel for featured products
-3. **Category Pages** - Uses ResponsiveFilter for product filtering
-4. **Checkout** - Uses ResponsiveCheckout for the checkout flow
-5. **Admin Panel** - Uses ResponsiveAdminDashboard for layout
-6. **User Profile** - Uses responsive tab navigation
-
-## Responsive Features
-
-All components implement responsive design principles:
-
-- **Mobile-first approach** - Components are designed for mobile first
-- **Flexible grids** - CSS Grid and Flexbox for adaptive layouts
-- **Touch-friendly controls** - Larger touch targets for mobile users
-- **Performance optimized** - Lazy loading and efficient rendering
-- **Accessibility compliant** - Proper ARIA labels and keyboard navigation
-
-## Screen Size Breakpoints
-
-Components adapt to the following screen sizes:
-
-- **Extra Small (< 640px)** - Mobile phones
-- **Small (640px - 767px)** - Large phones, small tablets
-- **Medium (768px - 1023px)** - Tablets
-- **Large (1024px - 1279px)** - Desktops
-- **Extra Large (≥ 1280px)** - Large desktops
-
-## Technologies Used
-
-- **Tailwind CSS** - For responsive utility classes
-- **Next.js** - For server-side rendering and routing
-- **React Hooks** - For state management
-- **Headless UI** - For accessible UI components
-- **Heroicons** - For SVG icons
+### 4. Core Responsive E-Commerce Components
+- **`ProductCarousel.tsx`** — Responsive featured masterpieces carousel (1/2/3/4 columns by breakpoint).
+- **`ProductGrid.tsx`**, **`FilterSidebar.tsx`**, **`ResponsiveFilter.tsx`** — Catalog display and filtering.
+- **`MobileMenu.tsx`**, **`MobileCartDrawer.tsx`**, **`MobileUserMenu.tsx`**, **`ResponsiveSearchBar.tsx`** — Mobile navigation, cart drawer, and search overlay.
+- **`SizeSelector.tsx`**, **`FittingSelector.tsx`**, **`MeasurementForm.tsx`** — Bespoke sizing and 48-point measurement capture.
+- **`ResponsiveCheckout.tsx`** — Multi-step checkout workflow.
+- **`chat/ChatWidget.tsx`**, **`ChatBot.tsx`**, **`NotificationBell.tsx`** — Real-time support chat, FAQ bot, and notifications.
+- **`ResponsiveAdminDashboard.tsx`**, **`admin/ProductPhotoManager.tsx`**, **`admin/ResponsiveProductForm.tsx`**, **`admin/ResponsiveAnalyticsDashboard.tsx`** — Admin portal components.

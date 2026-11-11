@@ -1,182 +1,100 @@
 # Needle Fashion Backend
 
-A comprehensive e-commerce backend for men's ethnic wear built with Node.js, Express, TypeScript, and MongoDB.
+A full-featured e-commerce & bespoke menswear atelier backend built with **Node.js**, **Express**, **TypeScript**, **MongoDB**, and **Socket.IO**.
 
 ## Features
 
-- **Authentication & Authorization**: JWT-based authentication with refresh tokens
-- **User Management**: Customer and admin roles with profile management
-- **Product Management**: CRUD operations with dynamic categories and filters
-- **Order Management**: Complete order lifecycle with GST invoice generation
-- **Analytics**: Search, view, and sales tracking
-- **Expense Management**: Business expense tracking and reporting
-- **FAQ System**: Dynamic chatbot and FAQ management
-- **Review System**: Product reviews with moderation
-- **File Upload**: Base64 image support for products and measurements
+- **Authentication & Authorization**: JWT access/refresh authentication, Google Auth support, and role-based access control (`customer` / `admin`).
+- **Product, Category & Dynamic Filter Management**: CRUD operations for menswear items, categories, dynamic filter attributes, and stock/make-to-order configurations.
+- **Order & GST Invoice Engine**: Complete order lifecycle with custom 48-point measurement storage and automated PDF GST invoice generation (`PDFKit`).
+- **Bespoke Inquiry & Fitting Dossier**: Dedicated `/api/inquiries` pipeline for private salon fittings and bespoke commissions.
+- **Analytics & Expense Tracking**: Dashboard KPIs, search term tracking, product view/sales analytics, and business expense tracking.
+- **Real-Time Communication**: Socket.IO support for live customer-admin chat and instant notifications.
+- **Dynamic Theme & FAQ/Chatbot System**: Configurable storefront themes, product reviews, and FAQ/chatbot responses.
+- **Media Upload**: File/image upload handling via Multer and Base64 support.
 
 ## Tech Stack
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Language**: TypeScript
+- **Runtime & Framework**: Node.js, Express.js, TypeScript
 - **Database**: MongoDB with Mongoose
-- **Authentication**: JWT with bcrypt
-- **File Processing**: PDFKit for invoice generation
-- **Validation**: Built-in validation with error handling
+- **Real-Time**: Socket.IO
+- **Security**: Helmet, CORS, `express-rate-limit`, bcryptjs, JWT, input sanitization & NoSQL injection protection
+- **Documents & Uploads**: PDFKit, Multer
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
+2. Create a `.env` file:
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/needle-fashion
+   JWT_SECRET=your-super-secret-jwt-key-here
+   JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
+   JWT_EXPIRES_IN=7d
+   JWT_REFRESH_EXPIRES_IN=30d
+   PORT=5000
+   NODE_ENV=development
+   CORS_ORIGIN=http://localhost:3000
    ```
 
-4. Configure your environment variables in `.env`
+3. (Optional) Seed sample data:
+   ```bash
+   npm run seed
+   ```
 
-5. Start the development server:
+4. Start the development server:
    ```bash
    npm run dev
    ```
 
-## Environment Variables
+## API Endpoints Overview
 
-Create a `.env` file with the following variables:
+All API routes are mounted in `src/routes/index.ts` with input sanitization, NoSQL injection prevention, and `Cache-Control: no-store`:
 
-```env
-# Database
-MONGODB_URI=mongodb://localhost:27017/needle-fashion
+- `GET /api/health` — Server health check
+- `/api/users` — Registration, login, token refresh, profile, saved measurements, wishlist
+- `/api/products` — Product catalog, filtering, search, CRUD (admin)
+- `/api/categories` — Category listing & management
+- `/api/filters` — Dynamic filter definitions & values
+- `/api/orders` — Order creation, user order history, payment & delivery status, GST PDF invoices
+- `/api/reviews` — Product reviews & moderation
+- `/api/inquiries` — Bespoke commission & atelier fitting requests
+- `/api/analytics` — Dashboard statistics, sales, product views, search terms
+- `/api/expenses` — Business expense tracking (admin)
+- `/api/themes` — Storefront theme configuration
+- `/api/faqs` — FAQ management
+- `/api/chat` — Live chat & chatbot endpoints
+- `/api/notifications` — User/admin notifications
+- `/api/upload` — Media upload endpoints
 
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
-JWT_EXPIRES_IN=7d
-JWT_REFRESH_EXPIRES_IN=30d
+*(See `needle-fashion-backend.postman_collection.json` in the repository root for detailed request examples.)*
 
-# Server Configuration
-PORT=5000
-NODE_ENV=development
+## Scripts
 
-# CORS Configuration
-CORS_ORIGIN=http://localhost:3000
-```
+- `npm run dev` — Start development server with `ts-node-dev`
+- `npm run build` — Compile TypeScript to `dist/`
+- `npm start` — Run compiled server (`dist/server.js`)
+- `npm run seed` — Run database seed script (`src/scripts/seed.ts`)
+- `npm run clean` — Remove `dist/`
 
-## API Endpoints
+## Project Structure
 
-### Authentication
-- `POST /api/users/register` - Register new user
-- `POST /api/users/login` - Login user
-- `POST /api/users/refresh` - Refresh access token
-- `GET /api/users/me` - Get current user profile
-
-### Products
-- `GET /api/products` - Get all products with filtering
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create product (admin)
-- `PUT /api/products/:id` - Update product (admin)
-- `DELETE /api/products/:id` - Delete product (admin)
-
-### Categories
-- `GET /api/categories` - Get all categories
-- `POST /api/categories` - Create category (admin)
-- `PUT /api/categories/:id` - Update category (admin)
-- `DELETE /api/categories/:id` - Delete category (admin)
-
-### Orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders/myorders` - Get user's orders
-- `GET /api/orders/:id` - Get order by ID
-- `PUT /api/orders/:id/pay` - Update order payment
-- `PUT /api/orders/:id/deliver` - Mark order as delivered (admin)
-
-### Analytics
-- `GET /api/analytics/dashboard` - Get dashboard statistics
-- `GET /api/analytics/sales` - Get sales analytics
-- `GET /api/analytics/products` - Get product analytics
-- `POST /api/analytics/search` - Track search terms
-
-## Database Models
-
-### User
-- Basic profile information
-- Role-based access (customer/admin)
-- Saved measurements for custom orders
-- Wishlist functionality
-
-### Product
-- Product details with Base64 images
-- Dynamic category assignment
-- Filter-based attributes
-- Stock management
-- Make-to-order vs ready-made options
-
-### Order
-- Complete order information
-- Customer measurements for custom orders
-- GST calculation and invoice generation
-- Order status tracking
-
-### Category
-- Dynamic category management
-- Category-based product organization
-
-### Filter
-- Dynamic filter system
-- Filter values for product attributes
-
-## Development
-
-### Scripts
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run clean` - Clean build directory
-
-### Project Structure
 ```
 src/
-├── controllers/     # Route handlers
-├── models/         # Database models
-├── routes/         # API routes
-├── middleware/     # Custom middleware
-├── utils/          # Utility functions
-└── index.ts        # Application entry point
+├── config/         # Database & environment configuration
+├── controllers/    # Route controllers (analytics, chatbot, expense, faq, filter, inquiry, notification, order, product, review, theme, user, category)
+├── middleware/     # Auth, error handling, and security middleware
+├── models/         # Mongoose schemas
+├── routes/         # Express route definitions (mounted in index.ts)
+├── scripts/        # Database seeding script
+├── socket/         # Socket.IO handlers
+├── utils/          # JWT & PDF invoice utilities
+└── index.ts        # Express app setup
 ```
-
-## Production Deployment
-
-1. Build the application:
-   ```bash
-   npm run build
-   ```
-
-2. Start the production server:
-   ```bash
-   npm start
-   ```
-
-## Security Features
-
-- Password hashing with bcrypt
-- JWT token-based authentication
-- Role-based access control
-- Input validation and sanitization
-- CORS configuration
-- Rate limiting (recommended for production)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## License
 
-This project is licensed under the ISC License.
+ISC License.
