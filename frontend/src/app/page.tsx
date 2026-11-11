@@ -3,6 +3,13 @@ import Image from 'next/image';
 import { ArrowRightIcon, SparklesIcon, ShieldCheckIcon, ScissorsIcon, TruckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import ProductCarousel from '@/components/ProductCarousel';
 import ShahiFarmanTrigger from '@/components/effects/ShahiFarmanTrigger';
+import GoldAtelierTicker from '@/components/showcase/GoldAtelierTicker';
+import NeedleArchiveMoods from '@/components/showcase/NeedleArchiveMoods';
+import TryTheLookShowcase from '@/components/showcase/TryTheLookShowcase';
+import PickAWeaveShowcase from '@/components/showcase/PickAWeaveShowcase';
+import AtelierRackShowcase from '@/components/showcase/AtelierRackShowcase';
+import CoronationCurvedCarousel from '@/components/showcase/CoronationCurvedCarousel';
+import AtelierMotionReels from '@/components/showcase/AtelierMotionReels';
 
 // Curated luxury menswear masterpieces
 const featuredProducts = [
@@ -239,6 +246,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Atelier Showcase Ticker Strip */}
+      <GoldAtelierTicker />
+
       {/* 2. Floating Frosted Glass Sovereign Guarantee Bar */}
       <section className="py-8 relative z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -372,6 +382,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Showcase: Six Moods — The Needle Archive */}
+      <NeedleArchiveMoods />
+
       {/* 4. Featured Masterpieces Carousel */}
       <section aria-labelledby="trending-heading" className="py-16 sm:py-24 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -390,6 +403,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Showcase: Try the Look — Complete Menswear Ensemble */}
+      <TryTheLookShowcase />
 
       {/* 5. Master Karigar Artisanal Lineage Section (Beating Sabyasachi & Manish Malhotra) */}
       <section className="py-20 sm:py-28 relative overflow-hidden">
@@ -475,6 +491,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Showcase: Pick a Weave — Tilting Tactile Cards */}
+      <PickAWeaveShowcase />
+
       {/* 6. Royal Regalia & Accents (Pashmina Doshala, Safa, Kalgi) */}
       <section className="py-16 sm:py-24 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -542,6 +561,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Showcase: Browse the Atelier Rack */}
+      <AtelierRackShowcase />
+
       {/* 7. Bespoke 48-Point Atelier Consultation Service (Superior to Manyavar & Manish Malhotra) */}
       <section className="py-20 sm:py-28 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -606,6 +628,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Showcase: Groom Coronation Edit — Curved Arch Carousel */}
+      <CoronationCurvedCarousel />
+
       {/* 8. Patron Connoisseurs & Royal Testimonials */}
       <section className="py-16 sm:py-24 relative">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -640,6 +665,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Showcase: Tailoring, In Motion — 3D Lookbook Reels */}
+      <AtelierMotionReels />
 
       {/* 9. Sovereign Atelier Call to Action */}
       <section className="py-16 sm:py-24 relative">
