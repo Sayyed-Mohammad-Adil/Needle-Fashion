@@ -10,6 +10,7 @@ const navigation = {
   categories: [
     {
       id: 'menswear',
+      roman: 'I.',
       name: 'Haute Menswear',
       items: [
         { name: 'Imperial Sherwanis', href: '/category/sherwani' },
@@ -22,6 +23,7 @@ const navigation = {
     },
     {
       id: 'concierge',
+      roman: 'II.',
       name: 'Atelier Concierge',
       items: [
         { name: 'Book Master Fitting', href: '/contact' },
@@ -33,6 +35,7 @@ const navigation = {
     },
     {
       id: 'maison',
+      roman: 'III.',
       name: 'The Vintage Maison',
       items: [
         { name: 'Six Moods Archive', href: '/#needle-archive' },
@@ -76,30 +79,50 @@ const navigation = {
 
 const heritagePillars = [
   {
-    symbol: '✦',
+    numeral: 'I',
     title: '48-Point Bespoke',
     subtitle: 'Hand-drafted master paper patterns',
-    metallic: false,
   },
   {
-    symbol: '❖',
-    title: 'Pure Indian Silks',
+    numeral: 'II',
+    title: 'Pure Banarasi Silks',
     subtitle: 'Varanasi Katan, Chanderi & Tussar',
-    metallic: true,
   },
   {
-    symbol: '⚜',
+    numeral: 'III',
     title: '24K Gold & Silver Zari',
-    subtitle: 'Heirloom dabka, marodi & tilla relief',
-    metallic: false,
+    subtitle: 'Hand-coiled dabka, marodi & tilla',
   },
   {
-    symbol: '✈',
+    numeral: 'IV',
     title: 'Muslin Trunk Transit',
     subtitle: 'Insured global white-glove dispatch',
-    metallic: true,
   },
 ];
+
+function VintageCornerFlourish({ className }: { className: string }) {
+  return (
+    <svg
+      viewBox="0 0 40 40"
+      fill="none"
+      aria-hidden="true"
+      className={`w-7 h-7 text-[#9E752E] dark:text-[#DFB76C] pointer-events-none ${className}`}
+    >
+      <path
+        d="M2 38V10C2 5.58 5.58 2 10 2H38"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M7 34V12C7 9.24 9.24 7 12 7H34"
+        stroke="currentColor"
+        strokeWidth="0.9"
+        strokeOpacity="0.65"
+      />
+      <circle cx="10" cy="10" r="2.2" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function Footer() {
   const [inviteEmail, setInviteEmail] = useState('');
@@ -111,202 +134,207 @@ export default function Footer() {
     if (!trimmed) return;
     setInvited(true);
     setInviteEmail('');
-    toast.success('Royal Salon Invitation logged for ' + trimmed);
+    toast.success(`Royal Salon Dispatch recorded for ${trimmed}`);
   };
 
   return (
     <footer
-      className="bg-[#0B0B0D] text-[#F5EFE6] relative overflow-hidden border-t-2 border-[#C5A059]/45"
       aria-labelledby="footer-heading"
+      className="relative overflow-hidden bg-[#EFE3CE] dark:bg-[#17100B] text-[#2A1B12] dark:text-[#F4E9D5] border-t-4 border-double border-[#9A712C] dark:border-[#C5A059]/75 transition-colors"
     >
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
 
-      {/* Vintage Twilight Palace Backdrop */}
+      {/* Vintage Palace Engraving & Jaali Filigree Backdrop */}
       <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
         <Image
           src="/images/vintage-palace-night.webp"
-          alt="Vintage Indian Heritage Palace Backdrop"
+          alt="Vintage Indian Heritage Palace Engraving"
           fill
           sizes="100vw"
-          className="object-cover object-bottom opacity-20 sepia-[0.35] contrast-[1.08] brightness-[0.65]"
+          className="object-cover object-center opacity-20 dark:opacity-30 sepia-[0.65] contrast-[1.08] brightness-[0.95] dark:brightness-[0.65]"
         />
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[0.09] dark:opacity-[0.08]"
           style={{
             backgroundImage: "url('/images/vintage-jaali-motif.webp')",
-            backgroundSize: '320px 320px',
+            backgroundSize: '280px 280px',
             backgroundRepeat: 'repeat',
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0B0B0D]/95 via-[#0F0E11]/88 to-[#070709]" />
+        {/* Aged Paper Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#EFE3CE]/88 via-[#E9DAC0]/80 to-[#DFCCA9]/92 dark:from-[#17100B]/88 dark:via-[#140D09]/82 dark:to-[#0E0906]/94" />
       </div>
 
-      {/* Ornate Double Antique Brass Hairlines */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[1px] z-20"
-        style={{
-          background:
-            'linear-gradient(to right, transparent, rgba(223, 183, 108, 0.7) 25%, rgba(252, 246, 186, 0.9) 50%, rgba(223, 183, 108, 0.7) 75%, transparent)',
-        }}
-      />
-      <div
-        className="absolute top-[5px] left-6 right-6 h-[1px] opacity-40 z-20"
-        style={{
-          background:
-            'linear-gradient(to right, transparent, #C5A059 20%, #C5A059 80%, transparent)',
-        }}
-      />
-
-      {/* 3D Flowing Silk Zari Threads Animation */}
-      <div className="absolute inset-0 pointer-events-none z-0 opacity-35 overflow-hidden">
+      {/* Subtle 3D Flowing Silk Zari Threads */}
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-20 dark:opacity-30 overflow-hidden">
         <RoyalFiberCanvas showRing={false} showBackgroundRibbon={true} className="w-full h-full" />
       </div>
 
-      {/* Vintage Sovereign Guarantee Ledger Bar */}
-      <div className="border-b border-[#C5A059]/25 bg-[#09090B]/70 backdrop-blur-sm relative z-10">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Top Ornamental Bel-Boota Ribbon */}
+      <div className="relative z-10 border-b border-[#9A712C]/40 dark:border-[#C5A059]/30 bg-[#E5D3B3]/70 dark:bg-[#221710]/80 py-2.5 px-4 text-center">
+        <p className="font-serif text-[10px] sm:text-xs uppercase tracking-[0.32em] text-[#6E4916] dark:text-[#DFB76C] font-semibold">
+          ❦ &nbsp; Agra &bull; Varanasi &bull; Jaipur &bull; Bombay &nbsp; ✦ &nbsp; Est. 2026 &nbsp; ❦
+        </p>
+      </div>
+
+      {/* Main Broadsheet Container with Double-Ruled Brass Frame */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="relative border-2 border-[#9A712C]/70 dark:border-[#C5A059]/55 p-5 sm:p-10 bg-[#F7EEDF]/70 dark:bg-[#1C130D]/75 shadow-[0_20px_50px_rgba(42,27,18,0.18)] backdrop-blur-[2px]">
+          {/* Inner hairline border */}
+          <div className="absolute inset-2 border border-[#9A712C]/35 dark:border-[#C5A059]/30 pointer-events-none" />
+
+          {/* Four Antique Corner Scrollwork Flourishes */}
+          <VintageCornerFlourish className="absolute top-3 left-3" />
+          <VintageCornerFlourish className="absolute top-3 right-3 rotate-90" />
+          <VintageCornerFlourish className="absolute bottom-3 left-3 -rotate-90" />
+          <VintageCornerFlourish className="absolute bottom-3 right-3 rotate-180" />
+
+          {/* Four Brass-Studded Heritage Guarantee Plaques */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-10 border-b-2 border-double border-[#9A712C]/45 dark:border-[#C5A059]/35">
             {heritagePillars.map((pillar) => (
               <div
                 key={pillar.title}
-                className={`relative bg-[#121114]/90 p-5 rounded-2xl flex items-center gap-4 border shadow-lg transition-all ${
-                  pillar.metallic
-                    ? 'border-[#BBC2CC]/25 hover:border-[#EAECEC]/55'
-                    : 'border-[#C5A059]/30 hover:border-[#DFB76C]/65'
-                }`}
+                className="relative p-4 border border-[#9A712C]/55 dark:border-[#C5A059]/40 bg-[#FBF5E9]/85 dark:bg-[#241911]/85 flex items-center gap-3.5 shadow-sm"
               >
-                {/* Vintage inner corner hairline */}
-                <div className="absolute inset-1.5 rounded-xl border border-[#C5A059]/10 pointer-events-none" />
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center font-serif text-lg font-bold flex-shrink-0 shadow-sm border ${
-                    pillar.metallic
-                      ? 'text-[#D6DCE5] bg-white/5 border-[#BBC2CC]/30'
-                      : 'text-[#DFB76C] bg-[#C5A059]/10 border-[#C5A059]/35'
-                  }`}
-                >
-                  {pillar.symbol}
+                {/* Brass corner rivets */}
+                <span className="absolute top-1 left-1 w-1 h-1 rounded-full bg-[#9A712C] dark:bg-[#DFB76C]" />
+                <span className="absolute top-1 right-1 w-1 h-1 rounded-full bg-[#9A712C] dark:bg-[#DFB76C]" />
+                <span className="absolute bottom-1 left-1 w-1 h-1 rounded-full bg-[#9A712C] dark:bg-[#DFB76C]" />
+                <span className="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-[#9A712C] dark:bg-[#DFB76C]" />
+
+                <div className="w-11 h-11 border border-[#9A712C]/70 dark:border-[#DFB76C]/60 bg-[#EFE1C6] dark:bg-[#312116] flex items-center justify-center font-serif text-base font-bold text-[#7A5316] dark:text-[#F5EDD6] flex-shrink-0">
+                  {pillar.numeral}
                 </div>
                 <div>
-                  <h3 className="font-serif text-sm font-bold text-[#FAF5EB] tracking-wide">
+                  <h3 className="font-serif text-sm font-bold text-[#2A1B12] dark:text-[#FAF0DC] tracking-wide">
                     {pillar.title}
                   </h3>
-                  <p className="text-xs text-[#C7BFA9] mt-0.5 font-light">{pillar.subtitle}</p>
+                  <p className="font-serif italic text-[11.5px] text-[#5F4731] dark:text-[#CBBBA0] mt-0.5">
+                    {pillar.subtitle}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Main Vintage Ledger Body */}
-      <div className="mx-auto max-w-7xl px-6 pb-12 pt-14 sm:pt-18 lg:px-8 relative z-10">
-        {/* Centered Vintage Maison Crest Divider */}
-        <div className="flex items-center justify-center gap-4 mb-12 text-[#C5A059]/80">
-          <span className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#C5A059]/45" />
-          <span className="text-[10px] font-serif uppercase tracking-[0.35em] text-[#DFB76C] text-center">
-            ✦ Est. 2026 • Royal Menswear Archive • Varanasi &amp; Jaipur ✦
-          </span>
-          <span className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#C5A059]/45" />
-        </div>
-
-        <div className="xl:grid xl:grid-cols-12 xl:gap-10">
-          {/* Left Heritage Monogram & Epigraph */}
-          <div className="xl:col-span-4 space-y-6">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl p-[1px] bg-gradient-to-b from-[#FCF6BA] via-[#C5A059] to-[#7D5E24] flex-shrink-0 shadow-md">
-                <div className="w-full h-full rounded-[15px] bg-[#131215] flex items-center justify-center border border-[#C5A059]/30">
-                  <span className="font-serif text-2xl font-black text-[#DFB76C]">N</span>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-2xl font-black tracking-tight flex items-center gap-1.5 leading-none">
-                  <span className="text-[#FAF5EB] font-black tracking-wider select-none">NEEDLE</span>{' '}
-                  <span className="text-[#DFB76C] font-black tracking-wider">FASHION</span>
-                </span>
-                <span className="text-[9px] tracking-[0.28em] uppercase text-[#C5A059]/85 font-bold mt-1.5">
-                  BESPOKE INDIAN MENSWEAR ATELIER
-                </span>
-              </div>
-            </div>
-
-            <p className="font-serif italic text-sm text-[#E8D7B5] border-l-2 border-[#C5A059]/60 pl-3.5">
-              &ldquo;Woven by hand, tailored for a lifetime.&rdquo;
-            </p>
-
-            <p className="text-xs leading-6 text-[#CBC3B4] max-w-md">
-              Preserving four centuries of Mughal and Rajput sartorial craft exclusively for men — handwoven Banarasi and Chanderi silks, 24K gold &amp; sterling silver zari, and 48-point bespoke tailoring.
-            </p>
-
-            <div className="flex items-center gap-3">
-              {navigation.social.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Needle Fashion on ${item.name}`}
-                  className="w-10 h-10 rounded-full bg-[#161519] border border-[#C5A059]/45 flex items-center justify-center text-[#D6D0C4] hover:text-[#FCF6BA] hover:border-[#FCF6BA] transition-all shadow-sm"
+          {/* Center Emblem & Broadsheet Grid */}
+          <div className="relative z-10 pt-10 xl:grid xl:grid-cols-12 xl:gap-10">
+            {/* Left: Royal Wax-Seal Monogram & Epigraph */}
+            <div className="xl:col-span-4 space-y-5">
+              <div className="flex items-center gap-4">
+                {/* Crimson & Antique Brass Wax Seal Medallion */}
+                <div
+                  className="w-14 h-14 rounded-full border-2 border-[#C5A059] shadow-[0_4px_14px_rgba(92,10,24,0.4)] flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background:
+                      'radial-gradient(circle at 35% 30%, #A91B34 0%, #7A0E22 60%, #4A0713 100%)',
+                  }}
                 >
-                  <span className="sr-only">{item.name}</span>
-                  <item.icon className="h-4 w-4" aria-hidden="true" />
-                </a>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('openShahiFarman'));
-                  }
-                }}
-                className="px-4 py-2 rounded-full bg-[#161519] border border-[#C5A059]/45 text-[10px] font-bold uppercase tracking-[0.18em] text-[#DFB76C] hover:border-[#FCF6BA] hover:text-[#FCF6BA] transition-all"
-              >
-                📜 Unroll Farman
-              </button>
-            </div>
-          </div>
+                  <div className="w-11 h-11 rounded-full border border-dashed border-[#F5EDD6]/60 flex items-center justify-center">
+                    <span className="font-serif text-2xl font-black text-[#F5EDD6]">N</span>
+                  </div>
+                </div>
 
-          {/* Right Navigation Ledger + Vintage Salon Dispatch Card */}
-          <div className="mt-14 xl:mt-0 xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {navigation.categories.map((group) => (
-              <div key={group.id}>
-                <h3 className="font-serif text-xs uppercase tracking-[0.22em] font-bold text-[#DFB76C] pb-2.5 border-b border-[#C5A059]/25">
-                  {group.name}
-                </h3>
-                <ul role="list" className="mt-5 space-y-3">
-                  {group.items.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        className="text-xs text-[#D8D0C0] hover:text-[#FCF6BA] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
-                      >
-                        <span className="text-[#C5A059]/70 text-[9px]" aria-hidden="true">
-                          ✦
-                        </span>
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <div>
+                  <span className="font-serif text-2xl font-black tracking-[0.08em] text-[#2A1B12] dark:text-[#FAF0DC] block leading-none">
+                    NEEDLE FASHION
+                  </span>
+                  <span className="font-serif text-[10px] tracking-[0.28em] uppercase text-[#8A5F1D] dark:text-[#DFB76C] font-bold mt-1.5 block">
+                    Royal Menswear Atelier
+                  </span>
+                </div>
               </div>
-            ))}
 
-            {/* Vintage Framed Salon Invitation Card */}
-            <div className="relative bg-[#141317]/95 p-5 rounded-2xl border border-[#C5A059]/40 shadow-xl">
-              <div className="absolute inset-1.5 rounded-xl border border-[#C5A059]/15 pointer-events-none" />
-              <div className="relative z-10">
-                <span className="text-[9px] uppercase tracking-[0.26em] text-[#C5A059] font-bold block">
-                  Royal Dispatch
-                </span>
-                <h3 className="font-serif text-base font-bold text-[#FAF5EB] mt-1">
-                  Private Salon Circle
-                </h3>
-                <p className="mt-2 text-[11px] leading-relaxed text-[#C7BFA9]">
-                  Receive private invitations to groom trunk shows and limited karigar archive releases.
+              <div className="border-y border-[#9A712C]/40 dark:border-[#C5A059]/30 py-3">
+                <p className="font-serif italic text-sm text-[#4A321F] dark:text-[#EFE2C8]">
+                  &ldquo;Woven by hand, tailored for a lifetime.&rdquo;
                 </p>
-                <form className="mt-4" onSubmit={handleSalonInvite}>
-                  <div className="flex flex-col gap-2.5">
+                <p className="text-[11px] text-[#7A5316] dark:text-[#DFB76C]/90 mt-1 tracking-wide">
+                  हुनर की बात है वरना लिबास सब पहनते हैं
+                </p>
+              </div>
+
+              <p className="font-serif text-xs leading-6 text-[#4D3827] dark:text-[#CDBFA8]">
+                Preserving four centuries of Mughal and Rajput sartorial craft exclusively for gentlemen — Banarasi pit-loom silks, 24K gold &amp; silver zari, and 48-point bespoke paper patterns.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                {navigation.social.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Needle Fashion on ${item.name}`}
+                    className="w-9 h-9 border border-[#9A712C]/70 dark:border-[#C5A059]/60 bg-[#FAF2E4] dark:bg-[#261A12] flex items-center justify-center text-[#5A3D22] dark:text-[#E8D7B5] hover:bg-[#9A712C] hover:text-white dark:hover:bg-[#C5A059] dark:hover:text-[#17100B] transition-colors"
+                  >
+                    <span className="sr-only">{item.name}</span>
+                    <item.icon className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      window.dispatchEvent(new CustomEvent('openShahiFarman'));
+                    }
+                  }}
+                  className="px-4 py-2 border border-[#7A0E22]/70 dark:border-[#C5A059]/70 bg-[#7A0E22] dark:bg-[#2C1C12] text-[#F5EDD6] font-serif text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#5E0A19] dark:hover:bg-[#C5A059] dark:hover:text-[#17100B] transition-colors"
+                >
+                  📜 Unroll Shahi Farman
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Classical Ledger Columns + Postal Salon Dispatch */}
+            <div className="mt-12 xl:mt-0 xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {navigation.categories.map((group) => (
+                <div key={group.id}>
+                  <h3 className="font-serif text-xs uppercase tracking-[0.2em] font-bold text-[#7A5316] dark:text-[#DFB76C] pb-2 border-b border-[#9A712C]/50 dark:border-[#C5A059]/40 flex items-center gap-1.5">
+                    <span className="opacity-75">{group.roman}</span>
+                    <span>{group.name}</span>
+                  </h3>
+                  <ul role="list" className="mt-4 space-y-2.5">
+                    {group.items.map((item) => (
+                      <li key={item.name}>
+                        <Link
+                          href={item.href}
+                          className="font-serif text-xs text-[#3C291B] dark:text-[#DFD2BC] hover:text-[#7A0E22] dark:hover:text-[#FCF6BA] hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                        >
+                          <span className="text-[#9A712C] dark:text-[#C5A059] text-[9px]" aria-hidden="true">
+                            ❧
+                          </span>
+                          <span>{item.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              {/* Vintage Postal Ledger Card: Private Salon Circle */}
+              <div className="relative border-2 border-[#9A712C]/70 dark:border-[#C5A059]/55 bg-[#FBF4E7] dark:bg-[#22170F] p-5 shadow-md">
+                <div className="absolute inset-1 border border-[#9A712C]/30 dark:border-[#C5A059]/25 pointer-events-none" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between border-b border-[#9A712C]/40 dark:border-[#C5A059]/30 pb-2">
+                    <span className="font-serif text-[9px] uppercase tracking-[0.25em] text-[#7A0E22] dark:text-[#DFB76C] font-bold">
+                      Royal Post
+                    </span>
+                    <span className="font-serif text-[9px] text-[#7A5316] dark:text-[#C5A059]">
+                      No. IV
+                    </span>
+                  </div>
+
+                  <h3 className="font-serif text-base font-bold text-[#2A1B12] dark:text-[#FAF0DC] mt-3">
+                    Private Salon Circle
+                  </h3>
+                  <p className="mt-1.5 font-serif italic text-[11.5px] leading-relaxed text-[#5A4028] dark:text-[#CBBBA0]">
+                    Enter your missive address for trunk show previews &amp; archive commissions.
+                  </p>
+
+                  <form className="mt-4 space-y-3" onSubmit={handleSalonInvite}>
                     <label htmlFor="footer-salon-email" className="sr-only">
                       Email address
                     </label>
@@ -321,39 +349,45 @@ export default function Footer() {
                         setInviteEmail(e.target.value);
                         if (invited) setInvited(false);
                       }}
-                      className="w-full bg-[#0A090B] border border-[#C5A059]/35 rounded-full px-3.5 py-2 text-xs text-white placeholder:text-[#8A8477] focus:outline-none focus:border-[#DFB76C]"
+                      className="w-full bg-transparent border-0 border-b-2 border-[#9A712C]/65 dark:border-[#C5A059]/55 px-1 py-1.5 font-serif text-xs text-[#2A1B12] dark:text-[#FAF0DC] placeholder:text-[#8A7156] dark:placeholder:text-[#9A8B74] focus:outline-none focus:border-[#7A0E22] dark:focus:border-[#FCF6BA]"
                       placeholder="patron@domain.com"
                     />
                     <button
                       type="submit"
-                      className="w-full py-2.5 text-[11px] uppercase tracking-[0.16em] font-bold text-[#141518] bg-gradient-to-r from-[#DFB76C] via-[#C5A059] to-[#B28C44] hover:brightness-110 shadow-md rounded-full transition-all"
+                      className="w-full py-2.5 border border-[#7A0E22] dark:border-[#C5A059] bg-[#7A0E22] dark:bg-[#C5A059] text-[#F5EDD6] dark:text-[#17100B] font-serif text-[10.5px] uppercase tracking-[0.22em] font-bold hover:bg-[#5E0A19] dark:hover:bg-[#DFB76C] transition-colors"
                     >
-                      {invited ? 'Invitation Logged ✓' : 'Request Invitation'}
+                      {invited ? 'Missive Recorded ✓' : 'Seal Invitation'}
                     </button>
-                  </div>
-                </form>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Heritage Colophon */}
-        <div className="mt-14 border-t border-[#C5A059]/25 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#B5AD9E] font-serif">
-            &copy; {new Date().getFullYear()} Needle Fashion Atelier. Handcrafted exclusively for men.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-[#B5AD9E]">
-            <Link href="/privacy" className="text-[#D8D2C4] hover:text-[#FCF6BA] transition-colors">
-              Privacy Protocol
-            </Link>
-            <span className="text-[#C5A059]/50">❖</span>
-            <Link href="/terms" className="text-[#D8D2C4] hover:text-[#FCF6BA] transition-colors">
-              Terms of Commission
-            </Link>
-            <span className="text-[#C5A059]/50">❖</span>
-            <span className="text-[#DFB76C] font-serif italic tracking-wide">
-              Imperial Vintage Edition
-            </span>
+          {/* Bottom Vintage Broadsheet Colophon */}
+          <div className="relative z-10 mt-12 pt-6 border-t-2 border-double border-[#9A712C]/50 dark:border-[#C5A059]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="font-serif text-xs text-[#4D3827] dark:text-[#CBBBA0]">
+              &copy; {new Date().getFullYear()} Needle Fashion Atelier &mdash; Handcrafted Exclusively for Men.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5 font-serif text-xs text-[#4D3827] dark:text-[#CBBBA0]">
+              <Link
+                href="/privacy"
+                className="hover:text-[#7A0E22] dark:hover:text-[#FCF6BA] transition-colors"
+              >
+                Privacy Protocol
+              </Link>
+              <span className="text-[#9A712C] dark:text-[#C5A059]">❖</span>
+              <Link
+                href="/terms"
+                className="hover:text-[#7A0E22] dark:hover:text-[#FCF6BA] transition-colors"
+              >
+                Terms of Commission
+              </Link>
+              <span className="text-[#9A712C] dark:text-[#C5A059]">❖</span>
+              <span className="italic font-semibold text-[#7A5316] dark:text-[#DFB76C]">
+                Imperial Vintage Edition
+              </span>
+            </div>
           </div>
         </div>
       </div>
