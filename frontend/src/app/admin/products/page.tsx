@@ -507,7 +507,7 @@ export default function AdminProductsPage() {
               Delete Catalogue Piece?
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Are you sure you wish to delete <span className="text-foreground font-semibold">"{productToDelete.name}"</span>? This will permanently remove the piece, lookbook photos, and pricing records.
+              Are you sure you wish to delete <span className="text-foreground font-semibold">&ldquo;{productToDelete.name}&rdquo;</span>? This will permanently remove the piece, lookbook photos, and pricing records.
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button

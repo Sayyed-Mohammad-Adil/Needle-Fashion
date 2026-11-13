@@ -221,7 +221,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                             return (
                               <div key={key} className="p-2 rounded-xl bg-card border border-border/70">
                                 <span className="text-[9px] uppercase text-muted-foreground font-bold block">{key}</span>
-                                <span className="font-serif font-bold text-foreground mt-0.5 block">{String(val)}"</span>
+                                <span className="font-serif font-bold text-foreground mt-0.5 block">{String(val)}&Prime;</span>
                               </div>
                             );
                           })}

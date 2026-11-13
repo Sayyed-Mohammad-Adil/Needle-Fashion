@@ -7,6 +7,8 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { SiteConfigProvider } from '@/contexts/SiteConfigContext';
+import { ChatProvider } from '@/contexts/ChatContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import ThemeProviderWrapper from '@/components/ThemeProviderWrapper';
 import ChatWidget from '@/components/chat/ChatWidget';
 
@@ -40,22 +42,26 @@ export default function RootLayout({
           <SiteConfigProvider>
             <AuthProvider>
               <CartProvider>
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    borderRadius: '0px',
-                    background: '#141414',
-                    color: '#FAF9F6',
-                    fontSize: '12px',
-                    letterSpacing: '0.06em',
-                  },
-                }}
-              />
-              <Header />
-              <main className="min-h-screen">{children}</main>
-              <Footer />
-              <ChatWidget />
+                <NotificationProvider>
+                  <ChatProvider>
+                    <Toaster
+                      position="top-center"
+                      toastOptions={{
+                        style: {
+                          borderRadius: '0px',
+                          background: '#141414',
+                          color: '#FAF9F6',
+                          fontSize: '12px',
+                          letterSpacing: '0.06em',
+                        },
+                      }}
+                    />
+                    <Header />
+                    <main className="min-h-screen">{children}</main>
+                    <Footer />
+                    <ChatWidget />
+                  </ChatProvider>
+                </NotificationProvider>
               </CartProvider>
             </AuthProvider>
           </SiteConfigProvider>
