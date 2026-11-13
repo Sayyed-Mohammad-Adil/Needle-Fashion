@@ -4,6 +4,7 @@ import {
   getSalesAnalytics,
   getProductAnalytics,
   getUserAnalytics,
+  getExecutiveReport,
   trackProductView,
   trackSearchTerm,
 } from '../controllers/analytics.controller';
@@ -20,5 +21,6 @@ router.get('/dashboard', protect, admin, getDashboardAnalytics);
 router.get('/sales', protect, admin, getSalesAnalytics);
 router.get('/products', protect, admin, getProductAnalytics);
 router.get('/users', protect, admin, getUserAnalytics);
+router.get('/report', protect, admin, getExecutiveReport);
 
 export default router;

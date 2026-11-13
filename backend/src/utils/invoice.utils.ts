@@ -1,8 +1,30 @@
 import PDFDocument from 'pdfkit';
-import { IOrder } from '../models/order.model';
+
+export interface InvoiceOrder {
+  id?: string;
+  _id: string;
+  createdAt: Date | string;
+  user: string | { name?: string; email?: string };
+  shippingAddress: {
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  items: Array<{
+    product: string | { name?: string };
+    quantity: number;
+    price: number;
+  }>;
+  itemsPrice: number;
+  taxPrice: number;
+  shippingPrice: number;
+  totalPrice: number;
+}
 
 // Generate GST invoice PDF
-export const generateInvoicePDF = async (order: IOrder): Promise<Buffer> => {
+export const generateInvoicePDF = async (order: InvoiceOrder): Promise<Buffer> => {
   return new Promise((resolve) => {
     const doc = new PDFDocument({ margin: 50 });
     const buffers: Buffer[] = [];
@@ -31,8 +53,12 @@ export const generateInvoicePDF = async (order: IOrder): Promise<Buffer> => {
     doc.moveDown();
 
     // Customer details
+    const customerLabel =
+      typeof order.user === 'object'
+        ? order.user.name || order.user.email || 'Patron'
+        : String(order.user);
     doc.text('Bill To:');
-    doc.text(`Name: ${order.user.toString()}`);
+    doc.text(`Name: ${customerLabel}`);
     doc.text(`Address: ${order.shippingAddress.address}`);
     doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.postalCode}`);
     doc.text(`Country: ${order.shippingAddress.country}`);
@@ -57,7 +83,11 @@ export const generateInvoicePDF = async (order: IOrder): Promise<Buffer> => {
       const productTotal = item.price * item.quantity;
       const gstAmount = productTotal * 0.18; // 18% GST
 
-      doc.text(item.product.toString(), 50, position);
+      const productLabel =
+        typeof item.product === 'object'
+          ? item.product.name || 'Atelier Piece'
+          : String(item.product);
+      doc.text(productLabel, 50, position);
       doc.text(item.quantity.toString(), 280, position);
       doc.text(`₹${item.price.toFixed(2)}`, 350, position);
       doc.text(`₹${gstAmount.toFixed(2)}`, 400, position);

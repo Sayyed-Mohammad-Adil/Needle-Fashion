@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export default function Error({
   error,
@@ -16,38 +15,37 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-center py-16 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      <div className="max-w-md mx-auto text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 mb-4 shadow-sm">
-          <span className="font-serif text-2xl font-black text-primary">N</span>
-        </div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Atelier Notice</p>
-        <h2 className="font-serif text-3xl font-bold tracking-tight text-foreground mt-2">
-          An Interruption Occurred
-        </h2>
-        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-          We apologize for the brief pause in your atelier journey. Our artisans have been notified.
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-center py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto text-center space-y-6">
+        <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+          Notice
+        </p>
+        <h1 className="text-3xl font-light tracking-tight text-foreground">
+          Something went wrong
+        </h1>
+        <p className="text-sm font-light text-muted-foreground leading-relaxed">
+          We encountered a brief interruption while loading this page. Please try again.
         </p>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
+            type="button"
             onClick={() => reset()}
-            className="btn-luxury-gold px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="px-7 py-3.5 bg-foreground text-background text-xs uppercase tracking-[0.2em] hover:bg-accent hover:text-accent-foreground transition-colors w-full sm:w-auto"
           >
-            <ArrowPathIcon className="w-4 h-4" />
-            <span>Retry Operation</span>
+            Try Again
           </button>
           <Link
             href="/"
-            className="btn-luxury-outline px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] w-full sm:w-auto text-center"
+            className="px-7 py-3.5 border border-border text-foreground text-xs uppercase tracking-[0.2em] hover:border-foreground transition-colors w-full sm:w-auto text-center"
           >
-            Atelier Homepage
+            Return Home
           </Link>
         </div>
 
         {error.digest && (
-          <p className="mt-6 text-[11px] text-muted-foreground font-mono">
-            Digest Code: {error.digest}
+          <p className="text-[11px] text-muted-foreground font-mono pt-2">
+            Reference: {error.digest}
           </p>
         )}
       </div>

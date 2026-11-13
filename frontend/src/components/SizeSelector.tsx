@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import MeasurementForm from '@/components/MeasurementForm';
 import { MeasurementDetails } from '@/lib/types';
-import { SparklesIcon, ScissorsIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 
 interface SizeSelectorProps {
   sizes: number[];
@@ -15,6 +14,18 @@ interface SizeSelectorProps {
   onFittingChange: (fitting: 'Loose' | 'Medium' | 'Fit') => void;
   onMeasurementsChange: (measurements: MeasurementDetails) => void;
 }
+
+const EU_TO_INTL: Record<number, string> = {
+  38: 'XS',
+  40: 'S',
+  42: 'M',
+  44: 'L',
+  46: 'S',
+  48: 'M',
+  50: 'L',
+  52: 'XL',
+  54: 'XXL',
+};
 
 export default function SizeSelector({
   sizes,
@@ -36,33 +47,35 @@ export default function SizeSelector({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A059] block">
-            Royal Tailoring
-          </span>
-          <h3 className="font-serif text-base font-bold text-foreground mt-0.5">
-            Select Size or Bespoke Fit
-          </h3>
-        </div>
-        <span className="text-xs text-muted-foreground">Standard & Made-to-Measure</span>
+        <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Size (EU)
+        </span>
+        <span className="text-[11px] text-muted-foreground">
+          European &amp; Bespoke
+        </span>
       </div>
 
-      {/* Size Pills */}
-      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
         {sizes.map((size) => {
           const isSelected = selectedSize === size;
+          const intl = EU_TO_INTL[size];
           return (
             <button
               key={size}
               type="button"
               onClick={() => onSizeChange(size)}
-              className={`relative py-3 px-2 rounded-2xl text-xs font-bold transition-all border ${
+              className={`py-2.5 px-2 text-xs transition-colors border flex flex-col items-center justify-center ${
                 isSelected
-                  ? 'btn-glass-gold shadow-md'
-                  : 'glass-pill text-foreground/80 hover:text-foreground hover:border-[#C5A059]/40'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'border-border text-foreground hover:border-foreground'
               }`}
             >
               <span>{size}</span>
+              {intl && (
+                <span className={`text-[9px] uppercase tracking-wider ${isSelected ? 'text-background/80' : 'text-muted-foreground'}`}>
+                  {intl}
+                </span>
+              )}
             </button>
           );
         })}
@@ -71,29 +84,24 @@ export default function SizeSelector({
           <button
             type="button"
             onClick={() => onSizeChange('custom')}
-            className={`col-span-2 relative py-3 px-3 rounded-2xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 ${
+            className={`col-span-3 sm:col-span-2 py-2.5 px-3 text-xs uppercase tracking-[0.16em] transition-colors border ${
               selectedSize === 'custom'
-                ? 'btn-glass-gold shadow-md'
-                : 'glass-pill text-foreground/80 hover:text-foreground hover:border-[#C5A059]/50'
+                ? 'bg-foreground text-background border-foreground'
+                : 'border-border text-foreground hover:border-foreground'
             }`}
           >
-            <ScissorsIcon className="w-3.5 h-3.5 text-[#C5A059]" />
-            <span>Bespoke 48-Pt</span>
+            Bespoke
           </button>
         )}
       </div>
 
-      {/* Custom measurements card */}
       {selectedSize === 'custom' && isMakeToOrder && (
-        <div className="border-t border-border/50 pt-6">
+        <div className="border-t border-border pt-6">
           {showMeasurementForm ? (
-            <div className="glass-panel p-5 rounded-3xl border border-[#C5A059]/40 shadow-xl space-y-4">
-              <div className="flex items-center gap-2">
-                <SparklesIcon className="w-4 h-4 text-[#C5A059]" />
-                <h4 className="font-serif text-sm font-bold text-foreground">
-                  48-Point Atelier Measurements
-                </h4>
-              </div>
+            <div className="border border-border p-5 space-y-4">
+              <h4 className="text-xs uppercase tracking-[0.2em] text-foreground">
+                48-Point Measurements
+              </h4>
               <MeasurementForm
                 onSubmit={handleCustomMeasurements}
                 onCancel={() => setShowMeasurementForm(false)}
@@ -101,47 +109,42 @@ export default function SizeSelector({
               />
             </div>
           ) : (
-            <div className="glass-panel-gold p-5 rounded-3xl border border-[#C5A059]/30 shadow-lg space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <CheckBadgeIcon className="w-4 h-4 text-[#C5A059]" />
-                  <h4 className="font-serif text-sm font-bold text-foreground">
-                    Custom Karigar Docket
-                  </h4>
-                </div>
+            <div className="border border-border p-5 space-y-4">
+              <div className="flex justify-between items-center gap-4">
+                <h4 className="text-xs uppercase tracking-[0.2em] text-foreground">
+                  Custom Measurements
+                </h4>
                 <button
                   type="button"
                   onClick={() => setShowMeasurementForm(true)}
-                  className="text-xs font-bold text-[#C5A059] uppercase tracking-wider hover:underline"
+                  className="text-xs uppercase tracking-[0.18em] text-foreground border-b border-border pb-0.5 hover:border-foreground transition-colors"
                 >
-                  {customMeasurements ? 'Modify Docket ✎' : '+ Input Measurements'}
+                  {customMeasurements ? 'Edit' : 'Enter Measurements'}
                 </button>
               </div>
 
               {customMeasurements ? (
-                <div className="glass-panel p-4 rounded-2xl border border-border/40">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div className="p-2 rounded-xl bg-background/40">
-                      <span className="text-[10px] text-muted-foreground uppercase block">Chest</span>
-                      <span className="font-bold text-foreground">{customMeasurements.chest}&quot;</span>
-                    </div>
-                    <div className="p-2 rounded-xl bg-background/40">
-                      <span className="text-[10px] text-muted-foreground uppercase block">Waist</span>
-                      <span className="font-bold text-foreground">{customMeasurements.waist}&quot;</span>
-                    </div>
-                    <div className="p-2 rounded-xl bg-background/40">
-                      <span className="text-[10px] text-muted-foreground uppercase block">Shoulder</span>
-                      <span className="font-bold text-foreground">{customMeasurements.shoulder}&quot;</span>
-                    </div>
-                    <div className="p-2 rounded-xl bg-background/40">
-                      <span className="text-[10px] text-muted-foreground uppercase block">Arm Length</span>
-                      <span className="font-bold text-foreground">{customMeasurements.armLength}&quot;</span>
-                    </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-border">
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase block">Chest</span>
+                    <span className="text-foreground">{customMeasurements.chest}&quot;</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase block">Waist</span>
+                    <span className="text-foreground">{customMeasurements.waist}&quot;</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase block">Shoulder</span>
+                    <span className="text-foreground">{customMeasurements.shoulder}&quot;</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase block">Arm</span>
+                    <span className="text-foreground">{customMeasurements.armLength}&quot;</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Provide your precision chest, shoulder, and length metrics. Our master cutting master will draft a custom wooden paper pattern exclusively for your body.
+                <p className="text-xs font-light text-muted-foreground leading-relaxed">
+                  Enter your chest, waist, shoulder, and sleeve measurements for a pattern drafted to your proportions.
                 </p>
               )}
             </div>
@@ -149,14 +152,13 @@ export default function SizeSelector({
         </div>
       )}
 
-      {/* Fitting preference selector */}
       {selectedSize !== 'custom' && (
-        <div className="border-t border-border/50 pt-5">
+        <div className="border-t border-border pt-5">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">
-              Silhouette Fitting
+            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              Fit
             </span>
-            <span className="text-xs font-bold text-[#C5A059]">{selectedFitting} Silhouette</span>
+            <span className="text-xs text-foreground">{selectedFitting}</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -165,13 +167,13 @@ export default function SizeSelector({
                 key={fit}
                 type="button"
                 onClick={() => onFittingChange(fit)}
-                className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all border text-center ${
+                className={`py-2.5 px-3 text-xs transition-colors border text-center ${
                   selectedFitting === fit
-                    ? 'btn-glass-gold shadow-sm'
-                    : 'glass-pill text-muted-foreground hover:text-foreground'
+                    ? 'bg-foreground text-background border-foreground'
+                    : 'border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {fit === 'Loose' ? 'Royal Flared' : fit === 'Medium' ? 'Aristocratic' : 'Sculpted Fit'}
+                {fit === 'Loose' ? 'Relaxed' : fit === 'Medium' ? 'Classic' : 'Tailored'}
               </button>
             ))}
           </div>

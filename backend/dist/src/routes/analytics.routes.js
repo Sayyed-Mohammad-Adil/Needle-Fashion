@@ -15,5 +15,6 @@ router.get('/dashboard', auth_middleware_1.protect, auth_middleware_1.admin, ana
 router.get('/sales', auth_middleware_1.protect, auth_middleware_1.admin, analytics_controller_1.getSalesAnalytics);
 router.get('/products', auth_middleware_1.protect, auth_middleware_1.admin, analytics_controller_1.getProductAnalytics);
 router.get('/users', auth_middleware_1.protect, auth_middleware_1.admin, analytics_controller_1.getUserAnalytics);
+router.get('/report', auth_middleware_1.protect, auth_middleware_1.admin, analytics_controller_1.getExecutiveReport);
 exports.default = router;
 //# sourceMappingURL=analytics.routes.js.map

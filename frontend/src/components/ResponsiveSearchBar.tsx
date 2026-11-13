@@ -2,22 +2,23 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { MagnifyingGlassIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchSuggestion {
   id: string;
   name: string;
-  category?: string;
-  badge?: string;
+  category: string;
+  href: string;
 }
 
 const LUXURY_SUGGESTIONS: SearchSuggestion[] = [
-  { id: '1', name: 'Imperial Ivory Zardozi Sherwani', category: 'Royal Wedding', badge: 'Haute Couture' },
-  { id: '2', name: 'Tailored Slate Grey Silk Bandhgala', category: 'Atelier Jodhpuri', badge: 'Bespoke Fit' },
-  { id: '3', name: 'Pure Chanderi Handloom Cream Kurta', category: 'Handwoven Silk', badge: 'Heritage' },
-  { id: '4', name: 'Gala Indo-Western Brocade Tuxedo', category: 'Evening Couture', badge: 'Limited' },
-  { id: '5', name: 'Cashmere Royal Doshala Shawl with Zari', category: 'Heirloom Shawls', badge: 'Pure Pashmina' },
-  { id: '6', name: 'Charcoal Silk Achkan with Antique Buttons', category: 'Sovereign Menswear', badge: 'Handcrafted' },
+  { id: '1', name: 'Mughal Jaali Ivory Tailored Suit', category: 'Suits', href: '/product/1' },
+  { id: '2', name: 'Sage Heritage Embroidered Suit', category: 'Suits', href: '/product/2' },
+  { id: '4', name: 'Handloom Linen Dress Shirt', category: 'Shirts', href: '/product/4' },
+  { id: '6', name: 'Ivory Pleated Tailored Trousers', category: 'Pants', href: '/product/6' },
+  { id: '8', name: 'Kashmir Tilla Pashmina Doshala', category: 'Accessories', href: '/product/8' },
+  { id: '11', name: 'Varanasi Chanderi Kurta Pyjama Set', category: 'Indian Wear', href: '/product/11' },
+  { id: '12', name: 'Imperial Ivory Zardozi Sherwani', category: 'Indian Wear', href: '/product/12' },
 ];
 
 export default function ResponsiveSearchBar() {
@@ -29,7 +30,6 @@ export default function ResponsiveSearchBar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Close search when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -38,24 +38,22 @@ export default function ResponsiveSearchBar() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Focus input when mobile search opens
   useEffect(() => {
     if (isMobileSearchOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isMobileSearchOpen]);
 
-  // Filter suggestions based on query
   useEffect(() => {
     if (query.trim().length > 0) {
       const q = query.toLowerCase();
       const filtered = LUXURY_SUGGESTIONS.filter(
-        item => item.name.toLowerCase().includes(q) || item.category?.toLowerCase().includes(q)
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q)
       );
       setSuggestions(filtered.length > 0 ? filtered : LUXURY_SUGGESTIONS.slice(0, 4));
       setIsOpen(true);
@@ -75,7 +73,7 @@ export default function ResponsiveSearchBar() {
   };
 
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
-    router.push(`/new-arrivals`);
+    router.push(suggestion.href);
     setQuery('');
     setIsOpen(false);
     setIsMobileSearchOpen(false);
@@ -83,66 +81,54 @@ export default function ResponsiveSearchBar() {
 
   return (
     <>
-      {/* Desktop Frosted Glass Search Bar */}
+      {/* Desktop Search */}
       <div className="hidden lg:block relative" ref={searchRef}>
         <form onSubmit={handleSubmit} className="flex items-center">
-          <div className="relative flex items-center glass-pill bg-white/70 dark:bg-[#16181F]/75 border border-[#C5A059]/30 pl-3 pr-1 py-1 focus-within:border-[#C5A059] focus-within:ring-1 focus-within:ring-[#C5A059]/20 transition-all backdrop-blur-md">
-            <MagnifyingGlassIcon className="h-4 w-4 text-[#9C7A3C] dark:text-[#C5A059] flex-shrink-0" aria-hidden="true" />
+          <div className="relative flex items-center border-b border-border focus-within:border-foreground transition-colors pb-1">
+            <MagnifyingGlassIcon
+              className="h-4 w-4 text-muted-foreground flex-shrink-0"
+              aria-hidden="true"
+            />
             <input
-              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => {
-                if (query.length > 0) setIsOpen(true);
-                else {
-                  setSuggestions(LUXURY_SUGGESTIONS.slice(0, 4));
-                  setIsOpen(true);
-                }
-              }}
-              className="bg-transparent border-0 px-2 py-1 text-xs text-[#18191D] dark:text-[#FAF8F5] placeholder:text-[#6F6960] dark:placeholder:text-[#A8A9AD] focus:outline-none w-32 focus:w-48 xl:w-44 xl:focus:w-60 transition-all duration-300 tracking-wide font-medium"
-              placeholder="Search couture..."
-              aria-label="Search menswear masterpieces"
+              placeholder="Search"
+              className="w-36 xl:w-44 bg-transparent pl-2.5 pr-2 py-0.5 text-xs text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
             />
-            <button
-              type="submit"
-              className="px-3.5 py-1.5 rounded-full text-[10px] uppercase tracking-[0.16em] font-semibold text-[#6B4E1B] dark:text-[#E8D7B5] bg-[#C5A059]/15 hover:bg-[#C5A059] hover:text-[#121316] dark:hover:text-[#121316] border border-[#C5A059]/35 hover:border-[#C5A059] transition-all flex items-center justify-center flex-shrink-0"
-            >
-              Search
-            </button>
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  setIsOpen(false);
+                }}
+                aria-label="Clear search"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <XMarkIcon className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </form>
 
-        {/* Frosted Glass Suggestions Popover */}
-        {isOpen && (
-          <div className="absolute z-50 mt-2 w-96 rounded-2xl glass-panel-gold p-3 shadow-2xl border border-primary/30 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="flex items-center justify-between px-2 pb-2 border-b border-border/50 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-              <span className="flex items-center gap-1.5">
-                <SparklesIcon className="w-3.5 h-3.5" />
-                <span>Atelier Menswear Archive</span>
-              </span>
-              <span className="text-[9px] text-muted-foreground">Select to Inspect</span>
-            </div>
-
-            <div className="py-2 space-y-1">
-              {suggestions.map((suggestion) => (
+        {isOpen && suggestions.length > 0 && (
+          <div className="absolute right-0 z-50 mt-3 w-80 bg-background border border-border p-4">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground pb-2 mb-2 border-b border-border">
+              Suggestions
+            </p>
+            <div className="divide-y divide-border">
+              {suggestions.map((item) => (
                 <button
-                  key={suggestion.id}
+                  key={item.id}
                   type="button"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="group flex w-full items-center justify-between px-3 py-2 text-left rounded-xl hover:bg-primary/10 transition-colors"
+                  onClick={() => handleSuggestionClick(item)}
+                  className="w-full text-left py-2.5 flex items-center justify-between gap-3 hover:text-accent transition-colors"
                 >
-                  <div>
-                    <p className="font-serif text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-                      {suggestion.name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{suggestion.category}</p>
-                  </div>
-                  {suggestion.badge && (
-                    <span className="text-[9px] uppercase tracking-wider text-primary font-bold px-2 py-0.5 rounded-full bg-primary/10 border border-primary/25">
-                      {suggestion.badge}
-                    </span>
-                  )}
+                  <span className="text-xs text-foreground truncate">{item.name}</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground flex-shrink-0">
+                    {item.category}
+                  </span>
                 </button>
               ))}
             </div>
@@ -150,61 +136,66 @@ export default function ResponsiveSearchBar() {
         )}
       </div>
 
-      {/* Search Trigger Button for Mobile Screen */}
+      {/* Mobile Search Trigger */}
       <button
         type="button"
-        className="p-2 text-[#1F2026] dark:text-[#E0DDD5] hover:text-[#C5A059] lg:hidden rounded-full bg-white/75 dark:bg-[#16181F]/80 border border-[#C5A059]/30 hover:border-[#C5A059] transition-colors backdrop-blur-md"
         onClick={() => setIsMobileSearchOpen(true)}
+        className="p-1.5 text-foreground/80 hover:text-foreground transition-colors lg:hidden"
         aria-label="Search"
       >
-        <MagnifyingGlassIcon className="h-4.5 w-4.5" aria-hidden="true" />
+        <MagnifyingGlassIcon className="h-5 w-5 stroke-[1.5]" aria-hidden="true" />
       </button>
 
-      {/* Search Overlay with Frosted Glass */}
+      {/* Mobile Search Overlay */}
       {isMobileSearchOpen && (
-        <div className="fixed inset-0 z-50 glass-panel backdrop-blur-2xl p-4 lg:hidden animate-in fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <form onSubmit={handleSubmit} className="flex-grow mr-2">
-              <div className="relative flex items-center glass-pill pl-3 pr-2 py-1.5">
-                <MagnifyingGlassIcon className="h-4 w-4 text-primary" aria-hidden="true" />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="bg-transparent border-0 px-3 py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none w-full"
-                  placeholder="Search sherwanis, kurtas, bandhgalas..."
-                  aria-label="Search menswear masterpieces"
-                />
-              </div>
-            </form>
+        <div className="fixed inset-0 z-50 bg-background p-6 lg:hidden overflow-y-auto">
+          <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
+            <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              Search
+            </span>
             <button
               type="button"
-              className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-card transition-colors"
               onClick={() => setIsMobileSearchOpen(false)}
+              aria-label="Close search"
+              className="p-1 text-foreground"
             >
-              <span className="sr-only">Close search</span>
-              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+              <XMarkIcon className="h-5 w-5 stroke-[1.5]" />
             </button>
           </div>
 
-          <div className="mt-4 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary px-2">
-              Featured Royal Curations
+          <form onSubmit={handleSubmit} className="mb-8">
+            <div className="flex items-center border-b border-foreground pb-2">
+              <MagnifyingGlassIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Suits, shirts, pants, kurta..."
+                className="w-full bg-transparent pl-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+              />
+            </div>
+          </form>
+
+          <div className="space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-3">
+              {suggestions.length > 0 ? 'Results' : 'Popular Searches'}
             </p>
-            {LUXURY_SUGGESTIONS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleSuggestionClick(item)}
-                className="w-full text-left p-3 rounded-2xl glass-card flex items-center justify-between"
-              >
-                <div>
-                  <p className="font-serif text-sm font-bold text-foreground">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">{item.category}</p>
-                </div>
-                <span className="text-[10px] text-primary uppercase font-bold tracking-wider">{item.badge}</span>
-              </button>
-            ))}
+            <div className="divide-y divide-border border-y border-border">
+              {(suggestions.length > 0 ? suggestions : LUXURY_SUGGESTIONS).map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleSuggestionClick(item)}
+                  className="w-full text-left py-3.5 flex items-center justify-between gap-4"
+                >
+                  <span className="text-sm font-light text-foreground">{item.name}</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground flex-shrink-0">
+                    {item.category}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

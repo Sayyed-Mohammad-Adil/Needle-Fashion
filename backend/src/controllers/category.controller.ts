@@ -1,98 +1,74 @@
 import { Request, Response } from 'express';
-import { Category } from '../models/category.model';
+import { prisma, withMongoId, withMongoIds } from '../lib/prisma';
 
-// @desc    Get all categories
-// @route   GET /api/categories
-// @access  Public
-export const getCategories = async (req: Request, res: Response) => {
+export const getCategories = async (_req: Request, res: Response) => {
   try {
-    const categories = await Category.find({});
-    res.json(categories);
+    const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+    res.json(withMongoIds(categories));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get single category by ID
-// @route   GET /api/categories/:id
-// @access  Public
 export const getCategoryById = async (req: Request, res: Response) => {
   try {
-    const category = await Category.findById(req.params.id);
-
+    const category = await prisma.category.findUnique({ where: { id: req.params.id } });
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
-
-    res.json(category);
+    res.json(withMongoId(category));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Create a category
-// @route   POST /api/categories
-// @access  Private/Admin
 export const createCategory = async (req: Request, res: Response) => {
   try {
     const { name, description, image } = req.body;
-
-    // Check if category already exists
-    const categoryExists = await Category.findOne({ name });
+    const categoryExists = await prisma.category.findUnique({ where: { name } });
     if (categoryExists) {
       return res.status(400).json({ message: 'Category already exists' });
     }
 
-    // Create category
-    const category = await Category.create({
-      name,
-      description,
-      image,
+    const category = await prisma.category.create({
+      data: { name, description, image },
     });
-
-    res.status(201).json(category);
+    res.status(201).json(withMongoId(category));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Update a category
-// @route   PUT /api/categories/:id
-// @access  Private/Admin
 export const updateCategory = async (req: Request, res: Response) => {
   try {
-    const category = await Category.findById(req.params.id);
-
+    const category = await prisma.category.findUnique({ where: { id: req.params.id } });
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
     const { name, description, image } = req.body;
-
-    // Update fields if provided
-    if (name) category.name = name;
-    if (description !== undefined) category.description = description;
-    if (image !== undefined) category.image = image;
-
-    const updatedCategory = await category.save();
-    res.json(updatedCategory);
+    const updatedCategory = await prisma.category.update({
+      where: { id: req.params.id },
+      data: {
+        name: name ?? category.name,
+        description: description !== undefined ? description : category.description,
+        image: image !== undefined ? image : category.image,
+      },
+    });
+    res.json(withMongoId(updatedCategory));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Delete a category
-// @route   DELETE /api/categories/:id
-// @access  Private/Admin
 export const deleteCategory = async (req: Request, res: Response) => {
   try {
-    const category = await Category.findById(req.params.id);
-
+    const category = await prisma.category.findUnique({ where: { id: req.params.id } });
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    await category.deleteOne();
+    await prisma.category.delete({ where: { id: req.params.id } });
     res.json({ message: 'Category removed' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

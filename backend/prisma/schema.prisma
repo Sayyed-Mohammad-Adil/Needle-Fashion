@@ -1,0 +1,272 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String         @id @default(cuid())
+  name              String
+  email             String         @unique
+  password          String
+  role              String         @default("user")
+  phone             String?
+  address           String?
+  savedMeasurements Json           @default("[]")
+  wishlist          String[]       @default([])
+  orders            Order[]
+  reviews           Review[]
+  notifications     Notification[] @relation("NotificationCreator")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  image       String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  name           String
+  description    String
+  price          Float
+  images         Json        @default("[]")
+  categoryId     String
+  category       Category    @relation(fields: [categoryId], references: [id])
+  filters        Json        @default("{}")
+  sizes          Int[]       @default([])
+  isMakeToOrder  Boolean     @default(false)
+  isOutOfStock   Boolean     @default(false)
+  fittingOptions String[]    @default(["Loose", "Medium", "Fit"])
+  stock          Int         @default(0)
+  averageRating  Float       @default(0)
+  numReviews     Int         @default(0)
+  orderItems     OrderItem[]
+  reviews        Review[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([categoryId])
+}
+
+model Filter {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  values    String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  shippingAddress Json
+  paymentMethod   String
+  paymentResult   Json?
+  itemsPrice      Float
+  taxPrice        Float
+  shippingPrice   Float
+  totalPrice      Float
+  isPaid          Boolean     @default(false)
+  paidAt          DateTime?
+  status          String      @default("Processing")
+  tailoringStage  String      @default("Pattern Drafting")
+  courierName     String      @default("")
+  trackingNumber  String      @default("")
+  atelierNotes    String      @default("")
+  deliveredAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                 String  @id @default(cuid())
+  orderId            String
+  order              Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId          String
+  product            Product @relation(fields: [productId], references: [id])
+  quantity           Int
+  price              Float
+  size               String
+  fitting            String  @default("Medium")
+  customMeasurements Json?
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Review {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+  productId          String
+  product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating             Int
+  comment            String
+  images             String[] @default([])
+  isVerifiedPurchase Boolean  @default(false)
+  isApproved         Boolean  @default(true)
+  isFlagged          Boolean  @default(false)
+  flagReason         String?
+  helpfulCount       Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([productId])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Float
+  category    String
+  date        DateTime @default(now())
+  description String?
+  receipt     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([category])
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Inquiry {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  type          String   @default("Bespoke Commission")
+  subject       String
+  message       String
+  preferredDate String?
+  preferredTime String?
+  productId     String?
+  productName   String?
+  measurements  Json?
+  status        String   @default("Pending")
+  adminNotes    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  title       String
+  message     String
+  type        String    @default("info")
+  priority    String    @default("medium")
+  targetUsers String    @default("all")
+  userIds     String[]  @default([])
+  isRead      Boolean   @default(false)
+  readBy      String[]  @default([])
+  expiresAt   DateTime?
+  createdById String
+  createdBy   User      @relation("NotificationCreator", fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([targetUsers, isRead])
+  @@index([expiresAt])
+}
+
+model Theme {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isDefault   Boolean  @default(false)
+  colors      Json
+  fonts       Json
+  layout      Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatSession {
+  id          String   @id @default(cuid())
+  userId      String?
+  userName    String?
+  sessionId   String   @unique
+  messages    Json     @default("[]")
+  lastMessage Json?
+  context     Json     @default("{}")
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([expiresAt])
+}
+
+model SearchAnalytics {
+  id        String   @id @default(cuid())
+  keyword   String
+  count     Int      @default(1)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ViewAnalytics {
+  id        String   @id @default(cuid())
+  productId String
+  views     Int      @default(1)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SalesAnalytics {
+  id            String   @id @default(cuid())
+  productId     String
+  categoryId    String
+  quantity      Int
+  revenue       Float
+  date          DateTime @default(now())
+  isMakeToOrder Boolean
+  size          String
+  filters       Json     @default("{}")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SiteConfig {
+  id         String   @id @default(cuid())
+  key        String   @unique @default("default")
+  commerce   Json
+  sections   Json
+  navigation Json?
+  footer     Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+

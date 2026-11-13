@@ -1,100 +1,87 @@
 import { Request, Response } from 'express';
-import { User, IUser } from '../models/user.model';
-import { generateTokenPair, verifyRefreshToken, generateAccessToken } from '../utils/jwt.utils';
+import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
-import mongoose from 'mongoose';
+import { prisma, withMongoId, withMongoIds } from '../lib/prisma';
+import {
+  generateTokenPair,
+  verifyRefreshToken,
+  generateAccessToken,
+} from '../utils/jwt.utils';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+}
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone, address } = req.body;
 
-    // Check if user already exists
-    const userExists = await User.findOne({ email });
-
+    const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create new user
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-      address,
+    const hashedPassword = await hashPassword(password);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        address,
+      },
     });
 
-    if (user) {
-      const tokens = generateTokenPair(user);
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address,
-        ...tokens,
-      });
-    } else {
-      res.status(400).json({ message: 'Invalid user data' });
-    }
+    const tokens = generateTokenPair(user);
+    res.status(201).json({
+      _id: user.id,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      address: user.address,
+      ...tokens,
+    });
   } catch (error: any) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Refresh access token
-// @route   POST /api/auth/refresh
-// @access  Public
 export const refreshToken = async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.body;
-
     if (!refreshToken) {
       return res.status(401).json({ message: 'Refresh token required' });
     }
 
-    // Verify refresh token
     const decoded = verifyRefreshToken(refreshToken);
-
-    // Get user from token
-    const user = await User.findById(decoded.id);
-
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    // Generate new access token
     const newAccessToken = generateAccessToken(user);
-
-    res.json({
-      accessToken: newAccessToken
-    });
-  } catch (error: any) {
+    res.json({ accessToken: newAccessToken });
+  } catch {
     res.status(401).json({ message: 'Invalid refresh token' });
   }
 };
 
-// @desc    Login user & get token
-// @route   POST /api/auth/login
-// @access  Public
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    // Find user by email
-    const user = await User.findOne({ email }).select('+password');
-
-    // Check if user exists and password matches
-    if (user && (await user.comparePassword(password))) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       const tokens = generateTokenPair(user);
       res.json({
-        _id: user._id,
+        _id: user.id,
+        id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -110,17 +97,12 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Login/Register with Google OAuth
-// @route   POST /api/auth/google
-// @access  Public
 export const googleAuth = async (req: Request, res: Response) => {
   try {
     const { idToken } = req.body;
-
     if (!idToken) {
       return res.status(400).json({ message: 'idToken is required' });
     }
-
     if (!process.env.GOOGLE_CLIENT_ID) {
       return res.status(500).json({ message: 'Google client ID is not configured on the server' });
     }
@@ -131,34 +113,25 @@ export const googleAuth = async (req: Request, res: Response) => {
     });
 
     const payload = ticket.getPayload();
-
     if (!payload || !payload.email) {
       return res.status(400).json({ message: 'Unable to verify Google account' });
     }
 
     const email = payload.email;
-    const name =
-      payload.name ||
-      payload.given_name ||
-      email.split('@')[0];
+    const name = payload.name || payload.given_name || email.split('@')[0];
 
-    let user = await User.findOne({ email });
-
-    // If user doesn't exist, create one
+    let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      const randomPassword = Math.random().toString(36).slice(-12);
-
-      user = await User.create({
-        name,
-        email,
-        password: randomPassword,
-      } as Partial<IUser> as IUser);
+      const randomPassword = await hashPassword(Math.random().toString(36).slice(-12));
+      user = await prisma.user.create({
+        data: { name, email, password: randomPassword },
+      });
     }
 
     const tokens = generateTokenPair(user);
-
     return res.json({
-      _id: user._id,
+      _id: user.id,
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
@@ -166,22 +139,20 @@ export const googleAuth = async (req: Request, res: Response) => {
       address: user.address,
       ...tokens,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Google auth error:', error);
     return res.status(401).json({ message: 'Google authentication failed' });
   }
 };
 
-// @desc    Get user profile
-// @route   GET /api/users/me
-// @access  Private
 export const getUserProfile = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user?._id);
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     res.set('Cache-Control', 'no-store');
     if (user) {
       res.json({
-        _id: user._id,
+        _id: user.id,
+        id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -198,32 +169,32 @@ export const getUserProfile = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/users/me
-// @access  Private
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update user fields
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.phone = req.body.phone || user.phone;
-    user.address = req.body.address || user.address;
+    const data: any = {
+      name: req.body.name || user.name,
+      email: req.body.email || user.email,
+      phone: req.body.phone !== undefined ? req.body.phone : user.phone,
+      address: req.body.address !== undefined ? req.body.address : user.address,
+    };
 
-    // Update password if provided
     if (req.body.password) {
-      user.password = req.body.password;
+      data.password = await hashPassword(req.body.password);
     }
 
-    const updatedUser = await user.save();
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user!.id },
+      data,
+    });
 
     res.json({
-      _id: updatedUser._id,
+      _id: updatedUser.id,
+      id: updatedUser.id,
       name: updatedUser.name,
       email: updatedUser.email,
       role: updatedUser.role,
@@ -236,110 +207,118 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Add measurement to user profile
-// @route   POST /api/users/measurements
-// @access  Private
 export const addUserMeasurement = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     const { chest, waist, length, sleeve, shoulder, neck, photo } = req.body;
+    const current = Array.isArray(user.savedMeasurements)
+      ? (user.savedMeasurements as any[])
+      : [];
 
-    // Add new measurement
-    user.savedMeasurements.push({
-      chest,
-      waist,
-      length,
-      sleeve,
-      shoulder,
-      neck,
-      photo,
+    const nextMeasurements = [
+      ...current,
+      { chest, waist, length, sleeve, shoulder, neck, photo },
+    ];
+
+    const updated = await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { savedMeasurements: nextMeasurements },
     });
 
-    await user.save();
-
-    res.status(201).json(user.savedMeasurements);
+    res.status(201).json(updated.savedMeasurements);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Add product to wishlist
-// @route   POST /api/users/wishlist
-// @access  Private
 export const addToWishlist = async (req: Request, res: Response) => {
   try {
     const { productId } = req.body;
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if product already in wishlist
     if (user.wishlist.includes(productId)) {
       return res.status(400).json({ message: 'Product already in wishlist' });
     }
 
-    // Add to wishlist
-    user.wishlist.push(productId);
-    await user.save();
+    const updated = await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { wishlist: [...user.wishlist, productId] },
+    });
 
-    res.status(200).json(user.wishlist);
+    res.status(200).json(updated.wishlist);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Remove product from wishlist
-// @route   DELETE /api/users/wishlist/:productId
-// @access  Private
 export const removeFromWishlist = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove from wishlist
-    user.wishlist = user.wishlist.filter(
-      (id) => id.toString() !== productId
-    );
-    await user.save();
+    const updated = await prisma.user.update({
+      where: { id: req.user!.id },
+      data: { wishlist: user.wishlist.filter((id) => id !== productId) },
+    });
 
-    res.status(200).json(user.wishlist);
+    res.status(200).json(updated.wishlist);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get all users (admin only)
-// @route   GET /api/admin/users
-// @access  Private/Admin
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (_req: Request, res: Response) => {
   try {
-    const users = await User.find({});
-    res.json(users);
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        address: true,
+        savedMeasurements: true,
+        wishlist: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(withMongoIds(users));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get user by ID (admin only)
-// @route   GET /api/admin/users/:id
-// @access  Private/Admin
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id);
-
+    const user = await prisma.user.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        address: true,
+        savedMeasurements: true,
+        wishlist: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
     if (user) {
-      res.json(user);
+      res.json(withMongoId(user));
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -348,87 +327,73 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Update user by ID (admin only)
-// @route   PUT /api/admin/users/:id
-// @access  Private/Admin
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.params.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.role = req.body.role || user.role;
-    user.phone = req.body.phone || user.phone;
-    user.address = req.body.address || user.address;
+    const data: any = {
+      name: req.body.name || user.name,
+      email: req.body.email || user.email,
+      role: req.body.role || user.role,
+      phone: req.body.phone !== undefined ? req.body.phone : user.phone,
+      address: req.body.address !== undefined ? req.body.address : user.address,
+    };
 
     if (req.body.password) {
-      user.password = req.body.password;
+      data.password = await hashPassword(req.body.password);
     }
 
-    const updatedUser = await user.save();
+    const updatedUser = await prisma.user.update({
+      where: { id: req.params.id },
+      data,
+    });
 
-    res.json(updatedUser);
+    res.json(withMongoId(updatedUser));
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Delete user by ID (admin only)
-// @route   DELETE /api/admin/users/:id
-// @access  Private/Admin
 export const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-
-  // Optional: validate MongoDB ObjectId format
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!id) {
     return res.status(400).json({ message: 'Invalid user ID' });
   }
 
   try {
-    const user = await User.findByIdAndDelete(id);
-
-    if (!user) {
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    await prisma.user.delete({ where: { id } });
     return res.json({ message: 'User removed' });
   } catch (error) {
-    // You can type error as unknown and narrow down if needed
     return res.status(500).json({ message: (error as Error).message || 'Server error' });
   }
 };
-// @desc    Get user's saved measurements
-// @route   GET /api/users/measurements
-// @access  Private
+
 export const getUserMeasurements = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.json(user.savedMeasurements);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get user's wishlist
-// @route   GET /api/users/wishlist
-// @access  Private
 export const getWishlist = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user?._id);
-
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.json(user.wishlist);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

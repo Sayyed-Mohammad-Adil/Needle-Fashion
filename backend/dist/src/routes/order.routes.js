@@ -19,6 +19,8 @@ router.route('/:id/deliver')
     .put(auth_middleware_1.protect, auth_middleware_1.admin, order_controller_1.updateOrderToDelivered);
 router.route('/:id/status')
     .put(auth_middleware_1.protect, auth_middleware_1.admin, order_controller_1.updateOrderStatus);
+router.route('/:id/admin')
+    .put(auth_middleware_1.protect, auth_middleware_1.admin, order_controller_1.updateOrderAdminDetails);
 router.route('/:id/cancel')
     .put(auth_middleware_1.protect, order_controller_1.cancelOrder);
 router.route('/:id/invoice')

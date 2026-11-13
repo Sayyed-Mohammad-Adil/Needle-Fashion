@@ -1,44 +1,63 @@
 import { Request, Response, NextFunction } from 'express';
-import { User, IUser } from '../models/user.model';
+import { prisma, withMongoId } from '../lib/prisma';
 import { verifyAccessToken, TokenPayload } from '../utils/jwt.utils';
 
-// Extend Express Request interface to include user
+export interface AuthenticatedUser {
+  id: string;
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  phone: string | null;
+  address: string | null;
+  savedMeasurements: any;
+  wishlist: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user?: AuthenticatedUser;
     }
   }
 }
 
-// Middleware to protect routes - only authenticated users can access
 export const protect = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  let token: string | undefined;
-
-  // Check for token in headers
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
-
-      // Verify token
+      const token = req.headers.authorization.split(' ')[1];
       const decoded: TokenPayload = verifyAccessToken(token);
 
-      // Get user from token
-      const user = await User.findById(decoded.id).select('-password');
-      
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          phone: true,
+          address: true,
+          savedMeasurements: true,
+          wishlist: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
       if (!user) {
         return res.status(401).json({ message: 'User not found' });
       }
 
-      req.user = user;
+      req.user = withMongoId(user);
       next();
     } catch (error) {
       console.error('Authentication error:', error);
@@ -49,7 +68,6 @@ export const protect = async (
   }
 };
 
-// Middleware to restrict access to admin users only
 export const admin = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && req.user.role === 'admin') {
     next();

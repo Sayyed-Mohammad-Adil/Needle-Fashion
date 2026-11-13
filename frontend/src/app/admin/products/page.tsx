@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { productService } from '@/lib/api/product-service';
 import { categoryService } from '@/lib/api/category-service';
 import { Product, Category } from '@/lib/types';
+import { formatEuro } from '@/lib/currency';
 import { toast } from 'react-hot-toast';
 import {
   PlusIcon,
@@ -388,9 +389,14 @@ export default function AdminProductsPage() {
                           </div>
                         ) : (
                           <div className="group/price flex items-center gap-2">
-                            <span className="font-serif font-bold text-sm text-foreground">
-                              ₹{product.price.toLocaleString('en-IN')}
-                            </span>
+                            <div>
+                              <span className="font-serif font-bold text-sm text-foreground block">
+                                ₹{product.price.toLocaleString('en-IN')}
+                              </span>
+                              <span className="text-[11px] font-medium text-primary">
+                                Storefront: {formatEuro(product.price)}
+                              </span>
+                            </div>
                             <button
                               type="button"
                               onClick={() => handleStartEditPrice(product)}

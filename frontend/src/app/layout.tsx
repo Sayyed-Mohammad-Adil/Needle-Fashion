@@ -1,32 +1,31 @@
-import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { SiteConfigProvider } from '@/contexts/SiteConfigContext';
 import ThemeProviderWrapper from '@/components/ThemeProviderWrapper';
 import ChatWidget from '@/components/chat/ChatWidget';
-import FirstVisitIntro from '@/components/effects/FirstVisitIntro';
-import ShahiFarmanModal from '@/components/effects/ShahiFarmanModal';
-import CustomLuxuryCursor from '@/components/effects/CustomLuxuryCursor';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-sans',
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-primary',
   display: 'swap',
 });
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
-});
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
-  title: 'Needle Fashion | Bespoke & Luxury Men\'s Ethnic Wear',
-  description: 'Handcrafted imperial sherwanis, pure silk kurtas, and bespoke ethnic couture in cream, grey, white and antique gold.',
+  title: 'Needle Fashion | Indian Craft & Modern Tailoring',
+  description:
+    'Understated luxury menswear uniting handloom Indian textiles and karigar embroidery with bespoke suits, shirts, trousers, and ceremonial Indian wear.',
 };
 
 export default function RootLayout({
@@ -35,21 +34,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-background text-foreground antialiased selection:bg-[#C5A059]/20 selection:text-[#18191C]`}>
+    <html lang="en" className={`${inter.variable} overflow-x-hidden`}>
+      <body className="font-sans bg-background text-foreground antialiased overflow-x-hidden selection:bg-primary/15 selection:text-foreground">
         <ThemeProviderWrapper>
-          <AuthProvider>
-            <CartProvider>
-              <CustomLuxuryCursor />
-              <FirstVisitIntro />
-              <ShahiFarmanModal />
-              <Toaster position="top-center" />
+          <SiteConfigProvider>
+            <AuthProvider>
+              <CartProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    borderRadius: '0px',
+                    background: '#141414',
+                    color: '#FAF9F6',
+                    fontSize: '12px',
+                    letterSpacing: '0.06em',
+                  },
+                }}
+              />
               <Header />
               <main className="min-h-screen">{children}</main>
               <Footer />
               <ChatWidget />
-            </CartProvider>
-          </AuthProvider>
+              </CartProvider>
+            </AuthProvider>
+          </SiteConfigProvider>
         </ThemeProviderWrapper>
       </body>
     </html>

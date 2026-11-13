@@ -1,191 +1,144 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { SparklesIcon, ShieldCheckIcon, ScissorsIcon, HeartIcon } from '@heroicons/react/24/outline';
+import {
+  useSiteConfig,
+  getAspectRatioClass,
+  getObjectFitClass,
+  getFocalPointClass,
+} from '@/contexts/SiteConfigContext';
 
 export default function AboutPage() {
+  const { getSection } = useSiteConfig();
+  const aboutSec = getSection('about', 'heritage-hero');
+  const heroMedia = aboutSec?.media?.[0];
+  const portraitMedia = aboutSec?.media?.[1];
+
   return (
-    <div className="bg-background text-foreground transition-colors duration-300">
-      {/* Hero section */}
-      <div className="relative min-h-[520px] flex items-center justify-center overflow-hidden border-b border-border">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/vintage-hero-palace.webp"
-            alt="Needle Fashion Royal Atelier Heritage"
-            fill
-            className="object-cover object-center filter brightness-[0.55] sepia-[0.15] contrast-[1.05]"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/45 to-black/25" />
-        </div>
-        
-        <div className="relative max-w-5xl mx-auto py-24 px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-black/40 backdrop-blur-md mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">The Royal Indian Atelier</span>
-          </div>
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6">
-            Preserving Indian Grandeur, Tailored for the Modern Sovereign
-          </h1>
-          <p className="mt-4 text-base sm:text-lg text-cream/90 max-w-2xl mx-auto font-light leading-relaxed">
-            Needle Fashion is a bespoke luxury fashion house dedicated to artisanal mastery, handcrafted zardozi embroidery, and timeless silhouettes for modern connoisseurs.
-          </p>
-        </div>
-      </div>
-
-      {/* Our Story section */}
-      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Artisanal Lineage</p>
-          <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-bold text-foreground">
-            A Celebration of Handcrafted Heritage
-          </h2>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4 mb-6" />
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Established with an unwavering devotion to India&apos;s rich handloom weaving legacy, Needle Fashion unites master karigars from Varanasi, Lucknow, and Bengal with world-class contemporary tailoring.
-          </p>
-        </div>
-
-        <div className="mt-16 grid grid-cols-1 gap-10 lg:grid-cols-2 items-center">
-          <div className="relative group">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border shadow-xl">
-              <Image
-                src="/images/category-sherwani.jpg"
-                alt="Master Karigars Hand Embroidery"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Handloom Archive</span>
-                <h3 className="font-serif text-xl font-bold text-white mt-1">Zardozi & Antique Dabka Mastery</h3>
-              </div>
-            </div>
+    <main className="bg-background text-foreground">
+      {/* Editorial Hero */}
+      <section className="border-b border-border py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="lg:col-span-6 space-y-6">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+              {aboutSec?.eyebrow || 'The Maison'}
+            </p>
+            <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-foreground leading-tight">
+              {aboutSec?.title || 'Indian Craftsmanship, Tailored for the Modern Wardrobe'}
+            </h1>
+            <p className="text-sm sm:text-base font-light text-muted-foreground leading-relaxed max-w-lg">
+              {aboutSec?.subtitle ||
+                'Needle Fashion unites centuries-old Indian handloom weaving and karigar embroidery with disciplined Western and Indian tailoring—producing bespoke suits, coats, shirts, trousers, and ceremonial Indian wear.'}
+            </p>
           </div>
 
-          <div className="space-y-6 lg:pl-6">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                <ScissorsIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-serif text-lg font-bold text-foreground">Bespoke Couture Precision</h4>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Every sherwani and bandhgala is tailored to individual measurements with 48 distinct anatomical checkpoints, ensuring effortless poise and drape.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                <SparklesIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-serif text-lg font-bold text-foreground">Authentic Metallic Resham & Zari</h4>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  We use genuine silver and gold-tinted resham threads woven on hand-operated pit looms, creating a distinctive antique luminescence that never fades.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                <ShieldCheckIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-serif text-lg font-bold text-foreground">Artisan Guild Support</h4>
-                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Over 150 master artisan families across Lucknow and Banaras earn equitable luxury wages and retain full patent ownership over generational motif archives.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Values section */}
-      <div className="bg-card border-y border-border py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">The Haute Atelier Standard</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2">
-              Our Guiding Principles
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-2xl bg-background border border-border hover:border-primary/40 transition-all duration-300 shadow-sm group">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-5 group-hover:scale-110 transition-transform">
-                <SparklesIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-serif text-lg font-bold text-foreground mb-2">Pure Handwoven Silks</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                We reject synthetic blends. Only pure Chanderi, Banarasi Mulberry, and Raw Tussar silks are accepted by our master cutters.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-background border border-border hover:border-primary/40 transition-all duration-300 shadow-sm group">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-5 group-hover:scale-110 transition-transform">
-                <HeartIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-serif text-lg font-bold text-foreground mb-2">Conscious Heritage</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Vegetable dyes, water recycling, zero fabric incineration, and ethical handloom preservation define every collection we release.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-background border border-border hover:border-primary/40 transition-all duration-300 shadow-sm group">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-5 group-hover:scale-110 transition-transform">
-                <ScissorsIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-serif text-lg font-bold text-foreground mb-2">Lifetime Preservation</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Each bespoke creation includes complimentary lifetime alteration and restoration care, ensuring your wedding ensemble becomes an enduring family heirloom.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA section */}
-      <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden border border-primary/30 p-10 sm:p-16 text-center bg-card shadow-2xl">
-          {/* Vintage Palace Night Backdrop */}
-          <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-            <Image
-              src="/images/vintage-palace-night.webp"
-              alt="Vintage Indian Heritage Palace at Twilight"
-              fill
-              className="object-cover object-center opacity-45 dark:opacity-40 contrast-[1.06]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-card/90 via-card/70 to-card/90 dark:from-[#111318]/90 dark:via-[#111318]/70 dark:to-[#111318]/90" />
-            <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/30 dark:from-[#111318]/50 dark:via-transparent dark:to-[#111318]/30" />
-          </div>
-          <div className="relative z-10">
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Experience Needle Fashion In Person
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto mb-8 font-light">
-            Book a private atelier fitting with our royal stylists or commission a custom couture ensemble for your special occasion.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/new-arrivals"
-              className="btn-luxury-gold px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.18em]"
+          <div className="lg:col-span-6">
+            <div
+              className={`relative ${getAspectRatioClass(
+                heroMedia?.aspectRatio || aboutSec?.aspectRatio || '16:9'
+              )} w-full overflow-hidden bg-muted`}
             >
-              Explore Royal Catalogue
-            </Link>
+              <img
+                src={heroMedia?.url || '/images/vintage-hero-palace.webp'}
+                alt={heroMedia?.alt || 'Needle Fashion Atelier Heritage'}
+                className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                  heroMedia?.objectFit || aboutSec?.objectFit
+                )} ${getFocalPointClass(heroMedia?.focalPoint || aboutSec?.focalPoint)}`}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Craft Pillars */}
+      <section className="py-20 sm:py-28 border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="lg:col-span-6">
+            <div
+              className={`relative ${getAspectRatioClass(
+                portraitMedia?.aspectRatio || '3:4'
+              )} max-w-lg mx-auto overflow-hidden bg-muted`}
+            >
+              <img
+                src={portraitMedia?.url || '/images/original-ivory-blazer.jpg'}
+                alt={portraitMedia?.alt || 'Mughal Jaali Embroidered Tailored Suit'}
+                className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                  portraitMedia?.objectFit || aboutSec?.objectFit
+                )} ${getFocalPointClass(portraitMedia?.focalPoint || 'top')}`}
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 space-y-10">
+            <div className="space-y-3">
+              <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+                Philosophy
+              </p>
+              <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-foreground">
+                Where East Meets Savile Row
+              </h2>
+            </div>
+
+            <div className="space-y-8 border-t border-border pt-8">
+              <div>
+                <h3 className="text-sm font-normal uppercase tracking-[0.16em] text-foreground mb-2">
+                  48-Point Bespoke Tailoring
+                </h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Every suit jacket, bandhgala, shirt, and trouser is drafted to individual posture and shoulder pitch across 48 anatomical checkpoints.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-normal uppercase tracking-[0.16em] text-foreground mb-2">
+                  Handloom Textiles &amp; Zardozi
+                </h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Our fabrics originate on pit looms in Varanasi, Chanderi, and Kashmir, finished by master karigars working in zardozi, resham, and fine tilla.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-normal uppercase tracking-[0.16em] text-foreground mb-2">
+                  Artisan Guild Stewardship
+                </h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  We partner directly with over 150 master weaver and embroiderer families, preserving generational motif archives under fair patronage.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Private Salon CTA */}
+      <section className="py-20 sm:py-28 bg-secondary/20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-6">
+          <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+            Private Salon
+          </p>
+          <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-foreground">
+            Experience the Atelier in Person
+          </h2>
+          <p className="text-sm sm:text-base font-light text-muted-foreground leading-relaxed">
+            Reserve a private appointment to explore seasonal fabric swatches and commission a bespoke garment.
+          </p>
+          <div className="pt-2 flex flex-wrap justify-center gap-4">
             <Link
               href="/contact"
-              className="btn-luxury-outline px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.18em]"
+              className="px-8 py-4 bg-foreground text-background text-xs uppercase tracking-[0.22em] hover:bg-accent hover:text-accent-foreground transition-colors"
             >
-              Consult with Stylist
+              Book Consultation
+            </Link>
+            <Link
+              href="/new-arrivals"
+              className="px-8 py-4 border border-border text-foreground text-xs uppercase tracking-[0.22em] hover:border-foreground transition-colors"
+            >
+              Explore New Arrivals
             </Link>
           </div>
         </div>
-      </div>
-    </div>
-    </div>
+      </section>
+    </main>
   );
 }

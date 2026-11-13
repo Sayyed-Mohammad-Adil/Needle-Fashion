@@ -1,42 +1,34 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAdminNotifications = exports.markAllAsRead = exports.markAsRead = exports.deleteNotification = exports.updateNotification = exports.createNotification = exports.getNotificationById = exports.getNotifications = void 0;
-const notification_model_1 = require("../models/notification.model");
-// @desc    Get all notifications for current user
-// @route   GET /api/notifications
-// @access  Private
-const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+const prisma_1 = require("../lib/prisma");
+const getNotifications = async (req, res) => {
     try {
         const page = Number(req.query.page) || 1;
         const pageSize = Number(req.query.pageSize) || 10;
-        const filterObj = {
-            $or: [
-                { targetUsers: 'all' },
-                { targetUsers: 'specific', userIds: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id },
-            ],
+        const userId = req.user.id;
+        const orConditions = [
+            { targetUsers: 'all' },
+            { targetUsers: 'specific', userIds: { has: userId } },
+        ];
+        if (req.user?.role === 'admin') {
+            orConditions.push({ targetUsers: 'admin' });
+        }
+        const where = {
+            OR: orConditions,
             isRead: false,
         };
-        // For admin users, also include admin notifications
-        if (((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === 'admin') {
-            filterObj.$or.push({ targetUsers: 'admin' });
-        }
-        const count = yield notification_model_1.Notification.countDocuments(filterObj);
-        const notifications = yield notification_model_1.Notification.find(filterObj)
-            .sort({ createdAt: -1 })
-            .limit(pageSize)
-            .skip(pageSize * (page - 1));
+        const [count, notifications] = await Promise.all([
+            prisma_1.prisma.notification.count({ where }),
+            prisma_1.prisma.notification.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take: pageSize,
+                skip: pageSize * (page - 1),
+            }),
+        ]);
         res.json({
-            notifications,
+            notifications: (0, prisma_1.withMongoIds)(notifications),
             page,
             pages: Math.ceil(count / pageSize),
             total: count,
@@ -45,197 +37,176 @@ const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, functio
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getNotifications = getNotifications;
-// @desc    Get notification by ID
-// @route   GET /api/notifications/:id
-// @access  Private
-const getNotificationById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+const getNotificationById = async (req, res) => {
     try {
-        const notification = yield notification_model_1.Notification.findById(req.params.id);
-        if (!notification) {
-            return res.status(404).json({ message: 'Notification not found' });
-        }
-        // Check if user is authorized to view this notification
-        if (notification.targetUsers === 'specific' &&
-            !((_a = notification.userIds) === null || _a === void 0 ? void 0 : _a.includes((_b = req.user) === null || _b === void 0 ? void 0 : _b._id))) {
-            return res.status(403).json({ message: 'Not authorized to view this notification' });
-        }
-        if (notification.targetUsers === 'admin' && ((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) !== 'admin') {
-            return res.status(403).json({ message: 'Not authorized to view this notification' });
-        }
-        res.json(notification);
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-exports.getNotificationById = getNotificationById;
-// @desc    Create a new notification
-// @route   POST /api/notifications
-// @access  Private/Admin
-const createNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const { title, message, type, priority, targetUsers, userIds, expiresAt, } = req.body;
-        const notification = yield notification_model_1.Notification.create({
-            title,
-            message,
-            type: type || 'info',
-            priority: priority || 'medium',
-            targetUsers: targetUsers || 'all',
-            userIds: targetUsers === 'specific' ? userIds : undefined,
-            createdBy: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id,
-            expiresAt,
+        const notification = await prisma_1.prisma.notification.findUnique({
+            where: { id: req.params.id },
         });
-        res.status(201).json(notification);
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+        if (notification.targetUsers === 'specific' &&
+            !notification.userIds.includes(req.user.id)) {
+            return res.status(403).json({ message: 'Not authorized to view this notification' });
+        }
+        if (notification.targetUsers === 'admin' && req.user?.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized to view this notification' });
+        }
+        res.json((0, prisma_1.withMongoId)(notification));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
-exports.createNotification = createNotification;
-// @desc    Update a notification
-// @route   PUT /api/notifications/:id
-// @access  Private/Admin
-const updateNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+};
+exports.getNotificationById = getNotificationById;
+const createNotification = async (req, res) => {
     try {
-        const notification = yield notification_model_1.Notification.findById(req.params.id);
+        const { title, message, type, priority, targetUsers, userIds, expiresAt } = req.body;
+        const notification = await prisma_1.prisma.notification.create({
+            data: {
+                title,
+                message,
+                type: type || 'info',
+                priority: priority || 'medium',
+                targetUsers: targetUsers || 'all',
+                userIds: targetUsers === 'specific' && Array.isArray(userIds) ? userIds : [],
+                createdById: req.user.id,
+                expiresAt: expiresAt ? new Date(expiresAt) : null,
+            },
+        });
+        res.status(201).json((0, prisma_1.withMongoId)(notification));
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+exports.createNotification = createNotification;
+const updateNotification = async (req, res) => {
+    try {
+        const notification = await prisma_1.prisma.notification.findUnique({
+            where: { id: req.params.id },
+        });
         if (!notification) {
             return res.status(404).json({ message: 'Notification not found' });
         }
-        const { title, message, type, priority, targetUsers, userIds, expiresAt, isRead, } = req.body;
-        // Update fields if provided
-        if (title)
-            notification.title = title;
-        if (message)
-            notification.message = message;
-        if (type)
-            notification.type = type;
-        if (priority)
-            notification.priority = priority;
-        if (targetUsers)
-            notification.targetUsers = targetUsers;
-        if (targetUsers === 'specific' && userIds)
-            notification.userIds = userIds;
-        if (expiresAt)
-            notification.expiresAt = expiresAt;
+        const { title, message, type, priority, targetUsers, userIds, expiresAt, isRead } = req.body;
+        let nextReadBy = [...notification.readBy];
         if (isRead !== undefined) {
-            if (isRead && !notification.readBy.includes((_a = req.user) === null || _a === void 0 ? void 0 : _a._id)) {
-                notification.readBy.push((_b = req.user) === null || _b === void 0 ? void 0 : _b._id);
+            const uid = req.user.id;
+            if (isRead && !nextReadBy.includes(uid)) {
+                nextReadBy.push(uid);
             }
             else if (!isRead) {
-                notification.readBy = notification.readBy.filter((id) => { var _a; return id.toString() !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a._id.toString()); });
+                nextReadBy = nextReadBy.filter((id) => id !== uid);
             }
-            notification.isRead = isRead;
         }
-        const updatedNotification = yield notification.save();
-        res.json(updatedNotification);
+        const updatedNotification = await prisma_1.prisma.notification.update({
+            where: { id: req.params.id },
+            data: {
+                title: title ?? notification.title,
+                message: message ?? notification.message,
+                type: type ?? notification.type,
+                priority: priority ?? notification.priority,
+                targetUsers: targetUsers ?? notification.targetUsers,
+                userIds: targetUsers === 'specific' && Array.isArray(userIds) ? userIds : notification.userIds,
+                expiresAt: expiresAt ? new Date(expiresAt) : notification.expiresAt,
+                isRead: isRead !== undefined ? Boolean(isRead) : notification.isRead,
+                readBy: nextReadBy,
+            },
+        });
+        res.json((0, prisma_1.withMongoId)(updatedNotification));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.updateNotification = updateNotification;
-// @desc    Delete a notification
-// @route   DELETE /api/notifications/:id
-// @access  Private/Admin
-const deleteNotification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteNotification = async (req, res) => {
     try {
-        const notification = yield notification_model_1.Notification.findById(req.params.id);
+        const notification = await prisma_1.prisma.notification.findUnique({
+            where: { id: req.params.id },
+        });
         if (!notification) {
             return res.status(404).json({ message: 'Notification not found' });
         }
-        yield notification.deleteOne();
+        await prisma_1.prisma.notification.delete({ where: { id: req.params.id } });
         res.json({ message: 'Notification removed' });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.deleteNotification = deleteNotification;
-// @desc    Mark notification as read
-// @route   PUT /api/notifications/:id/read
-// @access  Private
-const markAsRead = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+const markAsRead = async (req, res) => {
     try {
-        const notification = yield notification_model_1.Notification.findById(req.params.id);
+        const notification = await prisma_1.prisma.notification.findUnique({
+            where: { id: req.params.id },
+        });
         if (!notification) {
             return res.status(404).json({ message: 'Notification not found' });
         }
-        // Check if user is authorized to mark this notification as read
-        if (notification.targetUsers === 'specific' &&
-            !((_a = notification.userIds) === null || _a === void 0 ? void 0 : _a.includes((_b = req.user) === null || _b === void 0 ? void 0 : _b._id))) {
+        const uid = req.user.id;
+        if (notification.targetUsers === 'specific' && !notification.userIds.includes(uid)) {
             return res.status(403).json({ message: 'Not authorized to mark this notification as read' });
         }
-        if (notification.targetUsers === 'admin' && ((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) !== 'admin') {
+        if (notification.targetUsers === 'admin' && req.user?.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized to mark this notification as read' });
         }
-        // Add user to readBy array if not already there
-        if (!notification.readBy.includes((_d = req.user) === null || _d === void 0 ? void 0 : _d._id)) {
-            notification.readBy.push((_e = req.user) === null || _e === void 0 ? void 0 : _e._id);
-        }
-        notification.isRead = true;
-        const updatedNotification = yield notification.save();
-        res.json(updatedNotification);
-    }
-    catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-exports.markAsRead = markAsRead;
-// @desc    Mark all notifications as read
-// @route   PUT /api/notifications/read-all
-// @access  Private
-const markAllAsRead = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
-    try {
-        const filterObj = {
-            $or: [
-                { targetUsers: 'all' },
-                { targetUsers: 'specific', userIds: (_a = req.user) === null || _a === void 0 ? void 0 : _a._id },
-            ],
-            isRead: false,
-        };
-        // For admin users, also include admin notifications
-        if (((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === 'admin') {
-            filterObj.$or.push({ targetUsers: 'admin' });
-        }
-        // Update all matching notifications
-        const result = yield notification_model_1.Notification.updateMany(filterObj, {
-            $addToSet: { readBy: (_c = req.user) === null || _c === void 0 ? void 0 : _c._id },
-            isRead: true,
+        const nextReadBy = notification.readBy.includes(uid)
+            ? notification.readBy
+            : [...notification.readBy, uid];
+        const updatedNotification = await prisma_1.prisma.notification.update({
+            where: { id: req.params.id },
+            data: { isRead: true, readBy: nextReadBy },
         });
-        res.json({ message: `Marked ${result.modifiedCount} notifications as read` });
+        res.json((0, prisma_1.withMongoId)(updatedNotification));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
+exports.markAsRead = markAsRead;
+const markAllAsRead = async (req, res) => {
+    try {
+        const uid = req.user.id;
+        const orConditions = [
+            { targetUsers: 'all' },
+            { targetUsers: 'specific', userIds: { has: uid } },
+        ];
+        if (req.user?.role === 'admin') {
+            orConditions.push({ targetUsers: 'admin' });
+        }
+        const result = await prisma_1.prisma.notification.updateMany({
+            where: { OR: orConditions, isRead: false },
+            data: { isRead: true },
+        });
+        res.json({ message: `Marked ${result.count} notifications as read` });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 exports.markAllAsRead = markAllAsRead;
-// @desc    Get admin notifications
-// @route   GET /api/admin/notifications
-// @access  Private/Admin
-const getAdminNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAdminNotifications = async (req, res) => {
     try {
         const page = Number(req.query.page) || 1;
         const pageSize = Number(req.query.pageSize) || 10;
-        const filterObj = {
-            $or: [
-                { targetUsers: 'admin' },
-                { targetUsers: 'all' },
-            ],
+        const where = {
+            OR: [{ targetUsers: 'admin' }, { targetUsers: 'all' }],
         };
-        const count = yield notification_model_1.Notification.countDocuments(filterObj);
-        const notifications = yield notification_model_1.Notification.find(filterObj)
-            .sort({ createdAt: -1 })
-            .limit(pageSize)
-            .skip(pageSize * (page - 1));
+        const [count, notifications] = await Promise.all([
+            prisma_1.prisma.notification.count({ where }),
+            prisma_1.prisma.notification.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take: pageSize,
+                skip: pageSize * (page - 1),
+            }),
+        ]);
         res.json({
-            notifications,
+            notifications: (0, prisma_1.withMongoIds)(notifications),
             page,
             pages: Math.ceil(count / pageSize),
             total: count,
@@ -244,6 +215,6 @@ const getAdminNotifications = (req, res) => __awaiter(void 0, void 0, void 0, fu
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getAdminNotifications = getAdminNotifications;
 //# sourceMappingURL=notification.controller.js.map

@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { HeartIcon, ShoppingCartIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { formatEuro } from '@/lib/currency';
 
 // Mock wishlist data
 const mockWishlistItems = [
@@ -179,7 +180,7 @@ export default function WishlistPage() {
                   </Link>
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">{item.category}</p>
-                <p className="mt-1 text-lg font-medium text-gray-900">₹{item.price.toLocaleString()}</p>
+                <p className="mt-1 text-lg font-medium text-gray-900">{formatEuro(item.price)}</p>
                 
                 <div className="mt-4 flex space-x-2">
                   <button

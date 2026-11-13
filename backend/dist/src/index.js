@@ -5,13 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const routes_1 = __importDefault(require("./routes"));
+const prisma_1 = require("./lib/prisma");
 // Load environment variables
 dotenv_1.default.config();
 // Create Express app
@@ -51,11 +51,11 @@ app.use('/uploads', express_1.default.static(path_1.default.resolve(process.cwd(
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, morgan_1.default)('dev'));
 }
-// Connect to MongoDB
-mongoose_1.default
-    .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/needle-fashion')
-    .then(() => console.log('MongoDB connected'))
-    .catch((err) => console.error('MongoDB connection error:', err));
+// Connect to PostgreSQL via Prisma
+prisma_1.prisma
+    .$connect()
+    .then(() => console.log('PostgreSQL connected via Prisma'))
+    .catch((err) => console.error('PostgreSQL connection error:', err));
 // Use routes
 app.use(routes_1.default);
 // Start server

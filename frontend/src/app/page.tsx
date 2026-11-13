@@ -1,717 +1,498 @@
+'use client';
+
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRightIcon, SparklesIcon, ShieldCheckIcon, ScissorsIcon, TruckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import ProductCarousel from '@/components/ProductCarousel';
-import ShahiFarmanTrigger from '@/components/effects/ShahiFarmanTrigger';
-import GoldAtelierTicker from '@/components/showcase/GoldAtelierTicker';
 import NeedleArchiveMoods from '@/components/showcase/NeedleArchiveMoods';
 import TryTheLookShowcase from '@/components/showcase/TryTheLookShowcase';
 import PickAWeaveShowcase from '@/components/showcase/PickAWeaveShowcase';
 import AtelierRackShowcase from '@/components/showcase/AtelierRackShowcase';
 import CoronationCurvedCarousel from '@/components/showcase/CoronationCurvedCarousel';
 import AtelierMotionReels from '@/components/showcase/AtelierMotionReels';
+import {
+  useSiteConfig,
+  getAspectRatioClass,
+  getObjectFitClass,
+  getFocalPointClass,
+} from '@/contexts/SiteConfigContext';
 
-// Curated luxury menswear masterpieces
-const featuredProducts = [
+const defaultFeaturedProducts = [
   {
     id: '1',
-    name: 'Imperial Ivory & Gold Embroidered Sherwani',
-    price: 28999,
-    imageSrc: '/images/hero-ethnic.jpg',
-    imageAlt: 'Imperial Ivory & Gold Embroidered Sherwani',
+    name: 'Mughal Jaali Ivory Tailored Suit',
+    price: 32999,
+    imageSrc: '/images/original-ivory-blazer.jpg',
+    imageAlt: 'Mughal Jaali Ivory Tailored Suit',
     href: '/product/1',
   },
   {
     id: '2',
-    name: 'Tailored Slate Grey & Cream Silk Bandhgala',
-    price: 15499,
-    imageSrc: '/images/category-kurta-jacket.jpg',
-    imageAlt: 'Tailored Slate Grey & Cream Silk Bandhgala',
+    name: 'Sage Heritage Embroidered Suit',
+    price: 34499,
+    imageSrc: '/images/original-sage-suit.jpg',
+    imageAlt: 'Sage Heritage Embroidered Suit',
     href: '/product/2',
   },
   {
     id: '3',
-    name: 'Pure Chanderi Silk Cream Embroidered Kurta',
-    price: 5499,
-    imageSrc: '/images/category-kurta.jpg',
-    imageAlt: 'Pure Chanderi Silk Cream Embroidered Kurta',
+    name: 'Rose Ombré Jacket & Supima Tee',
+    price: 21999,
+    imageSrc: '/images/original-rose-jacket-tee.jpg',
+    imageAlt: 'Rose Ombré Jacket & Supima Tee',
     href: '/product/3',
   },
   {
     id: '4',
-    name: 'Charcoal Gala Brocade Indo-Western Tuxedo',
-    price: 18999,
-    imageSrc: '/images/menswear-indo-western.jpg',
-    imageAlt: 'Charcoal Gala Brocade Indo-Western Tuxedo',
+    name: 'Noir Kashmiri Paisley Coat',
+    price: 36999,
+    imageSrc: '/images/original-noir-bandhgala.jpg',
+    imageAlt: 'Noir Kashmiri Paisley Coat',
     href: '/product/4',
   },
   {
     id: '5',
-    name: 'Royal Cashmere Doshala Shawl with Tilla Border',
-    price: 12499,
-    imageSrc: '/images/menswear-doshala.jpg',
-    imageAlt: 'Royal Cashmere Doshala Shawl',
+    name: 'Ivory Botanical Achkan & Trousers',
+    price: 29499,
+    imageSrc: '/images/original-ivory-achkan.jpg',
+    imageAlt: 'Ivory Botanical Achkan & Trousers',
     href: '/product/5',
   },
   {
     id: '6',
-    name: 'Charcoal Grey Bandhgala with Gold Crest Motif',
-    price: 13999,
-    imageSrc: '/images/kurta-2.jpg',
-    imageAlt: 'Charcoal Grey Bandhgala with Gold Crest Motif',
+    name: 'Rose Bandhgala & Linen Shirt',
+    price: 24999,
+    imageSrc: '/images/original-rose-bandhgala-shirt.jpg',
+    imageAlt: 'Rose Bandhgala & Linen Shirt',
     href: '/product/6',
   },
 ];
 
-// The 4 Core Menswear Haute Wings
-const menswearWings = [
+const defaultMenswearWings = [
   {
-    title: 'The Imperial Sherwani',
-    subtitle: 'Antique Zardozi & Resham Embroidery on Pure Mulberry Silk',
-    href: '/category/sherwani',
-    imageSrc: '/images/category-sherwani.jpg',
-    tag: 'Wedding & Coronation',
-    hours: '120+ Karigar Hours',
-    number: '01',
+    title: 'Suits',
+    subtitle: 'Embroidered blazers, two-piece suits, coats & evening tuxedos',
+    href: '/category/suits',
+    image: '/images/original-sage-suit.jpg',
   },
   {
-    title: 'The Jodhpur Bandhgala',
-    subtitle: 'Tailored Slate Grey & Cream Silks with Polished Brass Buttons',
-    href: '/category/kurta-jacket',
-    imageSrc: '/images/category-kurta-jacket.jpg',
-    tag: 'Atelier Jodhpuri',
-    hours: '48 Anatomical Checks',
-    number: '02',
+    title: 'Shirts',
+    subtitle: 'Handloom linen shirts, crisp dress shirts & Supima t-shirts',
+    href: '/category/shirts',
+    image: '/images/original-rose-bandhgala-shirt.jpg',
   },
   {
-    title: 'The Handloom Kurta',
-    subtitle: 'Woven on Banaras Pit Looms with Marodi and Resham Detailing',
-    href: '/category/kurta',
-    imageSrc: '/images/category-kurta.jpg',
-    tag: 'Pure Chanderi Silk',
-    hours: '100% Pure Silks',
-    number: '03',
+    title: 'Pants',
+    subtitle: 'Pleated tailored trousers, tuxedo pants & relaxed linens',
+    href: '/category/pants',
+    image: '/images/original-ivory-achkan.jpg',
   },
   {
-    title: 'The Gala Indo-Western',
-    subtitle: 'Sculpted Brocade Tuxedo Lapels for Diplomatic Receptions',
-    href: '/new-arrivals',
-    imageSrc: '/images/menswear-indo-western.jpg',
-    tag: 'Evening Couture',
-    hours: 'Limited Edition Cut',
-    number: '04',
+    title: 'Accessories',
+    subtitle: 'Cashmere doshalas, silk pocket squares, safas & cufflinks',
+    href: '/category/accessories',
+    image: '/images/menswear-accessories.jpg',
+  },
+  {
+    title: 'Indian Wear',
+    subtitle: 'Kurta pyjama sets, imperial sherwanis & Jodhpur bandhgalas',
+    href: '/category/indian-wear',
+    image: '/images/original-noir-bandhgala.jpg',
   },
 ];
 
-// Testimonials from discerning patrons
-const testimonials = [
+const clientPerspectives = [
   {
-    quote: "Needle Fashion crafted my wedding sherwani in pure ivory cream with antique gold zardozi. The silhouette, fall, and handwork were absolutely peerless.",
-    author: "Vikramaditya Sharma",
-    location: "Udaipur & Mumbai",
-    role: "Groom 2026",
+    quote:
+      'The drape of the ivory sherwani required zero adjustment on the morning of our ceremony in Udaipur. Quietly extraordinary tailoring.',
+    author: 'Raghavendra Singhania',
+    location: 'Udaipur',
   },
   {
-    quote: "The slate grey silk bandhgala with engraved brass buttons was tailored to perfection. The 48-point bespoke measurement resulted in an effortless drape.",
-    author: "Rohit Singhania",
-    location: "South Mumbai",
-    role: "Private Client",
+    quote:
+      'Needle Fashion understands restraint. My midnight bandhgala had the precision of Savile Row with unmistakable Indian soul.',
+    author: 'Vikramaditya Kapoor',
+    location: 'New Delhi',
   },
   {
-    quote: "The pure cashmere doshala and hand-stitched Chanderi kurta have extraordinary texture and richness. Contemporary Indian menswear at its finest.",
-    author: "Devendra Rathore",
-    location: "Jaipur & Dubai",
-    role: "Couture Collector",
+    quote:
+      'From the first fabric swatch to the final basted fitting, every detail felt personal, unhurried, and deeply considered.',
+    author: 'Arjun & Kabir Malhotra',
+    location: 'Mumbai',
   },
 ];
 
-export default function Home() {
+export default function HomePage() {
+  const { getSection, commerce } = useSiteConfig();
+
+  const heroSection = getSection('home', 'hero');
+  const wingsSection = getSection('home', 'menswear-wings');
+  const featuredSection = getSection('home', 'featured-pieces');
+  const karigarSection = getSection('home', 'karigar-atelier');
+  const salonSection = getSection('home', 'royal-salon');
+  const palaceSection = getSection('home', 'palace-night');
+
+  const heroImg = heroSection?.media?.[0];
+  const menswearWings =
+    wingsSection?.media && wingsSection.media.length > 0
+      ? wingsSection.media.map((m) => ({
+          title: m.title || m.alt || 'Category',
+          subtitle: m.subtitle || '',
+          href: m.href || '/categories',
+          image: m.url,
+          alt: m.alt || m.title || 'Category',
+        }))
+      : defaultMenswearWings.map((w) => ({ ...w, alt: w.title }));
+
+  const featuredProducts =
+    featuredSection?.media && featuredSection.media.length > 0
+      ? featuredSection.media.map((m, idx) => ({
+          id: m.slotKey || String(idx + 1),
+          name: m.title || m.alt || 'Atelier Piece',
+          price: m.priceInr ?? 29999,
+          imageSrc: m.url,
+          imageAlt: m.alt || m.title || 'Atelier Piece',
+          href: m.href || `/product/${idx + 1}`,
+        }))
+      : defaultFeaturedProducts;
+
   return (
-    <div className="bg-background text-foreground transition-colors overflow-hidden relative">
-      {/* Ambient Atmospheric Gold Lighting Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] ambient-gold-glow pointer-events-none -z-0" />
-      <div className="absolute top-[1600px] -left-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none -z-0" />
-      <div className="absolute top-[3200px] -right-40 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none -z-0" />
-
-
-
-      {/* 1. Grand Editorial Glassmorphic Hero Section */}
-      <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
-        {/* Vintage Royal Mughal Palace Backdrop */}
-        <div className="absolute inset-0 pointer-events-none select-none -z-0 overflow-hidden">
-          <Image
-            src="/images/vintage-hero-palace.webp"
-            alt="Vintage Royal Indian Palace Architecture"
-            fill
-            priority
-            className="object-cover object-center lg:object-right opacity-55 dark:opacity-45 sepia-[0.16] contrast-[1.1] brightness-[0.98] scale-[1.02]"
-          />
-          {/* Asymmetrical gradient mask: solid behind text on left, opens up to palace grandeur on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/65 via-45% to-transparent dark:from-background dark:via-background/70 dark:via-45% dark:to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40 dark:from-background dark:via-transparent dark:to-background/40" />
+    <main className="bg-background text-foreground">
+      {commerce.announcementText && (
+        <div className="bg-foreground text-background text-center py-2 px-4 text-[11px] uppercase tracking-[0.22em]">
+          {commerce.announcementText}
         </div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            
-            {/* Left Column: Glassmorphic Editorial Docket */}
-            <div className="lg:col-span-7 z-10 flex flex-col justify-center">
+      )}
 
-              {/* Main Headline with Gold Foil Shimmer */}
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-                Heirloom Indian Menswear,{' '}
-                <span className="text-gold-foil block mt-1">Tailored to Perfection.</span>
-              </h1>
-
-              {/* Subheadline */}
-              <p className="mt-4 sm:mt-6 text-sm sm:text-base lg:text-lg leading-relaxed text-muted-foreground max-w-xl font-light">
-                Needle Fashion sculpts pure Banarasi silks, tailored slate greys, and cashmere creams with master Karigar 24K gold & sterling silver zardozi embroidery and 48-point bespoke made-to-measure tailoring.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="mt-6 sm:mt-10 flex flex-wrap items-center gap-3 sm:gap-4">
-                <Link
-                  href="/new-arrivals"
-                  className="btn-glass-gold rounded-full px-6 sm:px-8 py-3.5 sm:py-4 text-xs uppercase tracking-[0.18em] font-bold shadow-xl flex items-center gap-2"
-                >
-                  <span>Explore Collection</span>
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/contact"
-                  className="glass-pill px-5 sm:px-7 py-3.5 sm:py-4 text-xs uppercase tracking-[0.18em] font-semibold text-foreground hover:border-[#BBC2CC] hover:text-primary transition-all shadow-sm border border-border/80"
-                >
-                  Book Appointment &rarr;
-                </Link>
-              </div>
-
-              {/* 3 Floating Glass Stat Capsules */}
-              <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border/70 grid grid-cols-3 gap-2 sm:gap-6">
-                <div className="glass-card p-2 sm:p-4 rounded-xl sm:rounded-2xl text-center">
-                  <p className="font-serif text-base sm:text-2xl font-black text-foreground">120+ Hrs</p>
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">Zardozi Work</p>
-                </div>
-                <div className="glass-card p-2 sm:p-4 rounded-xl sm:rounded-2xl text-center border-primary/30">
-                  <p className="font-serif text-base sm:text-2xl font-black text-primary">100%</p>
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">Handloom Silks</p>
-                </div>
-                <div className="glass-card p-2 sm:p-4 rounded-xl sm:rounded-2xl text-center">
-                  <p className="font-serif text-base sm:text-2xl font-black text-foreground">48-Point</p>
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">Bespoke Fit</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Hero Fashion Artwork with Frosted Glass Overlay Docket */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-md lg:max-w-none">
-                {/* Decorative golden ambient frame */}
-                <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-primary/30 via-transparent to-primary/20 blur-2xl opacity-70" />
-                
-                <div className="relative rounded-3xl overflow-hidden border border-primary/40 shadow-2xl glass-panel p-2">
-                  <div className="relative h-[540px] sm:h-[620px] w-full rounded-2xl overflow-hidden">
-                    <Image
-                      src="/images/hero-ethnic.jpg"
-                      alt="Needle Fashion Imperial Royal Groom Sherwani in Cream and Gold"
-                      fill
-                      priority
-                      className="object-cover object-top hover:scale-105 transition-transform duration-1000 ease-out"
-                    />
-                    
-                    {/* Floating Frosted Glass Masterpiece Docket */}
-                    <div className="absolute bottom-5 left-4 right-4 p-5 rounded-2xl glass-panel-gold border border-white/40 dark:border-primary/40 text-foreground flex items-center justify-between shadow-2xl">
-                      <div>
-                        <div className="flex items-center gap-1.5 text-[9.5px] tracking-[0.24em] uppercase text-primary font-bold">
-                          <SparklesIcon className="w-3.5 h-3.5" />
-                          <span>Imperial Commission 01/26</span>
-                        </div>
-                        <p className="font-serif text-base sm:text-lg font-bold text-foreground mt-0.5">
-                          The Rajsabha Imperial Sherwani
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
-                          Pure Mulberry Silk with Master Handcrafted Zari
-                        </p>
-                      </div>
-                      <Link
-                        href="/new-arrivals"
-                        className="btn-glass-gold px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider flex-shrink-0"
-                      >
-                        Inspect Piece
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Atelier Showcase Ticker Strip */}
-      <GoldAtelierTicker />
-
-      {/* 2. Floating Frosted Glass Sovereign Guarantee Bar */}
-      <section className="py-8 relative z-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="flex items-start gap-4 p-5 rounded-3xl glass-card">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
-                <ScissorsIcon className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-foreground">48-Point Bespoke Fit</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Tailored to your anatomical contour with lifetime complimentary alterations.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-5 rounded-3xl glass-card">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
-                <SparklesIcon className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-foreground">Master Karigar Lineage</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Generational pit-loom weavers from Varanasi, Lucknow, and Bengal handcraft every weave.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-5 rounded-3xl glass-card">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
-                <ShieldCheckIcon className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-foreground">24K Gold & Silver Zari</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Genuine metallic bullion wires, sterling silver dabka, and polished heraldic crest buttons.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-5 rounded-3xl glass-card">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
-                <TruckIcon className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-foreground">Diplomatic Insured Transit</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Dispatched globally in museum-grade unbleached muslin trunks across 45 countries.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. The Four Menswear Haute Wings (Glassmorphic Cards) */}
-      <section aria-labelledby="wings-heading" className="py-20 sm:py-28 relative overflow-hidden">
-        {/* Subtle vintage jaali filigree watermark in background */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.18] dark:opacity-[0.14] -z-0">
-          <div
-            className="w-full h-full"
-            style={{
-              backgroundImage: "url('/images/vintage-jaali-motif.webp')",
-              backgroundSize: '360px 360px',
-              backgroundRepeat: 'repeat',
-            }}
-          />
-        </div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 id="wings-heading" className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
-              The Four Menswear Haute Wings
-            </h2>
-            <div className="w-20 h-0.5 mx-auto mt-4 mb-4 opacity-75" style={{ background: 'linear-gradient(to right, transparent, #C5A059, transparent)' }} />
-            <p className="text-sm text-muted-foreground font-light">
-              Exclusively created for gentlemen of distinction. Sculpted in tailored slate greys, royal creams, and white silks with antique gold and sterling silver flourishes.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {menswearWings.map((wing) => (
-              <div
-                key={wing.title}
-                className="group relative rounded-3xl overflow-hidden glass-card flex flex-col justify-between"
-              >
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-secondary">
-                  <Image
-                    src={wing.imageSrc}
-                    alt={wing.title}
-                    fill
-                    className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
-                  {/* Floating Top Tag */}
-                  <div className="absolute top-4 left-4">
-                    <span className="glass-pill px-3 py-1 text-[9.5px] uppercase tracking-wider text-primary font-bold shadow-md">
-                      {wing.tag}
-                    </span>
-                  </div>
-
-                  {/* Badge at Bottom of Image */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white/90">
-                    <span className="text-[10px] uppercase tracking-wider text-cream/90 font-medium">{wing.hours}</span>
-                    <span className="font-mono text-xs text-primary font-bold">{wing.number}</span>
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col justify-between flex-1">
-                  <div>
-                    <h3 className="font-serif text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                      <Link href={wing.href}>
-                        <span className="absolute inset-0" />
-                        {wing.title}
-                      </Link>
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-2 font-light leading-relaxed">
-                      {wing.subtitle}
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-widest font-bold text-primary group-hover:translate-x-1 transition-transform flex items-center gap-1.5">
-                      Explore Wing <ArrowRightIcon className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase: Six Moods — The Needle Archive */}
-      <NeedleArchiveMoods />
-
-      {/* 4. Featured Masterpieces Carousel */}
-      <section aria-labelledby="trending-heading" className="py-16 sm:py-24 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="p-6 sm:p-12 rounded-3xl glass-panel border border-border/80 shadow-xl">
-            <ProductCarousel products={featuredProducts} title="Featured Masterpieces" />
-
-            <div className="mt-12 text-center">
-              <Link
-                href="/new-arrivals"
-                className="inline-flex items-center gap-2 btn-glass-gold rounded-full px-8 py-3.5 text-xs uppercase tracking-[0.18em] font-bold shadow-md hover:scale-105 transition-all"
-              >
-                <span>View Complete Runway Collection</span>
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase: Try the Look — Complete Menswear Ensemble */}
-      <TryTheLookShowcase />
-
-      {/* 5. Master Karigar Artisanal Lineage Section (Beating Sabyasachi & Manish Malhotra) */}
-      <section className="py-20 sm:py-28 relative overflow-hidden">
-        {/* Vintage 19th Century Textile Atelier Backdrop */}
-        <div className="absolute inset-0 pointer-events-none select-none -z-0 overflow-hidden">
-          <Image
-            src="/images/vintage-karigar-atelier.webp"
-            alt="Historical Royal Indian Weaving Atelier"
-            fill
-            className="object-cover object-center opacity-50 dark:opacity-45 sepia-[0.22] contrast-[1.08] brightness-[0.96]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/50 to-background/90 dark:from-background/90 dark:via-background/55 dark:to-background/90" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/80" />
-        </div>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            {/* Image of Karigar Handwork */}
-            <div className="lg:col-span-6 relative">
-              <div className="relative rounded-3xl overflow-hidden glass-panel p-2 shadow-2xl border border-primary/30">
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                  <Image
-                    src="/images/menswear-karigar.jpg"
-                    alt="Master Karigar Hands Weaving 24K Gold Zari"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5 text-white">
-                    <span className="text-[10px] uppercase tracking-[0.22em] text-primary font-bold">Heirloom Handloom Archive</span>
-                    <h3 className="font-serif text-lg sm:text-xl font-bold mt-1">Varanasi &amp; Lucknow Zari Lineage</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Story & Technical Craft */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 glass-pill px-3.5 py-1 text-primary text-[10px] font-bold uppercase tracking-[0.2em]">
-                <SparklesIcon className="w-3.5 h-3.5" />
-                <span>Museum-Grade Indian Craftsmanship</span>
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
-                Authentic 24K Gold Wire &amp; Hand-Operated Pit Looms
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed font-light">
-                While commercial fashion houses rely on synthetic lurex threads and automated industrial presses, Needle Fashion commissions hereditary artisan families who trace their techniques back four centuries to the Mughal and Rajput royal courts.
-              </p>
-
-              <div className="space-y-4 pt-2">
-                <div className="p-4 rounded-2xl glass-card flex items-start gap-3.5">
-                  <CheckBadgeIcon className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-serif text-sm font-bold text-foreground">Marodi &amp; Dabka Antique Relief</h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">Bullion coils wound by hand to create three-dimensional sculpted heraldry on velvet and silk.</p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl glass-card flex items-start gap-3.5">
-                  <CheckBadgeIcon className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-serif text-sm font-bold text-foreground">Pure Chanderi &amp; Banarasi Handlooms</h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">Woven without synthetic plastic or polyester, ensuring natural breathability and royal drape.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/about"
-                  className="btn-glass-gold rounded-full px-8 py-3.5 text-xs uppercase tracking-[0.16em] font-bold inline-flex items-center gap-2"
-                >
-                  <span>Explore Atelier Craftsmanship &rarr;</span>
-                </Link>
-                <ShahiFarmanTrigger
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-xs uppercase tracking-[0.16em] font-bold border border-primary/40 bg-secondary/60 hover:bg-primary/20 text-foreground transition-all shadow-sm"
-                  label="📜 शाही फ़रमान (Unroll Royal Decree)"
-                />
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase: Pick a Weave — Tilting Tactile Cards */}
-      <PickAWeaveShowcase />
-
-      {/* 6. Royal Regalia & Accents (Pashmina Doshala, Safa, Kalgi) */}
-      <section className="py-16 sm:py-24 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-semibold tracking-[0.25em] uppercase text-primary mb-2 block">
-              ✦ Imperial Groom Ensemble ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground">
-              Royal Accents &amp; Heirloom Regalia
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-              The crowning touches of the groom&apos;s ensemble: pure cashmere doshala shawls, ivory chanderi safas, and handcrafted kalgis.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="group relative rounded-3xl overflow-hidden glass-card p-4">
-              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-secondary">
-                <Image
-                  src="/images/menswear-doshala.jpg"
-                  alt="Pure Cashmere Royal Doshala Shawl"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-4 sm:p-6">
-                <span className="text-[10px] uppercase tracking-wider text-primary font-bold">Pure Pashmina Weave</span>
-                <h3 className="font-serif text-2xl font-bold text-foreground mt-1">The Royal Doshala Shawl</h3>
-                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                  Draped over the bandhgala or sherwani shoulder, framed with antique gold tilla paisley borders.
-                </p>
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                  <span className="font-serif font-bold text-primary">₹12,499</span>
-                  <Link href="/new-arrivals" className="text-xs font-bold uppercase tracking-wider text-primary hover:underline">
-                    Inspect Shawl &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="group relative rounded-3xl overflow-hidden glass-card p-4">
-              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-secondary">
-                <Image
-                  src="/images/menswear-accessories.jpg"
-                  alt="Ivory Safa Turban with Emerald Kalgi and Monogram Cufflinks"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-4 sm:p-6">
-                <span className="text-[10px] uppercase tracking-wider text-primary font-bold">Coronation Jewelry</span>
-                <h3 className="font-serif text-2xl font-bold text-foreground mt-1">Safa, Kalgi &amp; Needle Cufflinks</h3>
-                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                  Ivory silk turban pre-tied with antique gold emerald kalgi brooch and hand-embroidered mojari footwear.
-                </p>
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between">
-                  <span className="font-serif font-bold text-primary">Complete Set Available</span>
-                  <Link href="/contact" className="text-xs font-bold uppercase tracking-wider text-primary hover:underline">
-                    Consult Stylist &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase: Browse the Atelier Rack */}
-      <AtelierRackShowcase />
-
-      {/* 7. Bespoke 48-Point Atelier Consultation Service (Superior to Manyavar & Manish Malhotra) */}
-      <section className="py-20 sm:py-28 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl glass-panel-gold p-8 sm:p-14 lg:p-16 relative overflow-hidden shadow-2xl border border-primary/40">
-            {/* Vintage Royal Bespoke Fitting Chamber Backdrop */}
-            <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-              <Image
-                src="/images/vintage-royal-salon.webp"
-                alt="Vintage Royal Fitting Salon"
-                fill
-                className="object-cover object-right opacity-65 dark:opacity-55 sepia-[0.18] contrast-[1.08]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-card via-card/75 via-50% to-card/15 dark:from-[#13151C] dark:via-[#13151C]/75 dark:via-50% dark:to-[#13151C]/15" />
-              <div className="absolute inset-0 bg-gradient-to-t from-card/50 via-transparent to-card/30 dark:from-[#13151C]/50 dark:via-transparent dark:to-[#13151C]/30" />
-            </div>
-            <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 glass-pill px-3.5 py-1 text-primary text-[10px] font-bold uppercase tracking-[0.22em] mb-4">
-                <SparklesIcon className="w-3.5 h-3.5" />
-                <span>The 48-Point Haute Couture Protocol</span>
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">
-                Anatomical Fit Sculpted Exclusively for Your Physique
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed font-light">
-                Standard sizing off-the-rack cannot match the regal carriage of bespoke tailoring. Our master cutters contour shoulder slope, chest curvature, armhole depth, and sleeve pitch for effortless authority.
-              </p>
-
-              <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-border/80">
-                <div className="p-4 rounded-2xl glass-card">
-                  <span className="font-serif text-2xl font-black text-primary">01</span>
-                  <p className="text-xs font-bold uppercase tracking-wider text-foreground mt-1">Private Video Fitting</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">1-on-1 consultation with senior master cutter</p>
-                </div>
-                <div className="p-4 rounded-2xl glass-card">
-                  <span className="font-serif text-2xl font-black text-primary">02</span>
-                  <p className="text-xs font-bold uppercase tracking-wider text-foreground mt-1">Archival Silk Swatches</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Pure Banarasi &amp; Chanderi sent to your home</p>
-                </div>
-                <div className="p-4 rounded-2xl glass-card">
-                  <span className="font-serif text-2xl font-black text-primary">03</span>
-                  <p className="text-xs font-bold uppercase tracking-wider text-foreground mt-1">Museum-Grade Delivery</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Complimentary lifetime alteration guarantee</p>
-                </div>
-              </div>
-
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Link
-                  href="/contact"
-                  className="btn-glass-gold rounded-full px-8 py-4 text-xs uppercase tracking-[0.18em] font-bold shadow-xl"
-                >
-                  Commission Bespoke Piece
-                </Link>
-                <Link
-                  href="/new-arrivals"
-                  className="glass-pill px-7 py-4 text-xs uppercase tracking-[0.18em] font-semibold text-foreground hover:border-primary hover:text-primary transition-all"
-                >
-                  Inspect Current Runway &rarr;
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Showcase: Groom Coronation Edit — Curved Arch Carousel */}
-      <CoronationCurvedCarousel />
-
-      {/* 8. Patron Connoisseurs & Royal Testimonials */}
-      <section className="py-16 sm:py-24 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-semibold tracking-[0.25em] uppercase text-primary mb-2 block">
-              ✦ Words of Patronage ✦
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Client Perspectives &amp; Testimonials
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, idx) => (
-              <div key={idx} className="p-8 rounded-3xl glass-card flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-1 text-primary mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-sm">★</span>
-                    ))}
-                  </div>
-                  <p className="font-serif text-sm sm:text-base text-foreground leading-relaxed italic">
-                    &ldquo;{t.quote}&rdquo;
+      {/* Editorial Hero */}
+      {heroSection?.enabled !== false && (
+        <section className="relative border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <div className="lg:col-span-6 space-y-8 order-2 lg:order-1">
+                <div className="space-y-5">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+                    {heroSection?.eyebrow || 'Indian Craft · Modern Tailoring'}
+                  </p>
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-foreground leading-[1.08]">
+                    {heroSection?.title || 'Indian Heritage Fabric, Tailored for the World'}
+                  </h1>
+                  <p className="text-base sm:text-lg font-light text-muted-foreground leading-relaxed max-w-lg">
+                    {heroSection?.subtitle ||
+                      'Bespoke suits, coats, tuxedos, shirts, and ceremonial Indian wear—uniting handloom textiles and karigar embroidery with timeless Western and Indian silhouettes.'}
                   </p>
                 </div>
-                <div className="mt-8 pt-4 border-t border-border/50">
-                  <p className="font-serif text-sm font-bold text-foreground">{t.author}</p>
-                  <p className="text-xs text-muted-foreground">{t.role} • {t.location}</p>
+
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <Link
+                    href={heroSection?.ctaHref || '/new-arrivals'}
+                    className="px-8 py-4 bg-foreground text-background text-xs uppercase tracking-[0.22em] hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    {heroSection?.ctaLabel || 'Explore Collection'}
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="px-8 py-4 border border-border text-foreground text-xs uppercase tracking-[0.22em] hover:border-foreground transition-colors"
+                  >
+                    Private Appointment
+                  </Link>
+                </div>
+
+                <div className="pt-8 border-t border-border grid grid-cols-3 gap-6 max-w-md">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                      Origin
+                    </p>
+                    <p className="text-xs text-foreground">Varanasi &amp; Lucknow</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                      Tailoring
+                    </p>
+                    <p className="text-xs text-foreground">48-Point Bespoke</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground mb-1">
+                      Service
+                    </p>
+                    <p className="text-xs text-foreground">Worldwide Salon</p>
+                  </div>
                 </div>
               </div>
+
+              <div className="lg:col-span-6 order-1 lg:order-2">
+                <div
+                  className={`relative ${getAspectRatioClass(
+                    heroSection?.aspectRatio || '3:4'
+                  )} w-full max-w-xl mx-auto overflow-hidden bg-muted`}
+                >
+                  <img
+                    src={heroImg?.url || '/images/original-ivory-blazer.jpg'}
+                    alt={heroImg?.alt || 'Needle Fashion Ivory Mughal Embroidered Tailored Suit'}
+                    className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                      heroSection?.objectFit
+                    )} ${getFocalPointClass(heroSection?.focalPoint || 'top')}`}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Couture Wings */}
+      {wingsSection?.enabled !== false && (
+        <section className="py-20 sm:py-28">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground mb-3">
+                  {wingsSection?.eyebrow || 'The House Wardrobe'}
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-foreground">
+                  {wingsSection?.title || 'Couture Categories'}
+                </h2>
+              </div>
+              <Link
+                href={wingsSection?.ctaHref || '/categories'}
+                className="text-xs uppercase tracking-[0.2em] text-foreground hover:text-accent transition-colors border-b border-border pb-1 self-start sm:self-auto"
+              >
+                {wingsSection?.ctaLabel || 'View All Categories'}
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-5 gap-y-10">
+              {menswearWings.map((wing) => (
+                <Link key={wing.title} href={wing.href} className="group block">
+                  <div
+                    className={`relative ${getAspectRatioClass(
+                      wingsSection?.aspectRatio || '3:4'
+                    )} w-full overflow-hidden bg-muted mb-5`}
+                  >
+                    <img
+                      src={wing.image}
+                      alt={wing.alt}
+                      className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                        wingsSection?.objectFit
+                      )} ${getFocalPointClass(
+                        wingsSection?.focalPoint || 'top'
+                      )} transition-transform duration-700 ease-out group-hover:scale-[1.03]`}
+                    />
+                  </div>
+                  <h3 className="text-base font-normal text-foreground group-hover:text-accent transition-colors">
+                    {wing.title}
+                  </h3>
+                  <p className="text-xs font-light text-muted-foreground mt-1.5 leading-relaxed">
+                    {wing.subtitle}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Six Moods Lookbook */}
+      <NeedleArchiveMoods />
+
+      {/* Featured Masterpieces */}
+      {featuredSection?.enabled !== false && (
+        <section className="py-20 sm:py-28 border-t border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground mb-3">
+                  {featuredSection?.eyebrow || 'Curated Selection'}
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-foreground">
+                  {featuredSection?.title || 'Featured Masterpieces'}
+                </h2>
+              </div>
+              <Link
+                href={featuredSection?.ctaHref || '/new-arrivals'}
+                className="text-xs uppercase tracking-[0.2em] text-foreground hover:text-accent transition-colors border-b border-border pb-1 self-start sm:self-auto"
+              >
+                {featuredSection?.ctaLabel || 'Shop New Arrivals'}
+              </Link>
+            </div>
+
+            <ProductCarousel products={featuredProducts} title={featuredSection?.title || 'Featured Masterpieces'} />
+          </div>
+        </section>
+      )}
+
+      {/* Complete Groom Styling */}
+      <TryTheLookShowcase />
+
+      {/* Fabrics & Weaves */}
+      <PickAWeaveShowcase />
+
+      {/* Artisanal Heritage */}
+      {karigarSection?.enabled !== false && (
+        <section className="py-20 sm:py-28 border-t border-border bg-secondary/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <div className="lg:col-span-6">
+                <div
+                  className={`relative ${getAspectRatioClass(
+                    karigarSection?.aspectRatio || '16:10'
+                  )} w-full overflow-hidden bg-muted`}
+                >
+                  <img
+                    src={karigarSection?.media?.[0]?.url || '/images/vintage-karigar-atelier.webp'}
+                    alt={karigarSection?.media?.[0]?.alt || 'Master Karigar Atelier'}
+                    className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                      karigarSection?.objectFit
+                    )} ${getFocalPointClass(karigarSection?.focalPoint)}`}
+                  />
+                </div>
+              </div>
+
+              <div className="lg:col-span-6 space-y-6">
+                <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+                  {karigarSection?.eyebrow || 'Artisanal Lineage'}
+                </p>
+                <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-foreground leading-tight">
+                  {karigarSection?.title || 'Two Hundred Hours of Hand Zardozi'}
+                </h2>
+                <p className="text-sm sm:text-base font-light text-muted-foreground leading-relaxed max-w-lg">
+                  {karigarSection?.subtitle ||
+                    'Every ceremonial sherwani is stretched on a traditional wooden adda frame in our Lucknow workshop, where fourth-generation karigars coil bullion wire, resham, and pearls by hand.'}
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href={karigarSection?.ctaHref || '/about'}
+                    className="inline-block px-7 py-3.5 border border-border text-foreground text-xs uppercase tracking-[0.2em] hover:border-foreground transition-colors"
+                  >
+                    {karigarSection?.ctaLabel || 'Discover Our Craft'}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Bespoke 48-Point Tailoring */}
+      {salonSection?.enabled !== false && (
+        <section className="py-20 sm:py-28 border-t border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <div className="lg:col-span-6 space-y-6 order-2 lg:order-1">
+                <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+                  {salonSection?.eyebrow || 'Private Salon'}
+                </p>
+                <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-foreground leading-tight">
+                  {salonSection?.title || '48-Point Bespoke Pattern Making'}
+                </h2>
+                <p className="text-sm sm:text-base font-light text-muted-foreground leading-relaxed max-w-lg">
+                  {salonSection?.subtitle ||
+                    'From shoulder slope to collar height, each garment is drafted to your exact posture. Basted muslin trials are conducted in-salon or via private video consultation worldwide.'}
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href={salonSection?.ctaHref || '/contact'}
+                    className="inline-block px-7 py-3.5 bg-foreground text-background text-xs uppercase tracking-[0.2em] hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    {salonSection?.ctaLabel || 'Request a Fitting'}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="lg:col-span-6 order-1 lg:order-2">
+                <div
+                  className={`relative ${getAspectRatioClass(
+                    salonSection?.aspectRatio || '16:10'
+                  )} w-full overflow-hidden bg-muted`}
+                >
+                  <img
+                    src={salonSection?.media?.[0]?.url || '/images/vintage-royal-salon.webp'}
+                    alt={salonSection?.media?.[0]?.alt || 'Needle Fashion Private Salon'}
+                    className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                      salonSection?.objectFit
+                    )} ${getFocalPointClass(salonSection?.focalPoint)}`}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Editorial Wardrobe Rail */}
+      <AtelierRackShowcase />
+
+      {/* The Coronation Edit */}
+      <CoronationCurvedCarousel />
+
+      {/* Notes from the Atelier */}
+      <AtelierMotionReels />
+
+      {/* Client Perspectives */}
+      <section className="py-20 sm:py-28 border-t border-border bg-secondary/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-14">
+            <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground mb-3">
+              Clientele
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-foreground">
+              Words from Our Patrons
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14">
+            {clientPerspectives.map((item) => (
+              <blockquote
+                key={item.author}
+                className="border-t border-border pt-6 flex flex-col justify-between space-y-6"
+              >
+                <p className="text-sm sm:text-base font-light text-foreground leading-relaxed">
+                  &ldquo;{item.quote}&rdquo;
+                </p>
+                <footer>
+                  <p className="text-xs font-normal text-foreground">
+                    {item.author}
+                  </p>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground mt-1">
+                    {item.location}
+                  </p>
+                </footer>
+              </blockquote>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Showcase: Tailoring, In Motion — 3D Lookbook Reels */}
-      <AtelierMotionReels />
-
-      {/* 9. Sovereign Atelier Call to Action */}
-      <section className="py-16 sm:py-24 relative">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl glass-panel p-8 sm:p-12 border border-primary/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 shadow-xl relative overflow-hidden">
-            {/* Vintage Palace at Twilight Backdrop */}
-            <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-              <Image
-                src="/images/vintage-palace-night.webp"
-                alt="Vintage Indian Heritage Palace at Twilight"
-                fill
-                className="object-cover object-center opacity-70 dark:opacity-65 contrast-[1.1] brightness-[0.94]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-card/80 via-card/55 to-card/75 dark:from-[#111318]/80 dark:via-[#111318]/55 dark:to-[#111318]/75" />
-              <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-card/40 dark:from-[#111318]/60 dark:via-transparent dark:to-[#111318]/40" />
-            </div>
-            <div className="relative z-10">
-              <span className="text-xs font-semibold tracking-[0.25em] uppercase text-primary mb-2 block">
-                ✦ The Grand Atelier Awaits ✦
-              </span>
-              <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-foreground">
-                Tailored with Distinction. Crafted for Defining Moments.
-              </h2>
-              <p className="mt-2 text-xs sm:text-sm text-muted-foreground font-light max-w-xl">
-                Explore our current runway creations or book an appointment at our private fitting salons.
-              </p>
-            </div>
-            <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 flex-shrink-0">
+      {/* Private Salon Banner */}
+      {palaceSection?.enabled !== false && (
+        <section className="relative py-28 sm:py-36 overflow-hidden bg-[#141414] text-[#FAF9F6]">
+          <img
+            src={palaceSection?.media?.[0]?.url || '/images/vintage-palace-night.webp'}
+            alt={palaceSection?.media?.[0]?.alt || 'Needle Fashion Private Salon'}
+            className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+              palaceSection?.objectFit
+            )} ${getFocalPointClass(palaceSection?.focalPoint)} opacity-35`}
+          />
+          <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-6">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[#FAF9F6]/70">
+              {palaceSection?.eyebrow || 'By Appointment'}
+            </p>
+            <h2 className="text-3xl sm:text-5xl font-light tracking-tight leading-tight">
+              {palaceSection?.title || 'Reserve Your Private Salon Consultation'}
+            </h2>
+            <p className="text-sm sm:text-base font-light text-[#FAF9F6]/80 max-w-xl mx-auto leading-relaxed">
+              {palaceSection?.subtitle ||
+                'Meet our master tailors in person or via private video appointment to select fabrics, weaves, and custom embroidery.'}
+            </p>
+            <div className="pt-4">
               <Link
-                href="/new-arrivals"
-                className="btn-glass-gold rounded-full px-6 sm:px-8 py-3.5 sm:py-4 text-xs uppercase tracking-[0.18em] font-bold shadow-xl"
+                href={palaceSection?.ctaHref || '/contact'}
+                className="inline-block px-8 py-4 border border-[#FAF9F6]/60 text-[#FAF9F6] text-xs uppercase tracking-[0.22em] hover:bg-[#FAF9F6] hover:text-[#141414] transition-colors"
               >
-                Explore Collection
-              </Link>
-              <Link
-                href="/contact"
-                className="glass-pill px-5 sm:px-7 py-3.5 sm:py-4 text-xs uppercase tracking-[0.18em] font-semibold text-foreground hover:border-primary hover:text-primary transition-all"
-              >
-                Book Appointment &rarr;
+                {palaceSection?.ctaLabel || 'Book Private Consultation'}
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      )}
+    </main>
   );
 }

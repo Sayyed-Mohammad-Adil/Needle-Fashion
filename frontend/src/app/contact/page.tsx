@@ -5,14 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'react-hot-toast';
-import {
-  EnvelopeIcon,
-  PhoneIcon,
-  MapPinIcon,
-  ClockIcon,
-  SparklesIcon,
-  CheckCircleIcon,
-} from '@heroicons/react/24/outline';
 import { inquiryService } from '@/lib/api/inquiry-service';
 
 const contactFormSchema = z.object({
@@ -77,10 +69,10 @@ export default function ContactPage() {
 
       const newId = res.inquiry?._id || 'PATRON-REQUEST';
       setSubmittedInquiryId(newId);
-      toast.success('Your consultation request has been received by our master atelier.');
+      toast.success('Your consultation request has been received.');
       reset();
-    } catch (error: any) {
-      toast.error('Failed to dispatch request. Please connect with our concierge directly.');
+    } catch (error) {
+      toast.error('Failed to send request. Please contact our concierge directly.');
       console.error('Contact form submission error:', error);
     } finally {
       setIsSubmitting(false);
@@ -88,289 +80,231 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-background text-foreground transition-colors duration-300 min-h-screen">
-      {/* Header Banner */}
-      <div className="border-b border-border bg-card/60 py-16 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
-        <div className="max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-primary/30 bg-primary/5 mb-4">
-            <SparklesIcon className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-              Private Atelier Service
-            </span>
-          </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
-            Bespoke Styling Concierge
+    <main className="bg-background text-foreground min-h-screen">
+      <div className="border-b border-border py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground mb-3">
+            Private Client Services
+          </p>
+          <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-foreground">
+            Private Salon &amp; Concierge
           </h1>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4 mb-4" />
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Whether inquiring about our royal wedding collections, custom anatomical measurements, or worldwide diplomatic dispatch, our master stylists are at your disposal.
+          <p className="text-sm sm:text-base font-light text-muted-foreground mt-3 max-w-2xl leading-relaxed">
+            Schedule an in-person fitting, request handloom fabric swatches, or arrange a private video consultation with our master tailors.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Atelier Info Column */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="p-8 rounded-2xl bg-card border border-border shadow-sm">
-              <h2 className="font-serif text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                <span>Flagship Couture Salons</span>
+      <div className="max-w-7xl mx-auto py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16 items-start">
+          {/* Salon Details */}
+          <div className="lg:col-span-5 space-y-10">
+            <div className="space-y-6 border-t border-border pt-6">
+              <h2 className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                Flagship Salons
               </h2>
 
-              <div className="space-y-6 text-sm">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                    <MapPinIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-bold text-foreground">Mumbai Flagship</h3>
-                    <p className="text-muted-foreground text-xs mt-1 leading-relaxed">
-                      Needle Atelier, Heritage Heritage Mile, Colaba, Mumbai 400001
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                    <MapPinIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-bold text-foreground">New Delhi Salon</h3>
-                    <p className="text-muted-foreground text-xs mt-1 leading-relaxed">
-                      Needle Heritage Gallery, Defence Colony Main Ring, New Delhi 110024
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                    <PhoneIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-bold text-foreground">Private Stylist Desk</h3>
-                    <p className="text-muted-foreground text-xs mt-1">+91 (022) 8800-NEEDLE (633353)</p>
-                    <p className="text-[11px] text-primary mt-0.5">Complimentary WhatsApp Video Fitting Available</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                    <EnvelopeIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-bold text-foreground">Bespoke Concierge</h3>
-                    <p className="text-muted-foreground text-xs mt-1">concierge@needlefashion.com</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
-                    <ClockIcon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-bold text-foreground">Salon Hours</h3>
-                    <p className="text-muted-foreground text-xs mt-1">Tuesday – Sunday: 11:00 AM – 8:30 PM IST</p>
-                    <p className="text-[11px] text-muted-foreground">Private appointments accommodated on Mondays</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* VIP Guarantee Card */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-card to-background border border-primary/30 shadow-sm">
-              <h3 className="font-serif text-sm font-bold text-primary uppercase tracking-[0.14em]">
-                Global White-Glove Dispatch
-              </h3>
-              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                All bespoke wedding ensembles are hand-steamed, wrapped in archival muslin preservation cases, and accompanied by insured express diplomatic transit across 45 countries.
-              </p>
-            </div>
-          </div>
-
-          {/* Form Column */}
-          <div className="lg:col-span-7">
-            <div className="p-8 sm:p-10 rounded-2xl bg-card border border-border shadow-md">
-              <div className="mb-8">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-                  Online Inquiries
-                </span>
-                <h2 className="font-serif text-2xl font-bold text-foreground mt-1">
-                  Request an Atelier Appointment
-                </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                  Complete the form below. An atelier stylist will connect with you within 4 business hours.
+              <div className="space-y-1">
+                <h3 className="text-sm font-normal text-foreground">Mumbai Flagship</h3>
+                <p className="text-xs font-light text-muted-foreground leading-relaxed">
+                  Needle Atelier, Heritage Mile, Colaba, Mumbai 400001
                 </p>
               </div>
 
-              {submittedInquiryId && (
-                <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-start gap-3">
-                  <CheckCircleIcon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <div className="text-xs">
-                    <p className="font-semibold text-emerald-400">Request Docket Registered</p>
-                    <p className="text-muted-foreground mt-0.5">
-                      Your inquiry has been placed with Docket ID <span className="font-mono text-primary font-bold">#{submittedInquiryId.substring(Math.max(0, submittedInquiryId.length - 8)).toUpperCase()}</span>. Our master tailor will review your notes shortly.
-                    </p>
-                  </div>
-                </div>
-              )}
+              <div className="space-y-1">
+                <h3 className="text-sm font-normal text-foreground">New Delhi Salon</h3>
+                <p className="text-xs font-light text-muted-foreground leading-relaxed">
+                  Needle Heritage Gallery, Defence Colony Main Ring, New Delhi 110024
+                </p>
+              </div>
+            </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-6 border-t border-border pt-6">
+              <h2 className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                Direct Desk
+              </h2>
+
+              <div className="space-y-1">
+                <p className="text-sm text-foreground">+91 (022) 8800-NEEDLE</p>
+                <p className="text-xs font-light text-muted-foreground">
+                  concierge@needlefashion.com
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs text-foreground">Tuesday – Sunday · 11:00 AM – 8:30 PM IST</p>
+                <p className="text-xs font-light text-muted-foreground">
+                  Monday appointments available by prior request.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Appointment Form */}
+          <div className="lg:col-span-7 border-t border-border pt-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-light tracking-tight text-foreground">
+                Request an Appointment
+              </h2>
+              <p className="text-xs font-light text-muted-foreground mt-2">
+                Our master tailor or client advisor will respond within one business day.
+              </p>
+            </div>
+
+            {submittedInquiryId ? (
+              <div className="border border-border p-8 space-y-4">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-accent">
+                  Request Confirmed
+                </p>
+                <h3 className="text-xl font-light text-foreground">
+                  Reference: {submittedInquiryId}
+                </h3>
+                <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                  Thank you for contacting Needle Fashion. A private client advisor will reach out shortly to confirm your consultation details.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSubmittedInquiryId(null)}
+                  className="px-6 py-3 border border-border text-xs uppercase tracking-[0.2em] text-foreground hover:border-foreground transition-colors"
+                >
+                  Submit Another Inquiry
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
-                      Your Full Name
+                    <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                      Full Name
                     </label>
                     <input
                       type="text"
-                      id="name"
-                      autoComplete="name"
-                      placeholder="e.g. Vikramaditya Rathore"
-                      className={`w-full rounded-xl border bg-background px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                        errors.name ? 'border-red-400' : 'border-border'
-                      }`}
                       {...register('name')}
+                      placeholder="Your name"
+                      className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
                     />
-                    {errors.name && <p className="mt-1.5 text-[11px] text-red-500">{errors.name.message}</p>}
+                    {errors.name && (
+                      <p className="mt-1.5 text-xs text-red-600">{errors.name.message}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
+                    <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
                       Email Address
                     </label>
                     <input
-                      id="email"
                       type="email"
-                      autoComplete="email"
-                      placeholder="e.g. vikram@regal.in"
-                      className={`w-full rounded-xl border bg-background px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                        errors.email ? 'border-red-400' : 'border-border'
-                      }`}
                       {...register('email')}
+                      placeholder="name@example.com"
+                      className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
                     />
-                    {errors.email && <p className="mt-1.5 text-[11px] text-red-500">{errors.email.message}</p>}
+                    {errors.email && (
+                      <p className="mt-1.5 text-xs text-red-600">{errors.email.message}</p>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="phone" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
-                      Contact Number / WhatsApp
+                    <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                      Phone Number
                     </label>
                     <input
                       type="tel"
-                      id="phone"
-                      autoComplete="tel"
-                      placeholder="+91 98765 43210"
-                      className={`w-full rounded-xl border bg-background px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                        errors.phone ? 'border-red-400' : 'border-border'
-                      }`}
                       {...register('phone')}
+                      placeholder="+91 98000 00000"
+                      className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
                     />
-                    {errors.phone && <p className="mt-1.5 text-[11px] text-red-500">{errors.phone.message}</p>}
+                    {errors.phone && (
+                      <p className="mt-1.5 text-xs text-red-600">{errors.phone.message}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label htmlFor="type" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
-                      Engagement Type
+                    <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                      Consultation Type
                     </label>
                     <select
-                      id="type"
-                      className="w-full rounded-xl border border-border bg-background px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       {...register('type')}
+                      className="w-full bg-background border-b border-border py-2.5 text-sm text-foreground focus:border-foreground focus:outline-none"
                     >
-                      <option value="Bespoke Commission">Bespoke Couture Commission</option>
-                      <option value="Atelier Fitting">Private Atelier Fitting</option>
-                      <option value="Custom Measurement">Custom Measurement Guidance</option>
-                      <option value="Order Inquiry">Existing Order Inquiry</option>
-                      <option value="General">General Concierge Query</option>
+                      <option value="Bespoke Commission">Bespoke Commission</option>
+                      <option value="Atelier Fitting">Atelier Fitting</option>
+                      <option value="Custom Measurement">Custom Measurement</option>
+                      <option value="Order Inquiry">Order Inquiry</option>
+                      <option value="General">General Inquiry</option>
                     </select>
                   </div>
                 </div>
 
                 {(selectedType === 'Atelier Fitting' || selectedType === 'Bespoke Commission') && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-4 rounded-xl border border-primary/20 bg-primary/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="preferredDate" className="block text-xs font-semibold uppercase tracking-[0.1em] text-primary mb-1.5">
-                        Preferred Date
+                      <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                        Preferred Date (Optional)
                       </label>
                       <input
                         type="date"
-                        id="preferredDate"
-                        className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
                         {...register('preferredDate')}
+                        className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground focus:border-foreground focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label htmlFor="preferredTime" className="block text-xs font-semibold uppercase tracking-[0.1em] text-primary mb-1.5">
-                        Preferred Salon Slot
+                      <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                        Preferred Time (Optional)
                       </label>
-                      <select
-                        id="preferredTime"
-                        className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                      <input
+                        type="text"
                         {...register('preferredTime')}
-                      >
-                        <option value="">Select Slot</option>
-                        <option value="Morning (11:30 AM - 1:30 PM)">Morning (11:30 AM - 1:30 PM)</option>
-                        <option value="Afternoon (2:30 PM - 5:00 PM)">Afternoon (2:30 PM - 5:00 PM)</option>
-                        <option value="Evening (6:00 PM - 8:30 PM)">Evening (6:00 PM - 8:30 PM)</option>
-                      </select>
+                        placeholder="e.g. 4:00 PM IST"
+                        className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
+                      />
                     </div>
                   </div>
                 )}
 
                 <div>
-                  <label htmlFor="subject" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
-                    Inquiry Title / Occasion
+                  <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    Subject
                   </label>
                   <input
                     type="text"
-                    id="subject"
-                    placeholder="e.g. Royal Wedding Sherwani Consultation for December"
-                    className={`w-full rounded-xl border bg-background px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                      errors.subject ? 'border-red-400' : 'border-border'
-                    }`}
                     {...register('subject')}
+                    placeholder="Bespoke suit fitting, fabric swatch request, etc."
+                    className="w-full bg-transparent border-b border-border py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
                   />
-                  {errors.subject && <p className="mt-1.5 text-[11px] text-red-500">{errors.subject.message}</p>}
+                  {errors.subject && (
+                    <p className="mt-1.5 text-xs text-red-600">{errors.subject.message}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-xs font-semibold uppercase tracking-[0.1em] text-foreground mb-1.5">
-                    Your Requirements & Timeline
+                  <label className="block text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                    Message
                   </label>
                   <textarea
-                    id="message"
                     rows={4}
-                    placeholder="Provide details about event dates, preferred color tones (slate, cream, ivory, antique gold), and bespoke customization..."
-                    className={`w-full rounded-xl border bg-background px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all ${
-                      errors.message ? 'border-red-400' : 'border-border'
-                    }`}
                     {...register('message')}
+                    placeholder="Share your occasion, preferred silhouettes, or sizing notes."
+                    className="w-full bg-transparent border border-border p-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:outline-none"
                   />
-                  {errors.message && <p className="mt-1.5 text-[11px] text-red-500">{errors.message.message}</p>}
+                  {errors.message && (
+                    <p className="mt-1.5 text-xs text-red-600">{errors.message.message}</p>
+                  )}
                 </div>
 
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full btn-luxury-gold py-4 text-xs font-semibold uppercase tracking-[0.18em] flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      'Dispatching Consultation Request...'
-                    ) : (
-                      <>
-                        <SparklesIcon className="w-4 h-4" />
-                        <span>Submit Consultation Request</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 py-4 bg-foreground text-background text-xs uppercase tracking-[0.22em] hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Submitting...' : 'Send Request'}
+                </button>
               </form>
-            </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

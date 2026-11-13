@@ -10,6 +10,7 @@ import { Fragment } from 'react';
 import { productService, categoryService, filterService } from '@/lib/api';
 import { Product, Category } from '@/lib/types';
 import { toast } from 'react-hot-toast';
+import { formatEuro } from '@/lib/currency';
 
 // Interface for frontend product display
 interface DisplayProduct {
@@ -37,10 +38,10 @@ const initialFilters = {
     { value: 'kurta-jacket-set', label: 'Kurta-Jacket Set' },
   ],
   price: [
-    { value: '0-5000', label: 'Under ₹5,000' },
-    { value: '5000-10000', label: 'Between ₹5,000 - ₹10,000' },
-    { value: '10000-20000', label: 'Between ₹10,000 - ₹20,000' },
-    { value: '20000-plus', label: 'Above ₹20,000' },
+    { value: '0-5000', label: 'Under €55' },
+    { value: '5000-10000', label: '€55 – €110' },
+    { value: '10000-20000', label: '€110 – €220' },
+    { value: '20000-plus', label: 'Above €220' },
   ],
   size: [
     { value: '36', label: '36' },
@@ -653,7 +654,7 @@ export default function CatalogPage() {
                             </h3>
                             <p className="mt-1 text-sm text-gray-500">{product.category}</p>
                           </div>
-                          <p className="text-sm font-medium text-gray-900">₹{product.price.toLocaleString()}</p>
+                          <p className="text-sm font-medium text-gray-900">{formatEuro(product.price)}</p>
                         </div>
                         <div className="mt-2">
                           <span className={`inline-flex items-center rounded-md ${product.makeToOrder ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'} px-2 py-1 text-xs font-medium`}>
@@ -677,7 +678,7 @@ export default function CatalogPage() {
                                 {product.name}
                               </Link>
                             </h3>
-                            <p className="text-lg font-medium text-gray-900">₹{product.price.toLocaleString()}</p>
+                            <p className="text-lg font-medium text-gray-900">{formatEuro(product.price)}</p>
                           </div>
                           <p className="mt-1 text-sm text-gray-500">{product.category}</p>
                           <div className="mt-2 grid grid-cols-2 gap-2">

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateInvoicePDF = void 0;
 const pdfkit_1 = __importDefault(require("pdfkit"));
 // Generate GST invoice PDF
-const generateInvoicePDF = (order) => __awaiter(void 0, void 0, void 0, function* () {
+const generateInvoicePDF = async (order) => {
     return new Promise((resolve) => {
         const doc = new pdfkit_1.default({ margin: 50 });
         const buffers = [];
@@ -39,8 +30,11 @@ const generateInvoicePDF = (order) => __awaiter(void 0, void 0, void 0, function
         doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
         doc.moveDown();
         // Customer details
+        const customerLabel = typeof order.user === 'object'
+            ? order.user.name || order.user.email || 'Patron'
+            : String(order.user);
         doc.text('Bill To:');
-        doc.text(`Name: ${order.user.toString()}`);
+        doc.text(`Name: ${customerLabel}`);
         doc.text(`Address: ${order.shippingAddress.address}`);
         doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.postalCode}`);
         doc.text(`Country: ${order.shippingAddress.country}`);
@@ -61,7 +55,10 @@ const generateInvoicePDF = (order) => __awaiter(void 0, void 0, void 0, function
         order.items.forEach((item) => {
             const productTotal = item.price * item.quantity;
             const gstAmount = productTotal * 0.18; // 18% GST
-            doc.text(item.product.toString(), 50, position);
+            const productLabel = typeof item.product === 'object'
+                ? item.product.name || 'Atelier Piece'
+                : String(item.product);
+            doc.text(productLabel, 50, position);
             doc.text(item.quantity.toString(), 280, position);
             doc.text(`₹${item.price.toFixed(2)}`, 350, position);
             doc.text(`₹${gstAmount.toFixed(2)}`, 400, position);
@@ -83,6 +80,6 @@ const generateInvoicePDF = (order) => __awaiter(void 0, void 0, void 0, function
         // Finalize PDF
         doc.end();
     });
-});
+};
 exports.generateInvoicePDF = generateInvoicePDF;
 //# sourceMappingURL=invoice.utils.js.map

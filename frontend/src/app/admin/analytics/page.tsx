@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { analyticsService } from '@/lib/api';
+import { formatEuro } from '@/lib/currency';
 import { toast } from 'react-hot-toast';
 import {
   ChartBarIcon,
@@ -18,6 +19,7 @@ export default function AnalyticsDashboard() {
   const [salesAnalytics, setSalesAnalytics] = useState<any>(null);
   const [productAnalytics, setProductAnalytics] = useState<any>(null);
   const [userAnalytics, setUserAnalytics] = useState<any>(null);
+  const [executiveReport, setExecutiveReport] = useState<any>(null);
 
   useEffect(() => {
     fetchAllAnalytics();
@@ -28,17 +30,19 @@ export default function AnalyticsDashboard() {
       setLoading(true);
 
       // Fetch all analytics data in parallel
-      const [dashboardData, salesData, productData, userData] = await Promise.all([
+      const [dashboardData, salesData, productData, userData, reportData] = await Promise.all([
         analyticsService.getDashboardStats(),
         analyticsService.getSalesAnalytics(),
         analyticsService.getProductAnalytics(),
-        analyticsService.getUserAnalytics()
+        analyticsService.getUserAnalytics(),
+        analyticsService.getExecutiveReport().catch(() => null),
       ]);
 
       setDashboardStats(dashboardData);
       setSalesAnalytics(salesData);
       setProductAnalytics(productData);
       setUserAnalytics(userData);
+      setExecutiveReport(reportData);
     } catch (error) {
       console.error('Error fetching analytics:', error);
       toast.error('Failed to load analytics data');
@@ -325,6 +329,135 @@ export default function AnalyticsDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Executive Financial & Atelier Report */}
+      {executiveReport?.summary && (
+        <div className="mt-8 rounded-lg bg-card p-6 shadow border border-border space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Executive Financial &amp; Atelier Report (Last 30 Days)
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Combined Order Revenue, Atelier Expenses, Net Profit Margin, EU Size Demand &amp; Top VIP Patrons.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted"
+              >
+                Print Report
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const s = executiveReport.summary;
+                  const rows = [
+                    ['Metric', 'INR', 'EUR'],
+                    ['Gross Booked Revenue', String(s.grossBooked), formatEuro(s.grossBooked)],
+                    ['Paid Revenue', String(s.paidRevenue), formatEuro(s.paidRevenue)],
+                    ['Atelier Expenses', String(s.totalExpenses), formatEuro(s.totalExpenses)],
+                    ['Net Profit', String(s.netProfit), formatEuro(s.netProfit)],
+                    ['Net Margin %', `${s.netMarginPercent}%`, `${s.netMarginPercent}%`],
+                  ];
+                  const csv = rows.map((r) => r.join(',')).join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `needle-executive-report-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold"
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="rounded-lg border border-border p-4">
+              <div className="text-xs text-muted-foreground">Paid Revenue</div>
+              <div className="text-xl font-bold text-foreground mt-1">
+                {formatCurrency(executiveReport.summary.paidRevenue || 0)}
+              </div>
+              <div className="text-xs text-primary">{formatEuro(executiveReport.summary.paidRevenue || 0)}</div>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <div className="text-xs text-muted-foreground">Atelier Expenses</div>
+              <div className="text-xl font-bold text-foreground mt-1">
+                {formatCurrency(executiveReport.summary.totalExpenses || 0)}
+              </div>
+              <div className="text-xs text-muted-foreground">{formatEuro(executiveReport.summary.totalExpenses || 0)}</div>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <div className="text-xs text-muted-foreground">Net Profit</div>
+              <div className="text-xl font-bold text-emerald-500 mt-1">
+                {formatCurrency(executiveReport.summary.netProfit || 0)}
+              </div>
+              <div className="text-xs text-emerald-500">{formatEuro(executiveReport.summary.netProfit || 0)}</div>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <div className="text-xs text-muted-foreground">Net Margin</div>
+              <div className="text-xl font-bold text-foreground mt-1">
+                {executiveReport.summary.netMarginPercent || 0}%
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {executiveReport.summary.orderCount || 0} orders
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-3">EU Size &amp; Bespoke Demand</h3>
+              <div className="space-y-2 text-xs">
+                {(executiveReport.sizeBreakdown || []).length === 0 ? (
+                  <p className="text-muted-foreground">No size data in period.</p>
+                ) : (
+                  executiveReport.sizeBreakdown.map((sz: any) => (
+                    <div key={String(sz._id)} className="flex items-center justify-between border-b border-border/60 py-1.5">
+                      <span className="font-medium text-foreground">
+                        {sz._id === 'custom' ? '48-Point Bespoke' : `EU ${sz._id}`}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {sz.units} pcs · {formatCurrency(sz.revenue)} ({formatEuro(sz.revenue)})
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-3">Top VIP Patrons</h3>
+              <div className="space-y-2 text-xs">
+                {(executiveReport.topClients || []).length === 0 ? (
+                  <p className="text-muted-foreground">No client order data yet.</p>
+                ) : (
+                  executiveReport.topClients.slice(0, 5).map((client: any) => (
+                    <div key={String(client._id)} className="flex items-center justify-between border-b border-border/60 py-1.5">
+                      <div>
+                        <div className="font-medium text-foreground">{client.name}</div>
+                        <div className="text-[11px] text-muted-foreground">{client.email}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-foreground">{formatCurrency(client.totalSpent)}</div>
+                        <div className="text-[11px] text-primary">
+                          {formatEuro(client.totalSpent)} · {client.orderCount} orders
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

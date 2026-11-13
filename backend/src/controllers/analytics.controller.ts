@@ -1,285 +1,257 @@
 import { Request, Response } from 'express';
-import { Order } from '../models/order.model';
-import { Product } from '../models/product.model';
-import { User } from '../models/user.model';
-import { SearchAnalytics, ViewAnalytics, SalesAnalytics } from '../models/analytics.model';
+import { prisma, withMongoId, withMongoIds } from '../lib/prisma';
 
-// @desc    Get dashboard analytics
-// @route   GET /api/admin/analytics/dashboard
-// @access  Private/Admin
-export const getDashboardAnalytics = async (req: Request, res: Response) => {
+export const getDashboardAnalytics = async (_req: Request, res: Response) => {
   try {
-    // Get date range (default to last 30 days)
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
 
-    // Get total revenue
-    const totalRevenue = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $group: { _id: null, total: { $sum: '$totalPrice' } } },
-    ]);
-
-    // Get total orders
-    const totalOrders = await Order.countDocuments();
-
-    // Get total users
-    const totalUsers = await User.countDocuments();
-
-    // Get total products
-    const totalProducts = await Product.countDocuments();
-
-    // Get recent orders
-    const recentOrders = await Order.find({})
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .populate('user', 'name');
-
-    // Get revenue by date (last 30 days)
-    const revenueByDate = await Order.aggregate([
-      {
-        $match: {
-          isPaid: true,
-          createdAt: { $gte: startDate, $lte: endDate },
-        },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          total: { $sum: '$totalPrice' },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-
-    // Get top selling products
-    const topSellingProducts = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $unwind: '$orderItems' },
-      {
-        $group: {
-          _id: '$orderItems.product',
-          name: { $first: '$orderItems.name' },
-          totalSold: { $sum: '$orderItems.qty' },
-          totalRevenue: { $sum: { $multiply: ['$orderItems.price', '$orderItems.qty'] } },
-        },
-      },
-      { $sort: { totalSold: -1 } },
-      { $limit: 5 },
-    ]);
-
-    // Get order status counts
-    const orderStatusCounts = await Order.aggregate([
-      {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    // Get low stock products
-    const lowStockProducts = await Product.find({ countInStock: { $lt: 10 } })
-      .limit(5)
-      .select('name category countInStock price');
-
-    res.json({
-      totalRevenue: totalRevenue.length > 0 ? totalRevenue[0].total : 0,
+    const [
+      paidOrders,
       totalOrders,
       totalUsers,
       totalProducts,
       recentOrders,
+      allNonCancelledOrders,
+      lowStockProducts,
+    ] = await Promise.all([
+      prisma.order.findMany({
+        where: { isPaid: true },
+        select: { totalPrice: true, createdAt: true },
+      }),
+      prisma.order.count(),
+      prisma.user.count(),
+      prisma.product.count(),
+      prisma.order.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        include: { user: { select: { id: true, name: true } } },
+      }),
+      prisma.order.findMany({
+        where: { status: { not: 'Cancelled' } },
+        include: {
+          items: {
+            include: { product: { select: { id: true, name: true } } },
+          },
+        },
+      }),
+      prisma.product.findMany({
+        where: { stock: { lt: 10 } },
+        take: 5,
+        select: { id: true, name: true, categoryId: true, stock: true, price: true },
+      }),
+    ]);
+
+    const totalRevenue = paidOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+
+    const revenueByDateMap = new Map<string, number>();
+    for (const o of paidOrders) {
+      if (o.createdAt >= startDate && o.createdAt <= endDate) {
+        const day = o.createdAt.toISOString().slice(0, 10);
+        revenueByDateMap.set(day, (revenueByDateMap.get(day) || 0) + o.totalPrice);
+      }
+    }
+    const revenueByDate = Array.from(revenueByDateMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([_id, total]) => ({ _id, total }));
+
+    const productSalesMap = new Map<
+      string,
+      { _id: string; name: string; totalSold: number; totalRevenue: number }
+    >();
+    const statusMap = new Map<string, number>();
+
+    const allOrdersForStatus = await prisma.order.findMany({ select: { status: true } });
+    for (const o of allOrdersForStatus) {
+      statusMap.set(o.status, (statusMap.get(o.status) || 0) + 1);
+    }
+
+    for (const o of allNonCancelledOrders) {
+      for (const item of o.items) {
+        const entry = productSalesMap.get(item.productId) || {
+          _id: item.productId,
+          name: item.product?.name || 'Atelier Piece',
+          totalSold: 0,
+          totalRevenue: 0,
+        };
+        entry.totalSold += item.quantity;
+        entry.totalRevenue += item.price * item.quantity;
+        productSalesMap.set(item.productId, entry);
+      }
+    }
+
+    const topSellingProducts = Array.from(productSalesMap.values())
+      .sort((a, b) => b.totalSold - a.totalSold)
+      .slice(0, 5);
+
+    const orderStatusCounts = Array.from(statusMap.entries()).map(([_id, count]) => ({
+      _id,
+      count,
+    }));
+
+    res.json({
+      totalRevenue,
+      totalOrders,
+      totalUsers,
+      totalProducts,
+      recentOrders: recentOrders.map((o) => ({
+        ...withMongoId(o),
+        user: o.user ? withMongoId(o.user) : null,
+      })),
       revenueByDate,
       topSellingProducts,
       orderStatusCounts,
-      lowStockProducts,
+      lowStockProducts: withMongoIds(lowStockProducts),
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get sales analytics
-// @route   GET /api/admin/analytics/sales
-// @access  Private/Admin
 export const getSalesAnalytics = async (req: Request, res: Response) => {
   try {
-    // Get date range from query params or default to last 30 days
     const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
     const startDate = req.query.startDate
       ? new Date(req.query.startDate as string)
-      : new Date(endDate);
+      : new Date(new Date(endDate).setDate(endDate.getDate() - 30));
 
-    if (!req.query.startDate) {
-      startDate.setDate(startDate.getDate() - 30);
+    const paidOrders = await prisma.order.findMany({
+      where: {
+        isPaid: true,
+        createdAt: { gte: startDate, lte: endDate },
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: { category: { select: { id: true, name: true } } },
+            },
+          },
+        },
+      },
+    });
+
+    const dateMap = new Map<
+      string,
+      { _id: string; totalSales: number; orderCount: number; itemsSold: number }
+    >();
+    const categoryMap = new Map<
+      string,
+      { _id: string; categoryName: string; totalSales: number; itemsSold: number }
+    >();
+
+    let totalPaidAll = 0;
+    for (const order of paidOrders) {
+      totalPaidAll += order.totalPrice;
+      const day = order.createdAt.toISOString().slice(0, 10);
+      const dayEntry = dateMap.get(day) || {
+        _id: day,
+        totalSales: 0,
+        orderCount: 0,
+        itemsSold: 0,
+      };
+      dayEntry.totalSales += order.totalPrice;
+      dayEntry.orderCount += 1;
+      dayEntry.itemsSold += order.items.reduce((s, i) => s + i.quantity, 0);
+      dateMap.set(day, dayEntry);
+
+      for (const item of order.items) {
+        const cat = item.product?.category;
+        if (cat) {
+          const catEntry = categoryMap.get(cat.id) || {
+            _id: cat.id,
+            categoryName: cat.name,
+            totalSales: 0,
+            itemsSold: 0,
+          };
+          catEntry.totalSales += item.price * item.quantity;
+          catEntry.itemsSold += item.quantity;
+          categoryMap.set(cat.id, catEntry);
+        }
+      }
     }
 
-    // Get sales by date
-    const salesByDate = await Order.aggregate([
-      {
-        $match: {
-          isPaid: true,
-          createdAt: { $gte: startDate, $lte: endDate },
-        },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          totalSales: { $sum: '$totalPrice' },
-          orderCount: { $sum: 1 },
-          itemsSold: { $sum: { $size: '$orderItems' } },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-
-    // Get sales by category
-    const salesByCategory = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $unwind: '$orderItems' },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'orderItems.product',
-          foreignField: '_id',
-          as: 'productInfo',
-        },
-      },
-      { $unwind: '$productInfo' },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'productInfo.category',
-          foreignField: '_id',
-          as: 'categoryInfo',
-        },
-      },
-      { $unwind: '$categoryInfo' },
-      {
-        $group: {
-          _id: '$categoryInfo._id',
-          categoryName: { $first: '$categoryInfo.name' },
-          totalSales: { $sum: { $multiply: ['$orderItems.price', '$orderItems.qty'] } },
-          itemsSold: { $sum: '$orderItems.qty' },
-        },
-      },
-      { $sort: { totalSales: -1 } },
-    ]);
-
-    // Get average order value
-    const averageOrderValue = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $group: { _id: null, avg: { $avg: '$totalPrice' } } },
-    ]);
-
-    // Store analytics data
-    await SalesAnalytics.create({
-      date: new Date(),
-      totalSales: salesByDate.reduce((acc, item) => acc + item.totalSales, 0),
-      orderCount: salesByDate.reduce((acc, item) => acc + item.orderCount, 0),
-      averageOrderValue: averageOrderValue.length > 0 ? averageOrderValue[0].avg : 0,
-    });
+    const salesByDate = Array.from(dateMap.values()).sort((a, b) =>
+      a._id.localeCompare(b._id)
+    );
+    const salesByCategory = Array.from(categoryMap.values()).sort(
+      (a, b) => b.totalSales - a.totalSales
+    );
+    const averageOrderValue = paidOrders.length > 0 ? totalPaidAll / paidOrders.length : 0;
 
     res.json({
       salesByDate,
       salesByCategory,
-      averageOrderValue: averageOrderValue.length > 0 ? averageOrderValue[0].avg : 0,
+      averageOrderValue,
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get product analytics
-// @route   GET /api/admin/analytics/products
-// @access  Private/Admin
-export const getProductAnalytics = async (req: Request, res: Response) => {
+export const getProductAnalytics = async (_req: Request, res: Response) => {
   try {
-    // Get top viewed products
-    const topViewedProducts = await ViewAnalytics.aggregate([
-      { $group: { _id: '$productId', totalViews: { $sum: 1 } } },
-      { $sort: { totalViews: -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: 'products',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'productInfo',
-        },
-      },
-      { $unwind: '$productInfo' },
-      {
-        $project: {
-          _id: 1,
-          totalViews: 1,
-          name: '$productInfo.name',
-          price: '$productInfo.price',
-          image: { $arrayElemAt: ['$productInfo.images.url', 0] },
-        },
-      },
+    const [views, searches, products, paidOrderItems] = await Promise.all([
+      prisma.viewAnalytics.findMany(),
+      prisma.searchAnalytics.findMany({ orderBy: { count: 'desc' }, take: 10 }),
+      prisma.product.findMany({ select: { id: true, name: true, price: true, images: true } }),
+      prisma.orderItem.findMany({
+        where: { order: { isPaid: true } },
+        select: { productId: true, orderId: true },
+      }),
     ]);
 
-    // Get top searched terms
-    const topSearchTerms = await SearchAnalytics.aggregate([
-      { $group: { _id: '$searchTerm', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 10 },
-    ]);
+    const viewCountByProduct = new Map<string, number>();
+    for (const v of views) {
+      viewCountByProduct.set(v.productId, (viewCountByProduct.get(v.productId) || 0) + v.views);
+    }
 
-    // Get conversion rate by product
-    const productConversionRate = await Product.aggregate([
-      {
-        $lookup: {
-          from: 'viewanalytics',
-          localField: '_id',
-          foreignField: 'productId',
-          as: 'views',
-        },
-      },
-      {
-        $lookup: {
-          from: 'orders',
-          let: { productId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$isPaid', true] },
-                    {
-                      $in: [
-                        '$$productId',
-                        { $map: { input: '$orderItems', as: 'item', in: '$$item.product' } },
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'orders',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          viewCount: { $size: '$views' },
-          orderCount: { $size: '$orders' },
-          conversionRate: {
-            $cond: [
-              { $eq: [{ $size: '$views' }, 0] },
-              0,
-              { $divide: [{ $size: '$orders' }, { $size: '$views' }] },
-            ],
-          },
-        },
-      },
-      { $match: { viewCount: { $gt: 0 } } },
-      { $sort: { conversionRate: -1 } },
-      { $limit: 10 },
-    ]);
+    const orderCountByProduct = new Map<string, Set<string>>();
+    for (const oi of paidOrderItems) {
+      if (!orderCountByProduct.has(oi.productId)) {
+        orderCountByProduct.set(oi.productId, new Set());
+      }
+      orderCountByProduct.get(oi.productId)!.add(oi.orderId);
+    }
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    const topViewedProducts = Array.from(viewCountByProduct.entries())
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([productId, totalViews]) => {
+        const prod = productMap.get(productId);
+        const imgs = Array.isArray(prod?.images) ? (prod!.images as any[]) : [];
+        return {
+          _id: productId,
+          totalViews,
+          name: prod?.name || 'Atelier Piece',
+          price: prod?.price || 0,
+          image: imgs[0]?.data || imgs[0]?.url || '',
+        };
+      });
+
+    const topSearchTerms = searches.map((s) => ({
+      _id: s.keyword,
+      count: s.count,
+    }));
+
+    const productConversionRate = products
+      .map((p) => {
+        const viewCount = viewCountByProduct.get(p.id) || 0;
+        const orderCount = orderCountByProduct.get(p.id)?.size || 0;
+        return {
+          _id: p.id,
+          name: p.name,
+          viewCount,
+          orderCount,
+          conversionRate: viewCount > 0 ? orderCount / viewCount : 0,
+        };
+      })
+      .filter((x) => x.viewCount > 0)
+      .sort((a, b) => b.conversionRate - a.conversionRate)
+      .slice(0, 10);
 
     res.json({
       topViewedProducts,
@@ -291,54 +263,49 @@ export const getProductAnalytics = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Get user analytics
-// @route   GET /api/admin/analytics/users
-// @access  Private/Admin
-export const getUserAnalytics = async (req: Request, res: Response) => {
+export const getUserAnalytics = async (_req: Request, res: Response) => {
   try {
-    // Get user registration over time
-    const userRegistrationByDate = await User.aggregate([
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
+    const [users, paidOrders] = await Promise.all([
+      prisma.user.findMany({ select: { id: true, name: true, email: true, createdAt: true } }),
+      prisma.order.findMany({
+        where: { isPaid: true },
+        select: { userId: true, totalPrice: true },
+      }),
     ]);
 
-    // Get top customers by order value
-    const topCustomers = await Order.aggregate([
-      { $match: { isPaid: true } },
-      {
-        $group: {
-          _id: '$user',
-          totalSpent: { $sum: '$totalPrice' },
-          orderCount: { $sum: 1 },
-        },
-      },
-      { $sort: { totalSpent: -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: 'users',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'userInfo',
-        },
-      },
-      { $unwind: '$userInfo' },
-      {
-        $project: {
-          _id: 1,
-          name: '$userInfo.name',
-          email: '$userInfo.email',
-          totalSpent: 1,
-          orderCount: 1,
-          averageOrderValue: { $divide: ['$totalSpent', '$orderCount'] },
-        },
-      },
-    ]);
+    const regMap = new Map<string, number>();
+    const userMap = new Map(users.map((u) => [u.id, u]));
+    for (const u of users) {
+      const day = u.createdAt.toISOString().slice(0, 10);
+      regMap.set(day, (regMap.get(day) || 0) + 1);
+    }
+
+    const userRegistrationByDate = Array.from(regMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([_id, count]) => ({ _id, count }));
+
+    const spendMap = new Map<string, { totalSpent: number; orderCount: number }>();
+    for (const o of paidOrders) {
+      const entry = spendMap.get(o.userId) || { totalSpent: 0, orderCount: 0 };
+      entry.totalSpent += o.totalPrice;
+      entry.orderCount += 1;
+      spendMap.set(o.userId, entry);
+    }
+
+    const topCustomers = Array.from(spendMap.entries())
+      .sort(([, a], [, b]) => b.totalSpent - a.totalSpent)
+      .slice(0, 10)
+      .map(([userId, stats]) => {
+        const u = userMap.get(userId);
+        return {
+          _id: userId,
+          name: u?.name || 'Patron Client',
+          email: u?.email || '',
+          totalSpent: stats.totalSpent,
+          orderCount: stats.orderCount,
+          averageOrderValue: stats.orderCount > 0 ? stats.totalSpent / stats.orderCount : 0,
+        };
+      });
 
     res.json({
       userRegistrationByDate,
@@ -349,44 +316,165 @@ export const getUserAnalytics = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Track product view
-// @route   POST /api/analytics/view
-// @access  Public
 export const trackProductView = async (req: Request, res: Response) => {
   try {
     const { productId } = req.body;
-
-    // Create view analytics entry
-    await ViewAnalytics.create({
-      productId,
-      userId: req.user?._id || null,
-      date: new Date(),
-      userAgent: req.headers['user-agent'],
-      referrer: req.headers.referer || null,
-    });
-
+    if (productId) {
+      await prisma.viewAnalytics.create({
+        data: {
+          productId: String(productId),
+          views: 1,
+          date: new Date(),
+        },
+      });
+    }
     res.status(201).json({ success: true });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Track search term
-// @route   POST /api/analytics/search
-// @access  Public
 export const trackSearchTerm = async (req: Request, res: Response) => {
   try {
-    const { searchTerm, resultCount } = req.body;
-
-    // Create search analytics entry
-    await SearchAnalytics.create({
-      searchTerm,
-      resultCount,
-      userId: req.user?._id || null,
-      date: new Date(),
-    });
-
+    const keyword = String(req.body.searchTerm || req.body.keyword || '').trim();
+    if (keyword) {
+      const existing = await prisma.searchAnalytics.findFirst({
+        where: { keyword: { equals: keyword, mode: 'insensitive' } },
+      });
+      if (existing) {
+        await prisma.searchAnalytics.update({
+          where: { id: existing.id },
+          data: { count: { increment: 1 }, date: new Date() },
+        });
+      } else {
+        await prisma.searchAnalytics.create({
+          data: { keyword, count: 1, date: new Date() },
+        });
+      }
+    }
     res.status(201).json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getExecutiveReport = async (req: Request, res: Response) => {
+  try {
+    const endDate = req.query.to ? new Date(req.query.to as string) : new Date();
+    const startDate = req.query.from
+      ? new Date(req.query.from as string)
+      : new Date(new Date().setDate(endDate.getDate() - 30));
+
+    const [ordersInPeriod, expensesInPeriod, allNonCancelledOrders] = await Promise.all([
+      prisma.order.findMany({
+        where: {
+          createdAt: { gte: startDate, lte: endDate },
+          status: { not: 'Cancelled' },
+        },
+        include: { items: true },
+      }),
+      prisma.expense.findMany({
+        where: { date: { gte: startDate, lte: endDate } },
+      }),
+      prisma.order.findMany({
+        where: { status: { not: 'Cancelled' } },
+        include: { user: { select: { id: true, name: true, email: true } } },
+      }),
+    ]);
+
+    let grossBooked = 0;
+    let paidRevenue = 0;
+    let paidCount = 0;
+    const sizeMap = new Map<string, { _id: string; units: number; revenue: number }>();
+    const tailoringMap = new Map<string, number>();
+
+    for (const o of ordersInPeriod) {
+      grossBooked += o.totalPrice;
+      if (o.isPaid) {
+        paidRevenue += o.totalPrice;
+        paidCount += 1;
+      }
+      const stage = o.tailoringStage || 'Pattern Drafting';
+      tailoringMap.set(stage, (tailoringMap.get(stage) || 0) + 1);
+
+      for (const item of o.items) {
+        const key = String(item.size);
+        const sz = sizeMap.get(key) || { _id: key, units: 0, revenue: 0 };
+        sz.units += item.quantity;
+        sz.revenue += item.price * item.quantity;
+        sizeMap.set(key, sz);
+      }
+    }
+
+    const expenseCatMap = new Map<
+      string,
+      { _id: string; totalAmount: number; count: number }
+    >();
+    let totalExpenses = 0;
+    for (const exp of expensesInPeriod) {
+      totalExpenses += exp.amount;
+      const cat = expenseCatMap.get(exp.category) || {
+        _id: exp.category,
+        totalAmount: 0,
+        count: 0,
+      };
+      cat.totalAmount += exp.amount;
+      cat.count += 1;
+      expenseCatMap.set(exp.category, cat);
+    }
+
+    const clientMap = new Map<
+      string,
+      {
+        _id: string;
+        name: string;
+        email: string;
+        totalSpent: number;
+        orderCount: number;
+        lastOrderAt: Date;
+      }
+    >();
+    for (const o of allNonCancelledOrders) {
+      const existing = clientMap.get(o.userId) || {
+        _id: o.userId,
+        name: o.user?.name || 'Patron Client',
+        email: o.user?.email || '',
+        totalSpent: 0,
+        orderCount: 0,
+        lastOrderAt: o.createdAt,
+      };
+      existing.totalSpent += o.totalPrice;
+      existing.orderCount += 1;
+      if (o.createdAt > existing.lastOrderAt) existing.lastOrderAt = o.createdAt;
+      clientMap.set(o.userId, existing);
+    }
+
+    const netProfit = paidRevenue - totalExpenses;
+    const netMarginPercent =
+      paidRevenue > 0 ? Math.round((netProfit / paidRevenue) * 1000) / 10 : 0;
+
+    res.json({
+      success: true,
+      period: { startDate, endDate },
+      summary: {
+        grossBooked,
+        paidRevenue,
+        totalExpenses,
+        netProfit,
+        netMarginPercent,
+        orderCount: ordersInPeriod.length,
+        paidCount,
+      },
+      expensesByCategory: Array.from(expenseCatMap.values()),
+      sizeBreakdown: Array.from(sizeMap.values()).sort((a, b) => b.units - a.units),
+      tailoringBreakdown: Array.from(tailoringMap.entries()).map(([_id, count]) => ({
+        _id,
+        count,
+      })),
+      topClients: Array.from(clientMap.values())
+        .sort((a, b) => b.totalSpent - a.totalSpent)
+        .slice(0, 10),
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

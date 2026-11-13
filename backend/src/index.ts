@@ -1,12 +1,12 @@
 import express from 'express';
 import path from 'path';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import routes from './routes';
+import { prisma } from './lib/prisma';
 
 // Load environment variables
 dotenv.config();
@@ -57,11 +57,11 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/needle-fashion')
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// Connect to PostgreSQL via Prisma
+prisma
+  .$connect()
+  .then(() => console.log('PostgreSQL connected via Prisma'))
+  .catch((err) => console.error('PostgreSQL connection error:', err));
 
 // Use routes
 app.use(routes);

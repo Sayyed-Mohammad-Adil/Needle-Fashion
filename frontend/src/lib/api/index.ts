@@ -8,3 +8,4 @@ export * from './expense-service';
 export * from './faq-service';
 export * from './inquiry-service';
 export * from './upload-service';
+export * from './site-config-service';

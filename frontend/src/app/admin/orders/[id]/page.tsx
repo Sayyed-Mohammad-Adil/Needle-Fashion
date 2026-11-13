@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { orderService } from '@/lib/api/order-service';
+import { formatEuro } from '@/lib/currency';
 import { toast } from 'react-hot-toast';
 import {
   ArrowLeftIcon,
@@ -26,6 +27,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const [isLoading, setIsLoading] = useState(true);
   const [order, setOrder] = useState<any>(null);
   const [statusUpdate, setStatusUpdate] = useState('');
+  const [tailoringStage, setTailoringStage] = useState('Pattern Drafting');
+  const [isPaidUpdate, setIsPaidUpdate] = useState(false);
+  const [courierName, setCourierName] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [atelierNotes, setAtelierNotes] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -39,6 +45,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       if (data) {
         setOrder(data);
         setStatusUpdate(data.status || 'Processing');
+        setTailoringStage((data as any).tailoringStage || 'Pattern Drafting');
+        setIsPaidUpdate(Boolean(data.isPaid));
+        setCourierName((data as any).courierName || '');
+        setTrackingNumber((data as any).trackingNumber || '');
+        setAtelierNotes((data as any).atelierNotes || '');
       } else {
         toast.error('Order not found');
         router.push('/admin/orders');
@@ -57,12 +68,19 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
     try {
       setIsUpdating(true);
-      const updated = await orderService.updateOrderStatus(orderId, statusUpdate as any);
+      const updated = await orderService.updateOrderAdminDetails(orderId, {
+        status: statusUpdate,
+        isPaid: isPaidUpdate,
+        tailoringStage,
+        courierName,
+        trackingNumber,
+        atelierNotes,
+      });
       setOrder(updated);
-      toast.success(`Order status updated to ${statusUpdate}`);
+      toast.success('Order dossier & dispatch details saved');
     } catch (error: any) {
       console.error('Failed to update order status:', error);
-      toast.error(error.response?.data?.message || 'Failed to update order status');
+      toast.error(error.response?.data?.message || 'Failed to update order details');
     } finally {
       setIsUpdating(false);
     }
@@ -237,7 +255,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             </div>
             <div className="flex justify-between pt-3 border-t border-border font-serif text-lg font-bold text-foreground">
               <span>Total Commission Amount</span>
-              <span className="text-primary">₹{order.totalPrice?.toLocaleString('en-IN')}</span>
+              <div className="text-right">
+                <span className="text-primary block">₹{order.totalPrice?.toLocaleString('en-IN')}</span>
+                <span className="text-xs font-sans font-medium text-muted-foreground">
+                  Client Invoice: {formatEuro(order.totalPrice || 0)}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -246,14 +269,24 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         <div className="space-y-6">
           {/* Status Update Control */}
           <div className="bg-card rounded-3xl p-6 border border-border shadow-sm space-y-4">
-            <h3 className="font-serif text-base font-bold text-foreground">
-              Dispatch &amp; Order Status
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-base font-bold text-foreground">
+                Atelier &amp; Dispatch Control
+              </h3>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+              >
+                <PrinterIcon className="w-4 h-4" />
+                <span>Print Dossier</span>
+              </button>
+            </div>
 
             <form onSubmit={handleStatusUpdate} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Update Atelier Status
+                  Order Status
                 </label>
                 <select
                   value={statusUpdate}
@@ -267,12 +300,80 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 </select>
               </div>
 
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+                  Bespoke Tailoring Stage
+                </label>
+                <select
+                  value={tailoringStage}
+                  onChange={(e) => setTailoringStage(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
+                >
+                  <option value="Pattern Drafting">Pattern Drafting</option>
+                  <option value="Fabric Cutting">Fabric Cutting</option>
+                  <option value="Basted Fitting">Basted Fitting</option>
+                  <option value="Hand Embroidery">Hand Embroidery</option>
+                  <option value="Quality Check">Quality Check</option>
+                  <option value="Ready for Dispatch">Ready for Dispatch</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                    Courier
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="DHL Express"
+                    value={courierName}
+                    onChange={(e) => setCourierName(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                    Tracking #
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="AWB / Tracking ID"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                  Internal Atelier Notes
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Monogramming, lining preference, or VIP delivery instructions..."
+                  value={atelierNotes}
+                  onChange={(e) => setAtelierNotes(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground"
+                />
+              </div>
+
+              <label className="flex items-center gap-2.5 text-xs font-medium text-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isPaidUpdate}
+                  onChange={(e) => setIsPaidUpdate(e.target.checked)}
+                  className="h-4 w-4 rounded border-border"
+                />
+                <span>Mark Commission as Paid in Full</span>
+              </label>
+
               <button
                 type="submit"
                 disabled={isUpdating}
                 className="w-full btn-luxury-gold py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm"
               >
-                {isUpdating ? 'Updating Status...' : 'Apply Status Update'}
+                {isUpdating ? 'Saving Dossier...' : 'Save Order Dossier'}
               </button>
             </form>
 

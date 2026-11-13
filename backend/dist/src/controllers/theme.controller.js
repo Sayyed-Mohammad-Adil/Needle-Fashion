@@ -1,37 +1,23 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setDefaultTheme = exports.deleteTheme = exports.updateTheme = exports.createTheme = exports.getThemeById = exports.getDefaultTheme = exports.getThemes = void 0;
-const theme_model_1 = require("../models/theme.model");
-// @desc    Get all themes
-// @route   GET /api/themes
-// @access  Public
-const getThemes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const prisma_1 = require("../lib/prisma");
+const getThemes = async (_req, res) => {
     try {
-        const themes = yield theme_model_1.Theme.find({ isActive: true });
-        res.json(themes);
+        const themes = await prisma_1.prisma.theme.findMany({ where: { isActive: true } });
+        res.json((0, prisma_1.withMongoIds)(themes));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getThemes = getThemes;
-// @desc    Get default theme
-// @route   GET /api/themes/default
-// @access  Public
-const getDefaultTheme = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getDefaultTheme = async (_req, res) => {
     try {
-        const theme = yield theme_model_1.Theme.findOne({ isDefault: true, isActive: true });
+        const theme = await prisma_1.prisma.theme.findFirst({
+            where: { isDefault: true, isActive: true },
+        });
         if (!theme) {
-            // Return a default theme if no default is set
             return res.json({
                 name: 'Default',
                 description: 'Default store theme',
@@ -55,130 +41,121 @@ const getDefaultTheme = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
             });
         }
-        res.json(theme);
+        res.json((0, prisma_1.withMongoId)(theme));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getDefaultTheme = getDefaultTheme;
-// @desc    Get theme by ID
-// @route   GET /api/themes/:id
-// @access  Public
-const getThemeById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getThemeById = async (req, res) => {
     try {
-        const theme = yield theme_model_1.Theme.findById(req.params.id);
+        const theme = await prisma_1.prisma.theme.findUnique({ where: { id: req.params.id } });
         if (!theme) {
             return res.status(404).json({ message: 'Theme not found' });
         }
-        res.json(theme);
+        res.json((0, prisma_1.withMongoId)(theme));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getThemeById = getThemeById;
-// @desc    Create a new theme
-// @route   POST /api/themes
-// @access  Private/Admin
-const createTheme = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createTheme = async (req, res) => {
     try {
-        const { name, description, isDefault, colors, fonts, layout, isActive, } = req.body;
-        // If this theme is set as default, unset the current default theme
+        const { name, description, isDefault, colors, fonts, layout, isActive } = req.body;
         if (isDefault) {
-            yield theme_model_1.Theme.updateMany({ isDefault: true }, { isDefault: false });
+            await prisma_1.prisma.theme.updateMany({
+                where: { isDefault: true },
+                data: { isDefault: false },
+            });
         }
-        const theme = yield theme_model_1.Theme.create({
-            name,
-            description,
-            isDefault: isDefault || false,
-            colors,
-            fonts,
-            layout,
-            isActive: isActive !== undefined ? isActive : true,
+        const theme = await prisma_1.prisma.theme.create({
+            data: {
+                name,
+                description,
+                isDefault: Boolean(isDefault),
+                colors: colors || {},
+                fonts: fonts || {},
+                layout: layout || {},
+                isActive: isActive !== undefined ? Boolean(isActive) : true,
+            },
         });
-        res.status(201).json(theme);
+        res.status(201).json((0, prisma_1.withMongoId)(theme));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.createTheme = createTheme;
-// @desc    Update a theme
-// @route   PUT /api/themes/:id
-// @access  Private/Admin
-const updateTheme = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateTheme = async (req, res) => {
     try {
-        const theme = yield theme_model_1.Theme.findById(req.params.id);
+        const theme = await prisma_1.prisma.theme.findUnique({ where: { id: req.params.id } });
         if (!theme) {
             return res.status(404).json({ message: 'Theme not found' });
         }
-        const { name, description, isDefault, colors, fonts, layout, isActive, } = req.body;
-        // If this theme is set as default, unset the current default theme
+        const { name, description, isDefault, colors, fonts, layout, isActive } = req.body;
         if (isDefault) {
-            yield theme_model_1.Theme.updateMany({ isDefault: true }, { isDefault: false });
+            await prisma_1.prisma.theme.updateMany({
+                where: { isDefault: true },
+                data: { isDefault: false },
+            });
         }
-        // Update fields if provided
-        if (name)
-            theme.name = name;
-        if (description !== undefined)
-            theme.description = description;
-        if (isDefault !== undefined)
-            theme.isDefault = isDefault;
-        if (colors)
-            theme.colors = colors;
-        if (fonts)
-            theme.fonts = fonts;
-        if (layout)
-            theme.layout = layout;
-        if (isActive !== undefined)
-            theme.isActive = isActive;
-        const updatedTheme = yield theme.save();
-        res.json(updatedTheme);
+        const updatedTheme = await prisma_1.prisma.theme.update({
+            where: { id: req.params.id },
+            data: {
+                name: name ?? theme.name,
+                description: description !== undefined ? description : theme.description,
+                isDefault: isDefault !== undefined ? Boolean(isDefault) : theme.isDefault,
+                colors: colors ?? theme.colors,
+                fonts: fonts ?? theme.fonts,
+                layout: layout ?? theme.layout,
+                isActive: isActive !== undefined ? Boolean(isActive) : theme.isActive,
+            },
+        });
+        res.json((0, prisma_1.withMongoId)(updatedTheme));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.updateTheme = updateTheme;
-// @desc    Delete a theme
-// @route   DELETE /api/themes/:id
-// @access  Private/Admin
-const deleteTheme = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteTheme = async (req, res) => {
     try {
-        const theme = yield theme_model_1.Theme.findById(req.params.id);
+        const theme = await prisma_1.prisma.theme.findUnique({ where: { id: req.params.id } });
         if (!theme) {
             return res.status(404).json({ message: 'Theme not found' });
         }
-        // Prevent deletion of the default theme
         if (theme.isDefault) {
             return res.status(400).json({ message: 'Cannot delete the default theme' });
         }
-        yield theme.deleteOne();
+        await prisma_1.prisma.theme.delete({ where: { id: req.params.id } });
         res.json({ message: 'Theme removed' });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.deleteTheme = deleteTheme;
-// @desc    Set theme as default
-// @route   PUT /api/themes/:id/default
-// @access  Private/Admin
-const setDefaultTheme = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const setDefaultTheme = async (req, res) => {
     try {
-        // Unset current default theme
-        yield theme_model_1.Theme.updateMany({ isDefault: true }, { isDefault: false });
-        // Set new default theme
-        const theme = yield theme_model_1.Theme.findByIdAndUpdate(req.params.id, { isDefault: true }, { new: true });
-        if (!theme) {
+        const existing = await prisma_1.prisma.theme.findUnique({ where: { id: req.params.id } });
+        if (!existing) {
             return res.status(404).json({ message: 'Theme not found' });
         }
-        res.json(theme);
+        await prisma_1.prisma.theme.updateMany({
+            where: { isDefault: true },
+            data: { isDefault: false },
+        });
+        const theme = await prisma_1.prisma.theme.update({
+            where: { id: req.params.id },
+            data: { isDefault: true },
+        });
+        res.json((0, prisma_1.withMongoId)(theme));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.setDefaultTheme = setDefaultTheme;
 //# sourceMappingURL=theme.controller.js.map

@@ -13,6 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { orderService, OrderFilters } from '@/lib/api/order-service';
 import { Order } from '@/lib/types';
+import { formatEuro } from '@/lib/currency';
 import { toast } from 'react-hot-toast';
 
 export default function OrdersPage() {
@@ -121,13 +122,45 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <button
-          onClick={fetchOrders}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-sm font-medium transition-colors"
-        >
-          <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin text-primary' : ''}`} />
-          <span>Refresh</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const rows = [
+                ['Order ID', 'Patron', 'Email', 'Date', 'Items', 'Total INR', 'Total EUR', 'Status', 'Paid'],
+                ...filteredOrders.map((o) => [
+                  o._id,
+                  typeof o.user === 'object' ? o.user?.name || '' : '',
+                  typeof o.user === 'object' ? o.user?.email || '' : '',
+                  new Date(o.createdAt).toISOString().slice(0, 10),
+                  String(o.items?.length || 0),
+                  String(o.totalPrice || 0),
+                  formatEuro(o.totalPrice || 0),
+                  o.status,
+                  o.isPaid ? 'Paid' : 'Pending',
+                ]),
+              ];
+              const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+              const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `needle-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-sm font-medium transition-colors"
+          >
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={fetchOrders}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-sm font-medium transition-colors"
+          >
+            <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin text-primary' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Metrics Bar */}
@@ -283,7 +316,8 @@ export default function OrdersPage() {
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-4 font-semibold text-foreground text-xs">
-                        ₹{order.totalPrice.toLocaleString()}
+                        <div>₹{order.totalPrice.toLocaleString()}</div>
+                        <div className="text-[11px] font-medium text-primary">{formatEuro(order.totalPrice)}</div>
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-4">

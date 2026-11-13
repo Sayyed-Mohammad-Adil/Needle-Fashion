@@ -1,5 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { IUser } from '../models/user.model';
+
+export interface AuthUserLike {
+  id: string;
+  _id?: string;
+  email: string;
+  role: string;
+}
 
 export interface TokenPayload {
   id: string;
@@ -12,13 +18,13 @@ export interface TokenPair {
   refreshToken: string;
 }
 
-// Generate access token
-export const generateAccessToken = (user: IUser): string => {
+export const generateAccessToken = (user: AuthUserLike): string => {
+  const userId = user.id || user._id || '';
   return jwt.sign(
-    { 
-      id: user._id.toString(),
+    {
+      id: userId,
       email: user.email,
-      role: user.role
+      role: user.role,
     },
     process.env.JWT_SECRET || 'fallback_secret',
     {
@@ -27,12 +33,12 @@ export const generateAccessToken = (user: IUser): string => {
   );
 };
 
-// Generate refresh token
-export const generateRefreshToken = (user: IUser): string => {
+export const generateRefreshToken = (user: AuthUserLike): string => {
+  const userId = user.id || user._id || '';
   return jwt.sign(
-    { 
-      id: user._id.toString(),
-      email: user.email
+    {
+      id: userId,
+      email: user.email,
     },
     process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret',
     {
@@ -41,32 +47,28 @@ export const generateRefreshToken = (user: IUser): string => {
   );
 };
 
-// Generate both tokens
-export const generateTokenPair = (user: IUser): TokenPair => {
+export const generateTokenPair = (user: AuthUserLike): TokenPair => {
   return {
     accessToken: generateAccessToken(user),
-    refreshToken: generateRefreshToken(user)
+    refreshToken: generateRefreshToken(user),
   };
 };
 
-// Verify access token
 export const verifyAccessToken = (token: string): TokenPayload => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as TokenPayload;
-  } catch (error) {
+  } catch {
     throw new Error('Invalid access token');
   }
 };
 
-// Verify refresh token
 export const verifyRefreshToken = (token: string): any => {
   try {
     return jwt.verify(token, process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret');
-  } catch (error) {
+  } catch {
     throw new Error('Invalid refresh token');
   }
 };
 
-// Legacy function for backward compatibility
 export const generateToken = generateAccessToken;
 export const verifyToken = verifyAccessToken;

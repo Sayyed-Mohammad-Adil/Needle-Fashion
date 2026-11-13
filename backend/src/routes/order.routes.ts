@@ -7,6 +7,7 @@ import {
   getMyOrders,
   getOrders,
   updateOrderStatus,
+  updateOrderAdminDetails,
   cancelOrder,
   generateInvoice,
 } from '../controllers/order.controller';
@@ -31,6 +32,9 @@ router.route('/:id/deliver')
 
 router.route('/:id/status')
   .put(protect, admin, updateOrderStatus);
+
+router.route('/:id/admin')
+  .put(protect, admin, updateOrderAdminDetails);
 
 router.route('/:id/cancel')
   .put(protect, cancelOrder);

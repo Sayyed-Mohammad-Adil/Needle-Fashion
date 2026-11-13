@@ -6,70 +6,91 @@ import ProductGrid from '@/components/ProductGrid';
 import ResponsiveFilter from '@/components/ResponsiveFilter';
 import { productService } from '@/lib/api/product-service';
 import { Product } from '@/lib/types';
-import { SparklesIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline';
 import { royalMenswearProducts } from '@/lib/royalCatalog';
+import {
+  useSiteConfig,
+  getAspectRatioClass,
+  getObjectFitClass,
+  getFocalPointClass,
+} from '@/contexts/SiteConfigContext';
 
-// Ultra-Luxe Men's Ethnic Wear Filters (Sabyasachi / Manish Malhotra Level)
 const royalMenswearFilters = [
   {
     id: 'silhouette',
-    name: 'Royal Silhouette',
+    name: 'Category & Silhouette',
     options: [
-      { value: 'sherwani', label: 'Imperial Sherwani', count: 18 },
-      { value: 'bandhgala', label: 'Heritage Bandhgala', count: 14 },
-      { value: 'kurta', label: 'Silk Kurta Set', count: 22 },
-      { value: 'indo-western', label: 'Indo-Western Tuxedo', count: 11 },
-      { value: 'doshala', label: 'Cashmere Doshala Shawl', count: 9 },
-      { value: 'regalia', label: 'Safas, Kalgis & Regalia', count: 15 },
+      { value: 'suits', label: 'Suits, Blazers & Tuxedos' },
+      { value: 'shirts', label: 'Shirts & Supima T-Shirts' },
+      { value: 'pants', label: 'Tailored Pants & Trousers' },
+      { value: 'accessories', label: 'Accessories & Doshalas' },
+      { value: 'kurta', label: 'Indian Wear — Kurta Pyjama' },
+      { value: 'sherwani', label: 'Indian Wear — Sherwani' },
+      { value: 'bandhgala', label: 'Indian Wear — Bandhgala' },
     ],
   },
   {
     id: 'fabric',
-    name: 'Heritage Fabric Lineage',
+    name: 'Fabric Lineage',
     options: [
-      { value: 'mulberry-silk', label: 'Pure Mulberry Silk', count: 16 },
-      { value: 'banarasi-katan', label: 'Banarasi Katan Brocade', count: 12 },
-      { value: 'pashmina-cashmere', label: 'Kashmiri Cashmere Wool', count: 8 },
-      { value: 'chanderi', label: 'Woven Chanderi Silk', count: 14 },
-      { value: 'raw-tussar', label: 'Antique Tussar Silk', count: 9 },
+      { value: 'mulberry-silk', label: 'Pure Mulberry Silk' },
+      { value: 'silk-wool', label: 'Silk & Wool Blend' },
+      { value: 'linen', label: 'Handloom Linen' },
+      { value: 'chanderi', label: 'Woven Chanderi Silk' },
+      { value: 'pashmina-cashmere', label: 'Kashmiri Cashmere' },
+      { value: 'cotton', label: 'Supima & Handspun Cotton' },
     ],
   },
   {
     id: 'craftsmanship',
-    name: 'Karigar Craftsmanship',
+    name: 'Craftsmanship',
     options: [
-      { value: 'zari-24k', label: '24K Gold Wire Zari', count: 10 },
-      { value: 'zardozi', label: 'Hand Zardozi & Resham', count: 18 },
-      { value: 'chikankari', label: 'Lucknowi Chikankari', count: 14 },
-      { value: 'tilla', label: 'Heritage Kashmiri Tilla', count: 7 },
-      { value: 'dabka', label: 'Antique Dabka Embroidery', count: 11 },
-    ],
-  },
-  {
-    id: 'occasion',
-    name: 'Occasion & Ceremony',
-    options: [
-      { value: 'groom-wedding', label: 'Royal Groom / Varmala', count: 20 },
-      { value: 'sangeet-reception', label: 'Sangeet & Royal Reception', count: 17 },
-      { value: 'imperial-durbar', label: 'Festive & Imperial Durbar', count: 15 },
-      { value: 'black-tie', label: 'Black Tie Indo-Western', count: 8 },
+      { value: 'zari-24k', label: '24K Gold Wire Zari' },
+      { value: 'zardozi', label: 'Hand Zardozi & Resham' },
+      { value: 'chikankari', label: 'Lucknowi Chikankari' },
+      { value: 'tilla', label: 'Kashmiri Tilla' },
+      { value: 'dabka', label: 'Antique Dabka' },
     ],
   },
   {
     id: 'size',
-    name: 'Bespoke Size / Fitting',
+    name: 'Size & Fitting (EU)',
     options: [
-      { value: '38', label: '38 Reg' },
-      { value: '40', label: '40 Reg' },
-      { value: '42', label: '42 Reg' },
-      { value: '44', label: '44 Reg' },
-      { value: '46', label: '46 Reg' },
-      { value: 'bespoke', label: '48-Pt Made to Measure' },
+      { value: '46', label: 'EU 46 (S)' },
+      { value: '48', label: 'EU 48 (M)' },
+      { value: '50', label: 'EU 50 (L)' },
+      { value: '52', label: 'EU 52 (XL)' },
+      { value: '54', label: 'EU 54 (XXL)' },
+      { value: 'bespoke', label: '48-Point Bespoke' },
     ],
   },
 ];
 
 const categoryDescriptions: Record<string, { title: string; subtitle: string; lineage: string }> = {
+  suits: {
+    title: 'Suits, Blazers & Tuxedos',
+    subtitle: 'Western Tailoring Infused with Indian Craftsmanship',
+    lineage: 'Structured blazers, two-piece suits, coats, and tuxedos featuring handwoven Indian silks and artisanal embroidery.',
+  },
+  shirts: {
+    title: 'Shirts & Luxury T-Shirts',
+    subtitle: 'Handloom Linens, Dress Shirts & Fine Supima Tees',
+    lineage: 'Breathable Indian cottons and mulberry silks tailored for effortless everyday refinement and layered tailoring.',
+  },
+  pants: {
+    title: 'Tailored Pants & Trousers',
+    subtitle: '48-Point Bespoke Drape for Formal and Casual Wear',
+    lineage: 'High-twist wool-silk trousers, pleated linen pants, and evening tuxedo cuts.',
+  },
+  accessories: {
+    title: 'Accessories & Regalia',
+    subtitle: 'Cashmere Doshalas, Pocket Squares, Cufflinks & Safas',
+    lineage: 'Handcrafted finishing accents woven in Kashmir, Varanasi, and Jaipur.',
+  },
+  'indian-wear': {
+    title: 'Indian Wear — Kurta Pyjama & Sherwani',
+    subtitle: 'Ceremonial Sherwanis, Kurta Pyjamas & Bandhgalas',
+    lineage: 'Timeless Indian silhouettes crafted in handloom Chanderi, Banarasi brocade, and 24K zardozi.',
+  },
   sherwani: {
     title: 'The Imperial Sherwani Collection',
     subtitle: 'Woven for Royal Grooms and Heirloom Indian Weddings',
@@ -152,13 +173,31 @@ export default function CategoryPage() {
 
         if (categorySlug && categorySlug !== 'all') {
           const slug = categorySlug.toLowerCase();
-          const filtered = fetchedProducts.filter(p =>
-            p.category?.name?.toLowerCase() === slug ||
-            p.category?.name?.toLowerCase().includes(slug) ||
-            p.name?.toLowerCase().includes(slug) ||
-            (p.filters?.silhouette && p.filters.silhouette.some(s => s.toLowerCase().includes(slug)))
-          );
+          const filtered = fetchedProducts.filter((p) => {
+            const catName = p.category?.name?.toLowerCase() || '';
+            const prodName = p.name?.toLowerCase() || '';
+            const silhouettes = p.filters?.silhouette || [];
+            if (catName === slug || catName.replace(/\s+/g, '-') === slug) return true;
+            if (prodName.includes(slug)) return true;
+            return silhouettes.some((s) => s.toLowerCase() === slug || s.toLowerCase().includes(slug));
+          });
           fetchedProducts = filtered.length > 0 ? filtered : fetchedProducts;
+        }
+
+        // Apply active sidebar filters
+        const activeFilterEntries = Object.entries(selectedFilters).filter(
+          ([, values]) => values.length > 0
+        );
+        if (activeFilterEntries.length > 0) {
+          const sidebarFiltered = fetchedProducts.filter((p) =>
+            activeFilterEntries.every(([key, values]) => {
+              const productVals = (p.filters as Record<string, string[]> | undefined)?.[key] || [];
+              return values.some((v) => productVals.includes(v));
+            })
+          );
+          if (sidebarFiltered.length > 0) {
+            fetchedProducts = sidebarFiltered;
+          }
         }
 
         setProducts(fetchedProducts);
@@ -210,80 +249,66 @@ export default function CategoryPage() {
     setSortOption(e.target.value);
   };
 
-  return (
-    <div className="bg-background text-foreground min-h-screen py-10 transition-colors">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        {/* Frosted Glass Category Hero Docket */}
-        <div className="relative rounded-3xl overflow-hidden glass-panel-gold p-6 sm:p-10 mb-8 sm:mb-10 shadow-2xl border border-[#C5A059]/30">
-          <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 glass-pill px-3.5 py-1 mb-3 border border-[#C5A059]/40">
-              <SparklesIcon className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C5A059]">
-                Exclusively Haute Menswear
-              </span>
-            </div>
-            
-            <h1 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-tight">
-              {meta.title}
-            </h1>
-            
-            <p className="text-xs sm:text-sm text-foreground/80 font-serif italic mt-2 sm:mt-3">
-              &ldquo;{meta.subtitle}&rdquo;
-            </p>
-            
-            <p className="text-xs text-muted-foreground mt-3 sm:mt-4 leading-relaxed max-w-2xl font-light">
-              {meta.lineage}
-            </p>
+  const { getSection } = useSiteConfig();
+  const catBannerSec = getSection('categories', 'category-banners');
+  const catMedia = catBannerSec?.media?.find((m) => m.slotKey === categorySlug);
 
-            <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-2 sm:gap-4 text-xs font-medium">
-              <span className="glass-pill px-3 py-1 text-[11px] sm:text-xs text-foreground/90 border border-border/50">
-                ⚜ 100% Handcrafted Indian Heritage
-              </span>
-              <span className="glass-pill px-3 py-1 text-[11px] sm:text-xs text-foreground/90 border border-border/50">
-                ✦ 48-Point Bespoke Fit
-              </span>
-              <span className="glass-pill px-3 py-1 text-[11px] sm:text-xs text-foreground/90 border border-border/50">
-                📦 White-Glove Dispatch
-              </span>
+  return (
+    <div className="bg-background text-foreground min-h-screen py-12 sm:py-16 transition-colors">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Minimal Editorial Category Header */}
+        <div className="border-b border-border pb-10 mb-10 space-y-8">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground mb-3">
+              {catBannerSec?.eyebrow || 'Needle Fashion Collection'}
+            </p>
+            <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-foreground leading-tight">
+              {catMedia?.title || meta.title}
+            </h1>
+            <p className="text-sm sm:text-base font-light text-muted-foreground mt-3 max-w-2xl leading-relaxed">
+              {catMedia?.subtitle || `${meta.subtitle} — ${meta.lineage}`}
+            </p>
+          </div>
+
+          {catMedia?.url && (
+            <div
+              className={`relative w-full ${getAspectRatioClass(
+                catMedia.aspectRatio || catBannerSec?.aspectRatio || '21:9'
+              )} overflow-hidden bg-muted`}
+            >
+              <img
+                src={catMedia.url}
+                alt={catMedia.alt || meta.title}
+                className={`absolute inset-0 w-full h-full ${getObjectFitClass(
+                  catMedia.objectFit || catBannerSec?.objectFit
+                )} ${getFocalPointClass(catMedia.focalPoint || catBannerSec?.focalPoint)}`}
+              />
             </div>
-          </div>
-          <div className="absolute right-0 bottom-0 pointer-events-none opacity-10 font-serif text-[120px] sm:text-[180px] font-bold text-[#C5A059] leading-none select-none pr-4 sm:pr-6">
-            N
-          </div>
+          )}
         </div>
 
         {/* Controls Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-4 gap-3 sm:gap-4">
-          <div className="flex items-center justify-between sm:justify-start gap-3">
-            <span className="text-xs uppercase tracking-[0.16em] font-semibold text-muted-foreground">
-              Showing <span className="text-foreground font-bold">{products.length}</span> Masterpieces
-            </span>
-            <span className="h-1 w-1 rounded-full bg-[#C5A059] hidden sm:inline" />
-            <span className="text-xs text-[#C5A059] font-medium hidden sm:inline">
-              Pure Silk &amp; Gold Zari
-            </span>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-3 sm:gap-4">
+          <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {products.length} {products.length === 1 ? 'Piece' : 'Pieces'}
+          </span>
 
-          <div className="flex items-center justify-between sm:justify-end gap-2">
-            <label htmlFor="sort" className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground whitespace-nowrap">
-              Sort:
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <label htmlFor="sort" className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
+              Sort By
             </label>
-            <div className="relative">
-              <select
-                id="sort"
-                value={sortOption}
-                onChange={handleSortChange}
-                className="appearance-none glass-pill py-2 pl-3.5 pr-8 sm:py-2.5 sm:pl-4 sm:pr-10 text-xs font-semibold text-foreground focus:border-[#C5A059] focus:outline-none shadow-sm cursor-pointer"
-              >
-                <option value="featured" className="bg-card text-foreground">Royal Featured</option>
-                <option value="price-low" className="bg-card text-foreground">Price: Low to High</option>
-                <option value="price-high" className="bg-card text-foreground">Price: High to Low</option>
-                <option value="rating" className="bg-card text-foreground">Highest Rating</option>
-                <option value="newest" className="bg-card text-foreground">New Arrivals</option>
-              </select>
-              <ChevronUpDownIcon className="w-4 h-4 text-[#C5A059] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={handleSortChange}
+              className="bg-transparent border border-border py-2 px-3 text-xs text-foreground focus:border-foreground focus:outline-none cursor-pointer"
+            >
+              <option value="featured" className="bg-background text-foreground">Featured</option>
+              <option value="price-low" className="bg-background text-foreground">Price: Low to High</option>
+              <option value="price-high" className="bg-background text-foreground">Price: High to Low</option>
+              <option value="rating" className="bg-background text-foreground">Highest Rating</option>
+              <option value="newest" className="bg-background text-foreground">New Arrivals</option>
+            </select>
           </div>
         </div>
 

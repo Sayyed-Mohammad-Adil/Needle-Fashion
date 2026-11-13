@@ -23,11 +23,15 @@ import {
   ArrowRightOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   SparklesIcon,
+  Squares2X2Icon,
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
+  { name: 'Page & Image Studio', href: '/admin/pages', icon: Squares2X2Icon, badge: 'CMS' },
   { name: 'Products & Pricing', href: '/admin/products', icon: ShoppingBagIcon },
+  { name: 'Pricing & Rules', href: '/admin/settings', icon: AdjustmentsHorizontalIcon },
   { name: 'Client Requests', href: '/admin/inquiries', icon: InboxStackIcon, badge: 'New' },
   { name: 'Media & Photos', href: '/admin/media', icon: PhotoIcon },
   { name: 'Orders & Bespoke', href: '/admin/orders', icon: CreditCardIcon },

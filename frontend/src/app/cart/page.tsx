@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
-import { XMarkIcon, MinusIcon, PlusIcon, SparklesIcon, ShoppingBagIcon, ShieldCheckIcon, TruckIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
+import { formatEuro } from '@/lib/currency';
 
 export default function CartPage() {
   const { items = [], updateQuantity, removeItem, clearCart } = useCart();
@@ -26,132 +27,94 @@ export default function CartPage() {
   if (!isClient) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#C5A059] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-xs uppercase tracking-[0.2em] text-[#C5A059]">Retrieving Salon Bag...</p>
-        </div>
+        <div className="w-8 h-8 border border-border border-t-foreground rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="bg-background text-foreground min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
-      {/* Subtle vintage jaali filigree watermark in background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.07] dark:opacity-[0.05] -z-0">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage: "url('/images/vintage-jaali-motif.webp')",
-            backgroundSize: '360px 360px',
-            backgroundRepeat: 'repeat',
-          }}
-        />
-      </div>
-      <div className="mx-auto max-w-2xl lg:max-w-7xl relative z-10">
-        <div className="border-b border-border/50 pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <main className="bg-background text-foreground min-h-screen py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="border-b border-border pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-1">
-              <SparklesIcon className="w-3.5 h-3.5" />
-              <span>Commissioned Pieces</span>
-            </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Bespoke Shopping Bag
+            <p className="text-[11px] uppercase tracking-[0.26em] text-muted-foreground mb-2">
+              Selected Pieces
+            </p>
+            <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-foreground">
+              Shopping Bag
             </h1>
           </div>
-
-          <div className="text-xs text-muted-foreground flex items-center gap-3">
-            <span className="glass-pill px-3 py-1 text-[#C5A059] border border-[#C5A059]/40">
-              ⚜ Insured White-Glove Dispatch
-            </span>
-          </div>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Complimentary White-Glove Delivery
+          </p>
         </div>
 
-        <div className="mt-10 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+        <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-14">
           <section aria-labelledby="cart-heading" className="lg:col-span-7">
             <h2 id="cart-heading" className="sr-only">
-              Items in your shopping cart
+              Items in your shopping bag
             </h2>
 
             {items.length === 0 ? (
-              <div className="py-20 text-center glass-panel rounded-3xl p-8 my-4 shadow-xl border border-[#C5A059]/30 relative overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
-                  <Image
-                    src="/images/vintage-royal-salon.webp"
-                    alt="Vintage Royal Salon"
-                    fill
-                    className="object-cover object-center opacity-35 dark:opacity-30 sepia-[0.2] contrast-[1.06]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-card/85 via-card/65 to-card/85 dark:from-[#111318]/85 dark:via-[#111318]/65 dark:to-[#111318]/85" />
-                </div>
-                <div className="relative z-10">
-                <div className="w-16 h-16 rounded-full glass-pill mx-auto flex items-center justify-center text-[#C5A059] mb-4">
-                  <ShoppingBagIcon className="w-8 h-8" />
-                </div>
-                <h3 className="font-serif text-2xl font-bold text-foreground">Your Salon Bag is Empty</h3>
-                <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto leading-relaxed">
-                  Discover our handcrafted royal sherwanis, 24K gold zari bandhgalas, and pure silk kurtas.
+              <div className="py-20 text-center border-b border-border space-y-5">
+                <h3 className="text-2xl font-light text-foreground">Your bag is empty</h3>
+                <p className="text-sm font-light text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                  Explore our tailored suits, handloom shirts, trousers, and ceremonial Indian wear.
                 </p>
-                <div className="mt-8">
+                <div className="pt-2">
                   <Link
                     href="/new-arrivals"
-                    className="btn-glass-gold inline-flex px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em]"
+                    className="inline-block px-8 py-4 bg-foreground text-background text-xs uppercase tracking-[0.22em] hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
-                    Explore Atelier Collections &rarr;
+                    Explore New Arrivals
                   </Link>
-                </div>
                 </div>
               </div>
             ) : (
               <div>
-                <ul role="list" className="space-y-4">
+                <ul role="list" className="divide-y divide-border border-b border-border">
                   {items.map((item, itemIdx) => {
                     const product = item.product;
-                    const rawImg = product?.images?.[0] as any;
-                    const imageSrc: string = typeof rawImg === 'string'
-                      ? rawImg
-                      : rawImg?.data
-                        ? (rawImg.data.startsWith('http') || rawImg.data.startsWith('/')
-                            ? rawImg.data
-                            : `data:image/jpeg;base64,${rawImg.data}`)
-                        : '/images/category-kurta.jpg';
+                    const rawImg = product?.images?.[0] as unknown as string | { data?: string };
+                    const imageSrc: string =
+                      typeof rawImg === 'string'
+                        ? rawImg
+                        : rawImg?.data
+                        ? rawImg.data.startsWith('http') || rawImg.data.startsWith('/')
+                          ? rawImg.data
+                          : `data:image/jpeg;base64,${rawImg.data}`
+                        : '/images/original-ivory-blazer.jpg';
 
                     return (
-                      <li key={itemIdx} className="glass-card p-4 sm:p-6 rounded-3xl flex flex-col sm:flex-row gap-5 items-start sm:items-center">
-                        <div className="relative h-28 w-24 flex-shrink-0 rounded-2xl overflow-hidden border border-[#C5A059]/40 bg-muted/40 shadow-sm">
+                      <li key={itemIdx} className="py-6 flex gap-6 items-start">
+                        <div className="relative h-32 w-24 flex-shrink-0 overflow-hidden bg-muted">
                           <Image
                             src={imageSrc}
-                            alt={product?.name || 'Couture item'}
+                            alt={product?.name || 'Garment'}
                             fill
-                            className="object-cover"
+                            sizes="96px"
+                            className="object-cover object-top"
                           />
                         </div>
 
-                        <div className="flex flex-1 flex-col justify-between w-full">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-serif text-base font-bold">
-                                <Link href={`/product/${product?._id}`} className="text-foreground hover:text-[#C5A059] transition-colors">
-                                  {product?.name || 'Heirloom Garment'}
+                        <div className="flex flex-1 flex-col justify-between min-w-0">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-1.5">
+                              <h3 className="text-sm sm:text-base font-normal text-foreground">
+                                <Link
+                                  href={`/product/${product?._id}`}
+                                  className="hover:text-accent transition-colors"
+                                >
+                                  {product?.name || 'Tailored Garment'}
                                 </Link>
                               </h3>
-                              <div className="mt-1.5 flex flex-wrap gap-2 text-[10px] text-muted-foreground">
-                                <span className="glass-pill px-2.5 py-0.5 border border-border/50">
-                                  Size: {item.size === 'customize' ? 'Bespoke 48-Pt' : item.size}
-                                </span>
-                                <span className="glass-pill px-2.5 py-0.5 border border-border/50">
-                                  Silhouette: {item.fitting}
-                                </span>
-                              </div>
-                              <p className="mt-2 text-sm font-serif font-bold text-[#C5A059]">
-                                ₹{((product?.price || 0) * item.quantity).toLocaleString()}
+                              <p className="text-xs font-light text-muted-foreground">
+                                Size: {item.size === 'customize' ? '48-Point Bespoke' : item.size} &middot; Fit: {item.fitting}
                               </p>
-
                               {item.measurements && (
-                                <div className="mt-2 text-[10px] text-muted-foreground font-mono glass-panel p-2 rounded-xl border border-border/40 inline-block">
-                                  <span>Chest: {item.measurements.chest}&quot; | </span>
-                                  <span>Waist: {item.measurements.waist}&quot; | </span>
-                                  <span>Shoulder: {item.measurements.shoulder}&quot;</span>
-                                </div>
+                                <p className="text-[11px] font-mono text-muted-foreground pt-1">
+                                  Chest {item.measurements.chest}&quot; &middot; Waist {item.measurements.waist}&quot; &middot; Shoulder {item.measurements.shoulder}&quot;
+                                </p>
                               )}
                             </div>
 
@@ -160,24 +123,22 @@ export default function CartPage() {
                               onClick={() => {
                                 if (product?._id) {
                                   removeItem(product._id);
-                                  toast.success('Piece removed from bag');
+                                  toast.success('Removed from bag');
                                 }
                               }}
-                              className="h-8 w-8 rounded-full glass-pill flex items-center justify-center text-muted-foreground hover:text-red-500 transition-colors"
+                              aria-label="Remove item"
+                              className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                             >
-                              <span className="sr-only">Remove</span>
-                              <XMarkIcon className="h-4 w-4" aria-hidden="true" />
+                              <XMarkIcon className="h-4 w-4" />
                             </button>
                           </div>
 
-                          <div className="mt-4 flex items-center justify-between pt-3 border-t border-border/40">
-                            <span className="text-[11px] text-muted-foreground uppercase tracking-wider">
-                              Artisan Quantity
-                            </span>
-                            <div className="flex items-center glass-pill p-1 border border-border/50">
+                          <div className="mt-5 flex items-center justify-between">
+                            <div className="inline-flex items-center border border-border">
                               <button
                                 type="button"
-                                className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-[#C5A059]/20 transition-colors"
+                                aria-label="Decrease quantity"
+                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                                 onClick={() => {
                                   if (product?._id) {
                                     updateQuantity(product._id, Math.max(1, item.quantity - 1));
@@ -186,12 +147,13 @@ export default function CartPage() {
                               >
                                 <MinusIcon className="h-3 w-3" />
                               </button>
-                              <span className="w-8 text-center text-xs font-semibold text-foreground">
+                              <span className="w-8 text-center text-xs tabular-nums text-foreground">
                                 {item.quantity}
                               </span>
                               <button
                                 type="button"
-                                className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-[#C5A059]/20 transition-colors"
+                                aria-label="Increase quantity"
+                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                                 onClick={() => {
                                   if (product?._id) {
                                     updateQuantity(product._id, item.quantity + 1);
@@ -201,6 +163,10 @@ export default function CartPage() {
                                 <PlusIcon className="h-3 w-3" />
                               </button>
                             </div>
+
+                            <p className="text-sm text-foreground tabular-nums">
+                              {formatEuro((product?.price || 0) * item.quantity)}
+                            </p>
                           </div>
                         </div>
                       </li>
@@ -213,59 +179,62 @@ export default function CartPage() {
                     type="button"
                     onClick={() => {
                       clearCart();
-                      toast.success('Shopping bag cleared');
+                      toast.success('Bag cleared');
                     }}
-                    className="text-[11px] uppercase tracking-widest font-semibold text-muted-foreground hover:text-red-500 transition-colors"
+                    className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Clear Salon Bag
+                    Clear Bag
                   </button>
                 </div>
               </div>
             )}
           </section>
 
-          {/* Order Investment Summary */}
+          {/* Order Summary */}
           <section
             aria-labelledby="summary-heading"
-            className="mt-12 rounded-3xl glass-panel-gold border border-[#C5A059]/30 shadow-2xl p-6 sm:p-8 lg:col-span-5 lg:mt-0"
+            className="mt-12 lg:mt-0 lg:col-span-5 border border-border p-8"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <SparklesIcon className="w-4 h-4 text-[#C5A059]" />
-              <span className="text-[10px] uppercase tracking-[0.2em] text-[#C5A059] font-bold">Atelier Investment</span>
-            </div>
-            <h2 id="summary-heading" className="font-serif text-2xl font-bold text-foreground">
-              Order Ledger
+            <h2
+              id="summary-heading"
+              className="text-xs uppercase tracking-[0.24em] text-muted-foreground pb-4 border-b border-border"
+            >
+              Order Summary
             </h2>
 
-            <dl className="mt-6 space-y-3.5 text-xs divide-y divide-border/40">
-              <div className="flex items-center justify-between pt-2">
-                <dt className="text-muted-foreground">Handloom Subtotal</dt>
-                <dd className="font-semibold text-foreground">₹{subtotal.toLocaleString()}</dd>
+            <dl className="mt-6 space-y-4 text-xs">
+              <div className="flex items-center justify-between">
+                <dt className="text-muted-foreground">Subtotal</dt>
+                <dd className="text-foreground tabular-nums">{formatEuro(subtotal)}</dd>
               </div>
-              <div className="flex items-center justify-between pt-3">
-                <dt className="text-muted-foreground">GST (18% Imperial Duty)</dt>
-                <dd className="font-semibold text-foreground">₹{gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}</dd>
-              </div>
-              <div className="flex items-center justify-between pt-3">
-                <dt className="text-muted-foreground">White-Glove Insured Delivery</dt>
-                <dd className="font-semibold text-[#C5A059]">
-                  {shipping === 0 ? 'Complimentary' : `₹${shipping.toLocaleString()}`}
+              <div className="flex items-center justify-between">
+                <dt className="text-muted-foreground">VAT / Duty (18%)</dt>
+                <dd className="text-foreground tabular-nums">
+                  {formatEuro(gst)}
                 </dd>
               </div>
-              <div className="flex items-center justify-between pt-4 border-t border-[#C5A059]/40">
-                <dt className="font-serif text-base font-bold text-foreground">Total Investment</dt>
-                <dd className="font-serif text-xl font-bold text-[#C5A059]">₹{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</dd>
+              <div className="flex items-center justify-between">
+                <dt className="text-muted-foreground">Delivery</dt>
+                <dd className="text-foreground">
+                  {shipping === 0 ? 'Complimentary' : formatEuro(shipping)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between pt-4 border-t border-border text-sm">
+                <dt className="font-normal text-foreground">Total</dt>
+                <dd className="font-normal text-foreground tabular-nums">
+                  {formatEuro(total)}
+                </dd>
               </div>
             </dl>
 
             <div className="mt-8">
               <Link
-                href={items.length > 0 ? "/checkout" : "#"}
-                className={`w-full ${
+                href={items.length > 0 ? '/checkout' : '#'}
+                className={`w-full py-4 text-xs uppercase tracking-[0.22em] flex items-center justify-center transition-colors ${
                   items.length > 0
-                    ? 'btn-glass-gold shadow-xl'
-                    : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-                } py-4 text-xs font-bold uppercase tracking-[0.18em] flex items-center justify-center text-center`}
+                    ? 'bg-foreground text-background hover:bg-accent hover:text-accent-foreground'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                }`}
                 onClick={(e) => {
                   if (items.length === 0) {
                     e.preventDefault();
@@ -273,33 +242,21 @@ export default function CartPage() {
                   }
                 }}
               >
-                Proceed to Bespoke Checkout
+                Proceed to Checkout
               </Link>
             </div>
 
-            <div className="mt-6 space-y-2 border-t border-border/40 pt-4 text-[11px] text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <ShieldCheckIcon className="w-4 h-4 text-[#C5A059]" />
-                <span>100% Genuine Handloom & Zari Certification</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <TruckIcon className="w-4 h-4 text-[#C5A059]" />
-                <span>Complimentary Master Tailor Adjustment Protocol</span>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center text-xs text-muted-foreground">
-              <p>
-                or{' '}
-                <Link href="/new-arrivals" className="font-semibold text-[#C5A059] hover:underline">
-                  Continue Browsing Atelier
-                  <span aria-hidden="true"> &rarr;</span>
-                </Link>
-              </p>
+            <div className="mt-6 text-center">
+              <Link
+                href="/new-arrivals"
+                className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Continue Browsing
+              </Link>
             </div>
           </section>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

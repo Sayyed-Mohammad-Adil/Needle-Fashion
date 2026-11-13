@@ -18,6 +18,7 @@ const notification_routes_1 = __importDefault(require("./notification.routes"));
 const chat_routes_1 = __importDefault(require("./chat.routes"));
 const upload_routes_1 = __importDefault(require("./upload.routes"));
 const inquiry_routes_1 = __importDefault(require("./inquiry.routes"));
+const siteConfig_routes_1 = __importDefault(require("./siteConfig.routes"));
 const error_middleware_1 = require("../middleware/error.middleware");
 const security_middleware_1 = require("../middleware/security.middleware");
 const router = express_1.default.Router();
@@ -44,6 +45,7 @@ router.use('/api/notifications', notification_routes_1.default);
 router.use('/api/chat', chat_routes_1.default);
 router.use('/api/upload', upload_routes_1.default);
 router.use('/api/inquiries', inquiry_routes_1.default);
+router.use('/api/site-config', siteConfig_routes_1.default);
 // Health check endpoint
 router.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Server is running' });

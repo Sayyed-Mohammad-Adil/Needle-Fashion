@@ -1,95 +1,88 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWishlist = exports.getUserMeasurements = exports.deleteUser = exports.updateUser = exports.getUserById = exports.getUsers = exports.removeFromWishlist = exports.addToWishlist = exports.addUserMeasurement = exports.updateUserProfile = exports.getUserProfile = exports.googleAuth = exports.loginUser = exports.refreshToken = exports.registerUser = void 0;
-const user_model_1 = require("../models/user.model");
-const jwt_utils_1 = require("../utils/jwt.utils");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const google_auth_library_1 = require("google-auth-library");
-const mongoose_1 = __importDefault(require("mongoose"));
+const prisma_1 = require("../lib/prisma");
+const jwt_utils_1 = require("../utils/jwt.utils");
 const googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
-const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+async function hashPassword(password) {
+    const salt = await bcryptjs_1.default.genSalt(10);
+    return bcryptjs_1.default.hash(password, salt);
+}
+const registerUser = async (req, res) => {
     try {
         const { name, email, password, phone, address } = req.body;
-        // Check if user already exists
-        const userExists = yield user_model_1.User.findOne({ email });
+        const userExists = await prisma_1.prisma.user.findUnique({ where: { email } });
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
-        // Create new user
-        const user = yield user_model_1.User.create({
-            name,
-            email,
-            password,
-            phone,
-            address,
+        const hashedPassword = await hashPassword(password);
+        const user = await prisma_1.prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                phone,
+                address,
+            },
         });
-        if (user) {
-            const tokens = (0, jwt_utils_1.generateTokenPair)(user);
-            res.status(201).json(Object.assign({ _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, address: user.address }, tokens));
-        }
-        else {
-            res.status(400).json({ message: 'Invalid user data' });
-        }
+        const tokens = (0, jwt_utils_1.generateTokenPair)(user);
+        res.status(201).json({
+            _id: user.id,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+            address: user.address,
+            ...tokens,
+        });
     }
     catch (error) {
         console.log(error);
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.registerUser = registerUser;
-// @desc    Refresh access token
-// @route   POST /api/auth/refresh
-// @access  Public
-const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const refreshToken = async (req, res) => {
     try {
         const { refreshToken } = req.body;
         if (!refreshToken) {
             return res.status(401).json({ message: 'Refresh token required' });
         }
-        // Verify refresh token
         const decoded = (0, jwt_utils_1.verifyRefreshToken)(refreshToken);
-        // Get user from token
-        const user = yield user_model_1.User.findById(decoded.id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: decoded.id } });
         if (!user) {
             return res.status(401).json({ message: 'User not found' });
         }
-        // Generate new access token
         const newAccessToken = (0, jwt_utils_1.generateAccessToken)(user);
-        res.json({
-            accessToken: newAccessToken
-        });
+        res.json({ accessToken: newAccessToken });
     }
-    catch (error) {
+    catch {
         res.status(401).json({ message: 'Invalid refresh token' });
     }
-});
+};
 exports.refreshToken = refreshToken;
-// @desc    Login user & get token
-// @route   POST /api/auth/login
-// @access  Public
-const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        // Find user by email
-        const user = yield user_model_1.User.findOne({ email }).select('+password');
-        // Check if user exists and password matches
-        if (user && (yield user.comparePassword(password))) {
+        const user = await prisma_1.prisma.user.findUnique({ where: { email } });
+        if (user && (await bcryptjs_1.default.compare(password, user.password))) {
             const tokens = (0, jwt_utils_1.generateTokenPair)(user);
-            res.json(Object.assign({ _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, address: user.address }, tokens));
+            res.json({
+                _id: user.id,
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                phone: user.phone,
+                address: user.address,
+                ...tokens,
+            });
         }
         else {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -98,12 +91,9 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.loginUser = loginUser;
-// @desc    Login/Register with Google OAuth
-// @route   POST /api/auth/google
-// @access  Public
-const googleAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const googleAuth = async (req, res) => {
     try {
         const { idToken } = req.body;
         if (!idToken) {
@@ -112,7 +102,7 @@ const googleAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!process.env.GOOGLE_CLIENT_ID) {
             return res.status(500).json({ message: 'Google client ID is not configured on the server' });
         }
-        const ticket = yield googleClient.verifyIdToken({
+        const ticket = await googleClient.verifyIdToken({
             idToken,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
@@ -121,39 +111,40 @@ const googleAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.status(400).json({ message: 'Unable to verify Google account' });
         }
         const email = payload.email;
-        const name = payload.name ||
-            payload.given_name ||
-            email.split('@')[0];
-        let user = yield user_model_1.User.findOne({ email });
-        // If user doesn't exist, create one
+        const name = payload.name || payload.given_name || email.split('@')[0];
+        let user = await prisma_1.prisma.user.findUnique({ where: { email } });
         if (!user) {
-            const randomPassword = Math.random().toString(36).slice(-12);
-            user = yield user_model_1.User.create({
-                name,
-                email,
-                password: randomPassword,
+            const randomPassword = await hashPassword(Math.random().toString(36).slice(-12));
+            user = await prisma_1.prisma.user.create({
+                data: { name, email, password: randomPassword },
             });
         }
         const tokens = (0, jwt_utils_1.generateTokenPair)(user);
-        return res.json(Object.assign({ _id: user._id, name: user.name, email: user.email, role: user.role, phone: user.phone, address: user.address }, tokens));
+        return res.json({
+            _id: user.id,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+            address: user.address,
+            ...tokens,
+        });
     }
     catch (error) {
         console.error('Google auth error:', error);
         return res.status(401).json({ message: 'Google authentication failed' });
     }
-});
+};
 exports.googleAuth = googleAuth;
-// @desc    Get user profile
-// @route   GET /api/users/me
-// @access  Private
-const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getUserProfile = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         res.set('Cache-Control', 'no-store');
         if (user) {
             res.json({
-                _id: user._id,
+                _id: user.id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
@@ -170,30 +161,30 @@ const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getUserProfile = getUserProfile;
-// @desc    Update user profile
-// @route   PUT /api/users/me
-// @access  Private
-const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const updateUserProfile = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        // Update user fields
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        user.phone = req.body.phone || user.phone;
-        user.address = req.body.address || user.address;
-        // Update password if provided
+        const data = {
+            name: req.body.name || user.name,
+            email: req.body.email || user.email,
+            phone: req.body.phone !== undefined ? req.body.phone : user.phone,
+            address: req.body.address !== undefined ? req.body.address : user.address,
+        };
         if (req.body.password) {
-            user.password = req.body.password;
+            data.password = await hashPassword(req.body.password);
         }
-        const updatedUser = yield user.save();
+        const updatedUser = await prisma_1.prisma.user.update({
+            where: { id: req.user.id },
+            data,
+        });
         res.json({
-            _id: updatedUser._id,
+            _id: updatedUser.id,
+            id: updatedUser.id,
             name: updatedUser.name,
             email: updatedUser.email,
             role: updatedUser.role,
@@ -205,104 +196,115 @@ const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.updateUserProfile = updateUserProfile;
-// @desc    Add measurement to user profile
-// @route   POST /api/users/measurements
-// @access  Private
-const addUserMeasurement = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const addUserMeasurement = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         const { chest, waist, length, sleeve, shoulder, neck, photo } = req.body;
-        // Add new measurement
-        user.savedMeasurements.push({
-            chest,
-            waist,
-            length,
-            sleeve,
-            shoulder,
-            neck,
-            photo,
+        const current = Array.isArray(user.savedMeasurements)
+            ? user.savedMeasurements
+            : [];
+        const nextMeasurements = [
+            ...current,
+            { chest, waist, length, sleeve, shoulder, neck, photo },
+        ];
+        const updated = await prisma_1.prisma.user.update({
+            where: { id: req.user.id },
+            data: { savedMeasurements: nextMeasurements },
         });
-        yield user.save();
-        res.status(201).json(user.savedMeasurements);
+        res.status(201).json(updated.savedMeasurements);
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.addUserMeasurement = addUserMeasurement;
-// @desc    Add product to wishlist
-// @route   POST /api/users/wishlist
-// @access  Private
-const addToWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const addToWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        // Check if product already in wishlist
         if (user.wishlist.includes(productId)) {
             return res.status(400).json({ message: 'Product already in wishlist' });
         }
-        // Add to wishlist
-        user.wishlist.push(productId);
-        yield user.save();
-        res.status(200).json(user.wishlist);
+        const updated = await prisma_1.prisma.user.update({
+            where: { id: req.user.id },
+            data: { wishlist: [...user.wishlist, productId] },
+        });
+        res.status(200).json(updated.wishlist);
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.addToWishlist = addToWishlist;
-// @desc    Remove product from wishlist
-// @route   DELETE /api/users/wishlist/:productId
-// @access  Private
-const removeFromWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const removeFromWishlist = async (req, res) => {
     try {
         const { productId } = req.params;
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        // Remove from wishlist
-        user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
-        yield user.save();
-        res.status(200).json(user.wishlist);
+        const updated = await prisma_1.prisma.user.update({
+            where: { id: req.user.id },
+            data: { wishlist: user.wishlist.filter((id) => id !== productId) },
+        });
+        res.status(200).json(updated.wishlist);
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.removeFromWishlist = removeFromWishlist;
-// @desc    Get all users (admin only)
-// @route   GET /api/admin/users
-// @access  Private/Admin
-const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUsers = async (_req, res) => {
     try {
-        const users = yield user_model_1.User.find({});
-        res.json(users);
+        const users = await prisma_1.prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                phone: true,
+                address: true,
+                savedMeasurements: true,
+                wishlist: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json((0, prisma_1.withMongoIds)(users));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getUsers = getUsers;
-// @desc    Get user by ID (admin only)
-// @route   GET /api/admin/users/:id
-// @access  Private/Admin
-const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserById = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById(req.params.id);
+        const user = await prisma_1.prisma.user.findUnique({
+            where: { id: req.params.id },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                phone: true,
+                address: true,
+                savedMeasurements: true,
+                wishlist: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
         if (user) {
-            res.json(user);
+            res.json((0, prisma_1.withMongoId)(user));
         }
         else {
             res.status(404).json({ message: 'User not found' });
@@ -311,62 +313,56 @@ const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getUserById = getUserById;
-// @desc    Update user by ID (admin only)
-// @route   PUT /api/admin/users/:id
-// @access  Private/Admin
-const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateUser = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById(req.params.id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.params.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        user.role = req.body.role || user.role;
-        user.phone = req.body.phone || user.phone;
-        user.address = req.body.address || user.address;
+        const data = {
+            name: req.body.name || user.name,
+            email: req.body.email || user.email,
+            role: req.body.role || user.role,
+            phone: req.body.phone !== undefined ? req.body.phone : user.phone,
+            address: req.body.address !== undefined ? req.body.address : user.address,
+        };
         if (req.body.password) {
-            user.password = req.body.password;
+            data.password = await hashPassword(req.body.password);
         }
-        const updatedUser = yield user.save();
-        res.json(updatedUser);
+        const updatedUser = await prisma_1.prisma.user.update({
+            where: { id: req.params.id },
+            data,
+        });
+        res.json((0, prisma_1.withMongoId)(updatedUser));
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.updateUser = updateUser;
-// @desc    Delete user by ID (admin only)
-// @route   DELETE /api/admin/users/:id
-// @access  Private/Admin
-const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteUser = async (req, res) => {
     const { id } = req.params;
-    // Optional: validate MongoDB ObjectId format
-    if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+    if (!id) {
         return res.status(400).json({ message: 'Invalid user ID' });
     }
     try {
-        const user = yield user_model_1.User.findByIdAndDelete(id);
-        if (!user) {
+        const existing = await prisma_1.prisma.user.findUnique({ where: { id } });
+        if (!existing) {
             return res.status(404).json({ message: 'User not found' });
         }
+        await prisma_1.prisma.user.delete({ where: { id } });
         return res.json({ message: 'User removed' });
     }
     catch (error) {
-        // You can type error as unknown and narrow down if needed
         return res.status(500).json({ message: error.message || 'Server error' });
     }
-});
+};
 exports.deleteUser = deleteUser;
-// @desc    Get user's saved measurements
-// @route   GET /api/users/measurements
-// @access  Private
-const getUserMeasurements = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getUserMeasurements = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -375,15 +371,11 @@ const getUserMeasurements = (req, res) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getUserMeasurements = getUserMeasurements;
-// @desc    Get user's wishlist
-// @route   GET /api/users/wishlist
-// @access  Private
-const getWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getWishlist = async (req, res) => {
     try {
-        const user = yield user_model_1.User.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        const user = await prisma_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -392,6 +384,6 @@ const getWishlist = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         res.status(500).json({ message: error.message });
     }
-});
+};
 exports.getWishlist = getWishlist;
 //# sourceMappingURL=user.controller.js.map

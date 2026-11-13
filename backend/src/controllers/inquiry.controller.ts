@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-import { Inquiry } from '../models/inquiry.model';
+import { prisma, withMongoId, withMongoIds } from '../lib/prisma';
 
-// @desc    Create a new client inquiry or fitting request
-// @route   POST /api/inquiries
-// @access  Public
 export const createInquiry = async (req: Request, res: Response) => {
   try {
     const {
@@ -26,76 +23,71 @@ export const createInquiry = async (req: Request, res: Response) => {
       });
     }
 
-    const inquiry = await Inquiry.create({
-      name,
-      email,
-      phone,
-      type: type || 'Bespoke Commission',
-      subject: subject || 'Atelier Fitting / Commission Request',
-      message,
-      preferredDate,
-      preferredTime,
-      productId,
-      productName,
-      measurements,
-      status: 'Pending',
+    const inquiry = await prisma.inquiry.create({
+      data: {
+        name,
+        email: String(email).toLowerCase(),
+        phone,
+        type: type || 'Bespoke Commission',
+        subject: subject || 'Atelier Fitting / Commission Request',
+        message,
+        preferredDate,
+        preferredTime,
+        productId,
+        productName,
+        measurements: measurements ?? undefined,
+        status: 'Pending',
+      },
     });
 
     res.status(201).json({
       success: true,
       message: 'Your inquiry has been successfully received by the royal atelier.',
-      inquiry,
+      inquiry: withMongoId(inquiry),
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get all inquiries with filtering & pagination
-// @route   GET /api/inquiries
-// @access  Private/Admin
 export const getInquiries = async (req: Request, res: Response) => {
   try {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 15;
 
-    const filterObj: any = {};
-
-    // Status filter
+    const where: any = {};
     if (req.query.status && req.query.status !== 'all') {
-      filterObj.status = req.query.status;
+      where.status = String(req.query.status);
     }
-
-    // Type filter
     if (req.query.type && req.query.type !== 'all') {
-      filterObj.type = req.query.type;
+      where.type = String(req.query.type);
     }
-
-    // Search keyword (name, email, phone, subject)
     if (req.query.keyword) {
       const keyword = String(req.query.keyword).trim();
-      filterObj.$or = [
-        { name: { $regex: keyword, $options: 'i' } },
-        { email: { $regex: keyword, $options: 'i' } },
-        { phone: { $regex: keyword, $options: 'i' } },
-        { subject: { $regex: keyword, $options: 'i' } },
+      where.OR = [
+        { name: { contains: keyword, mode: 'insensitive' } },
+        { email: { contains: keyword, mode: 'insensitive' } },
+        { phone: { contains: keyword, mode: 'insensitive' } },
+        { subject: { contains: keyword, mode: 'insensitive' } },
       ];
     }
 
-    const total = await Inquiry.countDocuments(filterObj);
-    const inquiries = await Inquiry.find(filterObj)
-      .sort({ createdAt: -1 })
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
-
-    // Summary counts for dashboard badges
-    const pendingCount = await Inquiry.countDocuments({ status: 'Pending' });
-    const scheduledCount = await Inquiry.countDocuments({ status: 'Fitting Scheduled' });
-    const inProgressCount = await Inquiry.countDocuments({ status: 'In Progress' });
+    const [total, inquiries, pendingCount, scheduledCount, inProgressCount] = await Promise.all([
+      prisma.inquiry.count({ where }),
+      prisma.inquiry.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: pageSize,
+        skip: pageSize * (page - 1),
+      }),
+      prisma.inquiry.count({ where: { status: 'Pending' } }),
+      prisma.inquiry.count({ where: { status: 'Fitting Scheduled' } }),
+      prisma.inquiry.count({ where: { status: 'In Progress' } }),
+    ]);
 
     res.json({
       success: true,
-      inquiries,
+      inquiries: withMongoIds(inquiries),
       total,
       page,
       pages: Math.ceil(total / pageSize),
@@ -111,58 +103,53 @@ export const getInquiries = async (req: Request, res: Response) => {
   }
 };
 
-// @desc    Get single inquiry by ID
-// @route   GET /api/inquiries/:id
-// @access  Private/Admin
 export const getInquiryById = async (req: Request, res: Response) => {
   try {
-    const inquiry = await Inquiry.findById(req.params.id);
+    const inquiry = await prisma.inquiry.findUnique({ where: { id: req.params.id } });
     if (!inquiry) {
       return res.status(404).json({ message: 'Inquiry not found' });
     }
-    res.json({ success: true, inquiry });
+    res.json({ success: true, inquiry: withMongoId(inquiry) });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Update inquiry status or add admin notes
-// @route   PUT /api/inquiries/:id
-// @access  Private/Admin
 export const updateInquiry = async (req: Request, res: Response) => {
   try {
-    const inquiry = await Inquiry.findById(req.params.id);
+    const inquiry = await prisma.inquiry.findUnique({ where: { id: req.params.id } });
     if (!inquiry) {
       return res.status(404).json({ message: 'Inquiry not found' });
     }
 
     const { status, adminNotes } = req.body;
-    if (status) inquiry.status = status;
-    if (adminNotes !== undefined) inquiry.adminNotes = adminNotes;
+    const updated = await prisma.inquiry.update({
+      where: { id: req.params.id },
+      data: {
+        status: status ?? inquiry.status,
+        adminNotes: adminNotes !== undefined ? adminNotes : inquiry.adminNotes,
+      },
+    });
 
-    const updated = await inquiry.save();
     res.json({
       success: true,
       message: 'Inquiry updated successfully',
-      inquiry: updated,
+      inquiry: withMongoId(updated),
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Delete inquiry
-// @route   DELETE /api/inquiries/:id
-// @access  Private/Admin
 export const deleteInquiry = async (req: Request, res: Response) => {
   try {
-    const inquiry = await Inquiry.findById(req.params.id);
+    const inquiry = await prisma.inquiry.findUnique({ where: { id: req.params.id } });
     if (!inquiry) {
       return res.status(404).json({ message: 'Inquiry not found' });
     }
 
-    await inquiry.deleteOne();
-    res.json({ success: true, message: 'Inquiry removed successfully' });
+    await prisma.inquiry.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Inquiry removed' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

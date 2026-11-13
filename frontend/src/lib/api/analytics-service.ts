@@ -71,6 +71,15 @@ export const analyticsService = {
     return response.data;
   },
 
+  // Get executive financial & atelier report
+  getExecutiveReport: async (from?: string, to?: string): Promise<any> => {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const response = await apiClient.get('/api/analytics/report', { params });
+    return response.data;
+  },
+
   // Get search analytics
   getSearchAnalytics: async (filters?: AnalyticsFilters): Promise<SearchAnalytics[]> => {
     const params = new URLSearchParams();

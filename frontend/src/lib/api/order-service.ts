@@ -87,6 +87,22 @@ export const orderService = {
     return response.data;
   },
 
+  // Update full admin order details (status, payment, tailoring stage, tracking, notes)
+  updateOrderAdminDetails: async (
+    id: string,
+    payload: {
+      status?: string;
+      isPaid?: boolean;
+      tailoringStage?: string;
+      courierName?: string;
+      trackingNumber?: string;
+      atelierNotes?: string;
+    }
+  ): Promise<any> => {
+    const response = await apiClient.put(`/api/orders/${id}/admin`, payload);
+    return response.data;
+  },
+
   // Update order to paid
   updateOrderToPaid: async (id: string, paymentResult: {
     id: string;
